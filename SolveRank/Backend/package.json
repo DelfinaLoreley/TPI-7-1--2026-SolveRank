@@ -5,12 +5,16 @@
   "license": "ISC",
   "author": "Gutierrez Delfina",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "dotenv": "^18.0.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.24.5",
+    "nodemon": "^3.1.14"
   }
 }
