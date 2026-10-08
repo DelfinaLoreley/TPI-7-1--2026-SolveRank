@@ -1,14 +1,16 @@
 import '/src/login/Login.css';
 
-import mailicon from '/src/assets/iconos/Mail.svg';
-import passwordicon from '/src/assets/iconos/password.svg';
+import logo from '/src/assets/login/logo.svg';
+import mailicon from '/src/assets/login/iconos/Mail.svg';
+import passwordicon from '/src/assets/login/iconos/password.svg';
+import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
 function Login() {
     return (
         <div className="container">
             <div className="Card">
                 <div className="CardInfo">
-                    <img src="/src/assets/logo.svg" alt="Solverank Logo" className="logo" />
+                    <img src={logo} alt="Solverank Logo" className="logo" />
                     <span className="Titulo">BIENVENIDO A SOLVERANK</span> 
                     <div className="input-group"> 
                         <img src={mailicon} alt="Mail Icon" className="img-icon" />
@@ -21,6 +23,7 @@ function Login() {
                     </div>
                     <input className="caja" type="password" placeholder="Contraseña..." />
                     <button className="boton-iniciar" type="submit">Iniciar Sesión</button>
+                    <button className="boton-iniciar-google" type="submit"> <img src={googleIcon} alt="Google Icon" /> Iniciar Sesión con Google</button>
                     <div className="separator">
                         <hr />
                         <p>ó</p>

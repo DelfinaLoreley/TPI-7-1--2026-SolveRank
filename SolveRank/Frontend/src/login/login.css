@@ -11,6 +11,13 @@ body{
     --color: white;
 }
 
+.logo{
+    width: 250px;
+    height: auto;
+    align-self: center;
+
+}
+
 .caja{
     font-family: var(--font);
     color: #3F4A66;
@@ -25,7 +32,6 @@ body{
 .input-group{
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
 }
 
 .Titulo{
@@ -94,7 +100,7 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-top: 50px;
+    padding-top: 20px;
 }
 
 
@@ -106,6 +112,23 @@ hr {
     font-weight: 700;
     border-radius: 10px;
     padding: 15px;
+}
+
+.boton-iniciar-google{
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    background: linear-gradient(to bottom, #A3C1F3, #518EF3, #1070FB); 
+    border: 2px solid #3078EF; 
+    font-weight: 700; 
+    border-radius: 10px; 
+    padding: 15px;
+}
+
+.boton-iniciar-google img {
+    align-self: center;
+    justify-self: center;
 }
 
 .boton-registrar{
