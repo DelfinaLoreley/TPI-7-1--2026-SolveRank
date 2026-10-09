@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { registro, login, miusuario, setPassword } = require('../controladores/authController');
+const { registro, login, miusuario, setPassword, logout } = require('../controladores/authController');
 const verificarToken = require('../middleware/authMiddleware');
 
 const {
@@ -12,8 +12,9 @@ const router = express.Router();
 
 router.post('/registro', registro);
 router.post('/login', login);
-router.get('/miusuario', verificarToken, miusuario);
+router.post('/logout', verificarToken, logout);
 router.post('/setPassword', verificarToken, setPassword);
+router.get('/miusuario', verificarToken, miusuario);
 router.get('/google', iniciarGoogle);
 router.get('/google/callback', callbackGoogle);
 

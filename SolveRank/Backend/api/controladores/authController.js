@@ -1,7 +1,17 @@
-
+const { guardarToken, borrarToken } = require('../config/auth-cookie');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db/conexion');
+
+
+function logout(req, res) {
+    borrarToken(res);
+
+    return res.json({
+        mensaje: 'Sesión cerrada correctamente'
+    });
+}
+
 
 async function registro(req, res) {
     try {
@@ -161,9 +171,12 @@ async function registro(req, res) {
             { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
         );
 
+        // Guardar el token en la cookie
+        guardarToken(res, token);
+
         return res.status(201).json({
             mensaje: 'Usuario registrado correctamente',
-            token,
+            //token,
             usuario: {
                 idUsuario: resultado.insertId,
                 nombre: nombre.trim(),
@@ -260,10 +273,13 @@ async function login(req, res) {
             { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
         );
 
+        // Guardar el token en la cookie
+        guardarToken(res, token);
+
         // Devolver los datos públicos del usuario
         return res.json({
             mensaje: 'Inicio de sesión correcto',
-            token,
+            //token,
             usuario: {
                 idUsuario: usuario.idUsuario,
                 nombre: usuario.Nombre,
@@ -386,4 +402,4 @@ async function setPassword(req, res) {
 }
 
 
-module.exports = { registro, login, miusuario, setPassword };
+module.exports = { registro, login, miusuario, setPassword, logout };

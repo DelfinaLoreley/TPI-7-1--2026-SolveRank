@@ -1,4 +1,5 @@
 
+const { guardarToken } = require('../config/auth-cookie');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
@@ -128,10 +129,10 @@ async function callbackGoogle(req, res) {
             const usuario = cuentasGoogle[0];
 
             const token = crearToken(usuario.idUsuario);
-
+            guardarToken(res, token);
             return res.json({
                 mensaje: 'Inicio de sesión con Google correcto',
-                token,
+                //token,
                 usuario: {
                     idUsuario: usuario.idUsuario,
                     nombre: usuario.Nombre,
@@ -182,10 +183,11 @@ async function callbackGoogle(req, res) {
             }
 
             const token = crearToken(usuario.idUsuario);
+            guardarToken(res, token);
 
             return res.json({
                 mensaje: 'Cuenta de Google vinculada correctamente',
-                token,
+                //token,
                 usuario: {
                     idUsuario: usuario.idUsuario,
                     nombre: usuario.Nombre,
@@ -265,10 +267,10 @@ async function callbackGoogle(req, res) {
         );
 
         const token = crearToken(resultado.insertId);
-
+        guardarToken(res, token);
         return res.status(201).json({
             mensaje: 'Usuario registrado con Google correctamente',
-            token,
+            //token,
             usuario: {
                 idUsuario: resultado.insertId,
                 nombre,

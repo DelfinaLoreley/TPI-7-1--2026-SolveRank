@@ -4,13 +4,26 @@ const jwt = require('jsonwebtoken');
 function verificarToken(req, res, next) {
     const encabezado = req.headers.authorization;
 
-    if (!encabezado || !encabezado.startsWith('Bearer ')) {
+    // Preferir la cookie para el navegador.
+    // Aceptar Bearer para clientes como Postman.
+    const token = req.cookies?.solverank_token ||
+        (encabezado?.startsWith('Bearer ')
+            ? encabezado.substring(7)
+            : null);
+
+    if (!token) {
         return res.status(401).json({
-            mensaje: 'No se proporcionó un token de autenticación'
+            mensaje: 'No hay una sesión autenticada'
         });
     }
 
-    const token = encabezado.substring(7);
+    if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET no está configurado');
+
+        return res.status(500).json({
+            mensaje: 'Error de configuración del servidor'
+        });
+    }
 
     try {
         const datos = jwt.verify(
@@ -23,9 +36,10 @@ function verificarToken(req, res, next) {
         next();
     } catch (error) {
         return res.status(401).json({
-            mensaje: 'Token inválido o vencido'
+            mensaje: 'La sesión es inválida o ha vencido'
         });
     }
 }
 
 module.exports = verificarToken;
+
