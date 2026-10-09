@@ -1,10 +1,6 @@
 const router = require('express').Router();
-
-
-
-
-
-
+const db = require('../../config/conexion')
+const bcrypt = require('bcrypt');
 
 
 //endpoint para obtener todos los usuarios
