@@ -1,5 +1,5 @@
 import './App.css'
-import Login from '/src/login/Login'
+import Login from '/src/vistas/login/Login'
 
 function App() {
 
