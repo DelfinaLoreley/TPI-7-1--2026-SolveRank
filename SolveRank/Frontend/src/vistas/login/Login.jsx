@@ -5,7 +5,7 @@ import mailicon from '/src/assets/login/iconos/Mail.svg';
 import passwordicon from '/src/assets/login/iconos/password.svg';
 import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
-import axios from '../axiosApi';
+import axios from '../../axiosApi';
 
 function Login() {
     return (
