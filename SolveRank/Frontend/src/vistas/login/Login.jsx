@@ -24,7 +24,7 @@ function Login() {
                         <span>Contraseña</span>
                     </div>
                     <input className="caja" type="password" placeholder="Contraseña..." />
-                    <button className="boton-iniciar" type="submit" onClick={hacerLogin()}>Iniciar Sesión</button>
+                    <button className="boton-iniciar" type="submit" onClick={hacerLogin}>Iniciar Sesión</button>
                     <button className="boton-iniciar-google" type="submit"> <img src={googleIcon} alt="Google Icon" /> Iniciar Sesión con Google</button>
                     <div className="separator">
                         <hr />
@@ -52,8 +52,9 @@ function hacerLogin(event) {
             console.log('Login successful:', response.data);
         })
         .catch(error => {
-            console.error('Login failed:', error.response.data, error);
-            alert('Login failed: ' + error.response.data.message);
+            const message = error.response?.data?.message || 'No se pudo conectar con el servidor.';
+            console.error('Login failed:', message, error);
+            alert('Login failed: ' + message);
         });
 
 }
