@@ -5,6 +5,8 @@ import mailicon from '/src/assets/login/iconos/Mail.svg';
 import passwordicon from '/src/assets/login/iconos/password.svg';
 import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
+import axios from '../axiosApi';
+
 function Login() {
     return (
         <div className="container">
@@ -22,7 +24,7 @@ function Login() {
                         <span>Contraseña</span>
                     </div>
                     <input className="caja" type="password" placeholder="Contraseña..." />
-                    <button className="boton-iniciar" type="submit">Iniciar Sesión</button>
+                    <button className="boton-iniciar" type="submit" onClick={(e) => hacerLogin(e)}>Iniciar Sesión</button>
                     <button className="boton-iniciar-google" type="submit"> <img src={googleIcon} alt="Google Icon" /> Iniciar Sesión con Google</button>
                     <div className="separator">
                         <hr />
@@ -34,6 +36,26 @@ function Login() {
             </div>
         </div>        
     );
+}
+
+function hacerLogin(event) {
+    event.preventDefault();
+    const email = document.querySelector('input[type="email"]').value;
+    const password = document.querySelector('input[type="password"]').value;
+    
+    console.log('Email:', email);
+    console.log('Password:', password);
+
+    // Realizar la solicitud de inicio de sesión al backend pasando los datos de email y password como json
+    axios.post('/auth/login', { email, password })
+        .then(response => {
+            console.log('Login successful:', response.data);
+        })
+        .catch(error => {
+            console.error('Login failed:', error.response.data, error);
+            alert('Login failed: ' + error.response.data.message);
+        });
+
 }
 
 export default Login;
