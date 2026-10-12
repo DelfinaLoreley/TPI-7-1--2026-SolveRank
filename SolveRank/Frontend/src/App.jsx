@@ -1,11 +1,16 @@
 import './App.css'
-import Login from '/src/vistas/login/Login'
+import { useState } from 'react'
+import Login from './vistas/login/Login.jsx'
+import Registro from './vistas/registro/Registro.jsx'
 
 function App() {
+  const [vista, setVista] = useState('login')
 
   return (
     <div>
-      <Login />
+      {vista === 'registro'
+        ? <Registro />
+        : <Login onRegister={() => setVista('registro')} />}
     </div>
   )
 }

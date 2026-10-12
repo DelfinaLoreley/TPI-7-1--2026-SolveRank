@@ -7,7 +7,7 @@ import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
 import axios from '../../axiosApi';
 
-function Login() {
+function Login({ onRegister }) {
     return (
         <div className="container">
             <div className="Card">
@@ -31,7 +31,7 @@ function Login() {
                         <p>ó</p>
                         <hr />
                     </div>
-                    <button className="boton-registrar" type="button">Registrarse</button>
+                    <button className="boton-registrar" type="button" onClick={onRegister}>Registrarse</button>
                 </div>
             </div>
         </div>        
