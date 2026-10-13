@@ -302,9 +302,17 @@ async function login(req, res) {
 async function miusuario(req, res) {
     try {
         const [usuarios] = await db.execute(
-            `SELECT idUsuario, Nombre, apellido, email, idPais
-             FROM usuarios
-             WHERE idUsuario = ?`,
+            `SELECT
+                idUsuario,
+                idTipoUsuario,
+                idPais,
+                Nombre,
+                apellido,
+                fecha_Nacimiento,
+                email,
+                avatar_url
+            FROM usuarios
+            WHERE idUsuario = ?;`,
             [req.usuario.idUsuario]
         );
 
@@ -317,13 +325,16 @@ async function miusuario(req, res) {
         const usuario = usuarios[0];
 
         return res.json({
-            usuario: {
-                idUsuario: usuario.idUsuario,
-                nombre: usuario.Nombre,
-                apellido: usuario.apellido,
-                email: usuario.email,
-                idPais: usuario.idPais
-            }
+        usuario: {
+            idUsuario: usuario.idUsuario,
+            idTipoUsuario: usuario.idTipoUsuario,
+            idPais: usuario.idPais,
+            nombre: usuario.Nombre,
+            apellido: usuario.apellido,
+            email: usuario.email,
+            fecha_Nacimiento: usuario.fecha_Nacimiento,
+            avatar_url: usuario.avatar_url
+        }
         });
     } catch (error) {
         console.error('Error al consultar el usuario:', error.message);
