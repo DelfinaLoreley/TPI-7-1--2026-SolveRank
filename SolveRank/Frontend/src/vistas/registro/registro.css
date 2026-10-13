@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    min-height: calc(100vh - var(--navbar-height, 58px));
     padding: 24px;
     background-color: #000b21;
     font-family: 'Inclusive Sans', Arial, sans-serif;

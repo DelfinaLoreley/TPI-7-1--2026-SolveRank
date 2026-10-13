@@ -7,7 +7,7 @@ import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
 import axios from '../../axiosApi';
 
-function Login({ onRegister }) {
+function Login({ onRegister, onLogin }) {
     return (
         <div className="container">
             <div className="Card">
@@ -24,7 +24,7 @@ function Login({ onRegister }) {
                         <span>Contraseña</span>
                     </div>
                     <input className="caja" type="password" placeholder="Contraseña..." />
-                    <button className="boton-iniciar" type="submit" onClick={hacerLogin}>Iniciar Sesión</button>
+                    <button className="boton-iniciar" type="submit" onClick={(event) => hacerLogin(event, onLogin)}>Iniciar Sesión</button>
                     <button className="boton-iniciar-google" type="submit"> <img src={googleIcon} alt="Google Icon" /> Iniciar Sesión con Google</button>
                     <div className="separator">
                         <hr />
@@ -38,7 +38,7 @@ function Login({ onRegister }) {
     );
 }
 
-function hacerLogin(event) {
+function hacerLogin(event, onLogin) {
     event.preventDefault();
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
@@ -50,6 +50,7 @@ function hacerLogin(event) {
     axios.post('/auth/login', { email, password })
         .then(response => {
             console.log('Login successful:', response.data);
+            onLogin();
         })
         .catch(error => {
             const message = error.response?.data?.message || 'No se pudo conectar con el servidor.';
