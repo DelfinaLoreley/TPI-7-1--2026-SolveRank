@@ -99,8 +99,12 @@ function App() {
       {vista === 'home'
         ? <Home />
         : vista === 'registro'
-          ? <Registro />
-          : (
+        ? (
+            <Registro
+                onRegistroExitoso={manejarLogin}
+                onVolverLogin={() => setVista('login')}
+            />
+        ) : (
             <Login
               onRegister={() => setVista('registro')}
               onLogin={manejarLogin}

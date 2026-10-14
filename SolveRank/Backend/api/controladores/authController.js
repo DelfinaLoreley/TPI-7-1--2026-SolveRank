@@ -21,6 +21,8 @@ async function registro(req, res) {
             email,
             password,
             idPais,
+            idgenero,
+            wcaid,
             fechaNacimiento
         } = req.body;
 
@@ -59,10 +61,17 @@ async function registro(req, res) {
 
         // Validar país
         const paisId = Number(idPais);
+        const generoId = Number(idgenero);
 
         if (!Number.isSafeInteger(paisId) || paisId <= 0) {
             return res.status(400).json({
                 mensaje: 'El país seleccionado no es válido'
+            });
+        }
+
+        if (!Number.isSafeInteger(generoId) || generoId <= 0) {
+            return res.status(400).json({
+                mensaje: 'El género seleccionado no es válido'
             });
         }
 
@@ -151,8 +160,8 @@ async function registro(req, res) {
         const [resultado] = await db.execute(
             `INSERT INTO usuarios
                 (idTipoUsuario, idPais, Nombre, apellido,
-                 fecha_Nacimiento, email, password_hash)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                 fecha_Nacimiento, email, password_hash, idGenero, wcaid)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 tipoUsuarioId,
                 paisId,
@@ -160,7 +169,9 @@ async function registro(req, res) {
                 apellido.trim(),
                 fecha,
                 correo,
-                passwordHash
+                passwordHash,
+                generoId,
+                wcaid
             ]
         );
 
@@ -310,7 +321,9 @@ async function miusuario(req, res) {
                 apellido,
                 fecha_Nacimiento,
                 email,
-                avatar_url
+                avatar_url,
+                idGenero,
+                wcaid
             FROM usuarios
             WHERE idUsuario = ?;`,
             [req.usuario.idUsuario]
@@ -333,7 +346,9 @@ async function miusuario(req, res) {
             apellido: usuario.apellido,
             email: usuario.email,
             fecha_Nacimiento: usuario.fecha_Nacimiento,
-            avatar_url: usuario.avatar_url
+            avatar_url: usuario.avatar_url,
+            idGenero: usuario.idGenero,
+            wcaid: usuario.wcaid
         }
         });
     } catch (error) {

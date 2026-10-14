@@ -192,7 +192,7 @@ function Navbar({
                             aria-expanded={menuAbierto === 'Perfil'}
                             onClick={() => alternarMenu('Perfil')}
                         >
-                            <img className="fotoPerfil" src={usuario.avatar_url} alt="" />
+                            <img className="fotoPerfil" src={usuario.avatar_url === null ? userPfp : usuario.avatar_url} alt="" />
                             <img className="site-navbar-chevron chevron-perfil" src={chevronIcon} alt="" />
                         </button>
                         {menuAbierto === 'Perfil' && (
