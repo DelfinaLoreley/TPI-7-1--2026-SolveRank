@@ -17,21 +17,20 @@ import liveIconSeleccionado from '/src/assets/home/iconos/solverank-live-azul-ic
 import searchIcon from '/src/assets/home/iconos/search-icon.png';
 import chevronIcon from '/src/assets/home/iconos/chevron-icon.png';
 import userNotLogged from '/src/assets/home/iconos/icon-user.png';
+import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
+import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
+import menuCelu from '/src/assets/home/iconos/Menu.png';
 
-const menuItems = {
-    torneos: [
-        { etiqueta: 'Todos', href: '#torneos', icono: torneosMundiales },
-        { etiqueta: 'Mis torneos', href: '#mis-torneos', icono: torneosIcon },
-    ],
-    resultados: [
-        { etiqueta: 'Rankings', href: '#rankings', icono: rankingIcon },
-        { etiqueta: 'Récords', href: '#records', icono: recordsIcon },
-        { etiqueta: 'Mis resultados', href: '#mis-resultados', icono: resultadosIcon },
-    ],
-};
-
-function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
+function Navbar({
+    vistaActiva,
+    usuario,
+    onInicio,
+    onIniciarSesion,
+    onCerrarSesion,
+}) {
     const [menuAbierto, setMenuAbierto] = useState(null);
+    const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
+    const sesionIniciada = Boolean(usuario);
 
     function alternarMenu(menu) {
         setMenuAbierto(menuAbierto === menu ? null : menu);
@@ -39,6 +38,7 @@ function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
 
     function cerrarMenu() {
         setMenuAbierto(null);
+        setMenuMovilAbierto(false);
     }
 
     function irAInicio(event) {
@@ -47,9 +47,59 @@ function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
         onInicio();
     }
 
+    const menuTorneos = [
+        {
+            etiqueta: 'Todos',
+            href: '#torneos',
+            icono: torneosMundiales,
+        },
+        ...(sesionIniciada
+            ? [{
+                etiqueta: 'Mis torneos',
+                href: '#mis-torneos',
+                icono: torneosIcon,
+            }]
+            : []),
+    ];
+
+    const menuResultados = [
+        {
+            etiqueta: 'Rankings',
+            href: '#rankings',
+            icono: rankingIcon,
+        },
+        {
+            etiqueta: 'Récords',
+            href: '#records',
+            icono: recordsIcon,
+        },
+        ...(sesionIniciada
+            ? [{
+                etiqueta: 'Mis resultados',
+                href: '#mis-resultados',
+                icono: resultadosIcon,
+            }]
+            : []),
+    ];
+
     return (
-        <header className="site-navbar">
-            <a className="site-navbar-logo" href="#inicio" onClick={irAInicio} aria-label="SolveRank, Inicio">
+        <header className={`site-navbar${menuMovilAbierto ? ' menu-movil-abierto' : ''}`}>
+            <button
+                className="site-navbar-hamburger"
+                type="button"
+                aria-label={menuMovilAbierto ? 'Cerrar navegación' : 'Abrir navegación'}
+                aria-expanded={menuMovilAbierto}
+                onClick={() => setMenuMovilAbierto(!menuMovilAbierto)}
+            >
+                <img src={menuCelu} alt="" />
+            </button>
+
+            <a
+                className="site-navbar-logo"
+                href="#inicio"
+                onClick={irAInicio}
+                aria-label="SolveRank, Inicio"
+            >
                 <img src={logo} alt="SolveRank" />
             </a>
 
@@ -70,13 +120,18 @@ function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
                         aria-expanded={menuAbierto === 'torneos'}
                         onClick={() => alternarMenu('torneos')}
                     >
-                        <img src={menuAbierto === 'torneos' || vistaActiva === 'torneos' ? torneosIconSeleccionado : torneosIcon} alt="" />
+                        <img
+                            src={menuAbierto === 'torneos' || vistaActiva === 'torneos'
+                                ? torneosIconSeleccionado
+                                : torneosIcon}
+                            alt=""
+                        />
                         <span>Torneos</span>
                         <img className="site-navbar-chevron" src={chevronIcon} alt="" />
                     </button>
                     {menuAbierto === 'torneos' && (
                         <div className="site-navbar-dropdown">
-                            {menuItems.torneos.map((item) => (
+                            {menuTorneos.map((item) => (
                                 <a href={item.href} key={item.etiqueta} onClick={cerrarMenu}>
                                     <img src={item.icono} alt="" />
                                     {item.etiqueta}
@@ -93,13 +148,18 @@ function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
                         aria-expanded={menuAbierto === 'resultados'}
                         onClick={() => alternarMenu('resultados')}
                     >
-                        <img src={menuAbierto === 'resultados' || vistaActiva === 'resultados' ? resultadosIconSeleccionado : resultadosIcon} alt="" />
+                        <img
+                            src={menuAbierto === 'resultados' || vistaActiva === 'resultados'
+                                ? resultadosIconSeleccionado
+                                : resultadosIcon}
+                            alt=""
+                        />
                         <span>Resultados</span>
                         <img className="site-navbar-chevron" src={chevronIcon} alt="" />
                     </button>
                     {menuAbierto === 'resultados' && (
                         <div className="site-navbar-dropdown">
-                            {menuItems.resultados.map((item) => (
+                            {menuResultados.map((item) => (
                                 <a href={item.href} key={item.etiqueta} onClick={cerrarMenu}>
                                     <img src={item.icono} alt="" />
                                     {item.etiqueta}
@@ -109,22 +169,73 @@ function Navbar({ vistaActiva, onInicio, onIniciarSesion }) {
                     )}
                 </div>
 
-                <a className="site-navbar-link" href="#records">
+                <a className="site-navbar-link" href="#records" onClick={cerrarMenu}>
                     <img src={vistaActiva === 'records' ? recordsIconSeleccionado : recordsIcon} alt="" />
                     <span>Récords</span>
                 </a>
-                <a className="site-navbar-link" href="#estadisticas">
+                <a className="site-navbar-link" href="#estadisticas" onClick={cerrarMenu}>
                     <img src={vistaActiva === 'live' ? liveIconSeleccionado : liveIcon} alt="" />
                     <span>SolveRank LIVE</span>
                 </a>
             </nav>
 
             <div className="site-navbar-actions">
-                <button className="site-navbar-search" type="button" aria-label="Buscar"> <img src={searchIcon} alt="" /> </button> 
-                <button className="site-navbar-login" type="button" onClick={onIniciarSesion}>
-                    <span className="site-navbar-user-icon"><img src={userNotLogged}/></span>
-                    Iniciar sesión
+                <button className="site-navbar-search" type="button" aria-label="Buscar">
+                    <img src={searchIcon} alt="" />
                 </button>
+
+                {sesionIniciada ? (
+                    <div className="site-navbar-user-actions menuPerfil">
+                        <button
+                            className="PerfilBtn"
+                            type="button"
+                            aria-expanded={menuAbierto === 'Perfil'}
+                            onClick={() => alternarMenu('Perfil')}
+                        >
+                            <img className="fotoPerfil" src={usuario.avatar_url} alt="" />
+                            <img className="site-navbar-chevron chevron-perfil" src={chevronIcon} alt="" />
+                        </button>
+                        {menuAbierto === 'Perfil' && (
+                            <div className="site-navbar-dropdown menuDesplegado">
+                                <label>
+                                    {usuario.nombre}, {usuario.apellido}
+                                </label>
+                                <hr className="site-navbar-dropdown-separator" />
+
+                                <a href="#perfil" onClick={cerrarMenu}>
+                                    <img src={userNotLogged} alt="" />
+                                    Mi Perfil
+                                </a>
+                                <a href="#configuracion" onClick={cerrarMenu}>
+                                    <img src={resultadosIcon} alt="" />
+                                    Mis Resultados
+                                </a>
+                                <a href="#mis-torneos" onClick={cerrarMenu}>
+                                    <img src={torneosIcon} alt="" />
+                                    Mis Torneos
+                                </a>
+
+                                <hr className="site-navbar-dropdown-separator" />
+
+                                <button className="site-navbar-logout" onClick={onCerrarSesion}>
+                                    <img src={logoutIcon} alt="" />
+                                    Cerrar Sesión
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <button
+                        className="site-navbar-login"
+                        type="button"
+                        onClick={onIniciarSesion}
+                    >
+                        <span className="site-navbar-user-icon">
+                            <img src={userPfp} alt="" />
+                        </span>
+                        <span className="site-navbar-login-label">Iniciar sesión</span>
+                    </button>
+                )}
             </div>
         </header>
     );

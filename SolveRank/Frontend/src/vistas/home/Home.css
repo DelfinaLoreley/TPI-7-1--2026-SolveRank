@@ -34,6 +34,7 @@
     margin: 0 auto;
     padding: 0 12px;
 }
+
 /*Home hero section------------------------------------------------------------*/
 .home-hero {
     position: relative;
@@ -129,7 +130,7 @@
 .home-resumen {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 24px;
     width: fit-content;
     min-height: 42px;
     padding: 15px 25px;
@@ -678,53 +679,65 @@
     }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
     .home-contenido {
-        padding: 0 10px;
+        padding: 0 14px;
     }
 
     .home-hero {
-        min-height: 255px;
-        padding: 22px 16px;
+        min-height: 270px;
+        padding: 24px 22px;
     }
 
     .home-cubo-escena {
-        right: -12%;
+        right: -3%;
         width: 58%;
-        opacity: 0.8;
     }
 
     .home-torneos-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
     }
 
     .home-torneo-imagen {
-        height: 125px;
+        height: 135px;
     }
 
     .home-dashboard {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 
+    /* ← Home.css: padding intermedio en tablet */
     .home-ranking,
     .home-estadisticas {
         padding: 14px;
     }
 }
 
-@media (max-width: 440px) {
+@media (max-width: 600px) {
+    .home-contenido {
+        padding: 0 10px;
+    }
+
     .home-hero {
-        min-height: 270px;
-        padding: 19px 11px;
+        min-height: 300px;
+        align-items: flex-start;
+        padding: 14px 12px 15px;
     }
 
     .home-hero h1 {
-        font-size: 24px;
+        max-width: 190px;
+        margin-bottom: 10px;
+        font-size: clamp(22px, 6vw, 26px);
+        line-height: 1.08;
     }
 
     .home-hero-texto > p {
-        max-width: 235px;
-        font-size: 11px;
+        max-width: min(100%, 245px);
+        margin-bottom: 14px;
+        font-size: 10px;
+        line-height: 1.2;
     }
 
     .desktop-break {
@@ -732,74 +745,297 @@
     }
 
     .home-cubo-escena {
-        right: -31%;
-        width: 74%;
-        opacity: 0.55;
+        top: -5%;
+        right: -4%;
+        bottom: auto;
+        width: 62%;
+        height: 205px;
+        opacity: 0.82;
+    }
+
+    .home-cubo-escena img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 62% center;
+    }
+
+    .home-hero-botones {
+        position: relative;
+        z-index: 1;
+        gap: 9px;
+        margin-bottom: 18px;
     }
 
     .home-resumen {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 12px 1fr 12px 0.72fr;
+        gap: 7px;
+        width: 100%;
+        min-height: 54px;
+        padding: 8px 10px;
+    }
+
+    .home-resumen > div {
+        grid-template-columns: 29px auto;
+        column-gap: 5px;
+    }
+
+    .home-resumen small {
+        font-size: clamp(8px, 2.5vw, 10px);
+    }
+
+    .home-resumen strong {
+        font-size: 15px;
+    }
+
+    .home-resumen img {
+        width: 27px;
+        height: 27px;
+    }
+
+    .home-resumen hr {
+        width: 1px;
+        height: 100%;
+        justify-self: center;
+    }
+
+    .home-torneos {
+        padding: 12px 10px;
+    }
+
+    .home-section-heading {
+        margin-left: 0;
+        margin-bottom: 12px;
+        padding: 0 2px;
+    }
+
+    .home-section-heading h2 {
+        gap: 6px;
+        font-size: 15px;
+    }
+
+    .home-section-heading a {
+        font-size: 13px;
+    }
+
+    .home-button {
+        min-width: 0;
+        min-height: 34px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .home-button img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .home-torneos-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .home-torneo-imagen {
+        height: clamp(132px, 38vw, 170px);
+    }
+
+    .home-torneo-info {
+        grid-template-columns: 58px minmax(0, 1fr);
+        column-gap: 10px;
+        row-gap: 10px;
+        min-height: 88px;
+        padding: 15px 11px 10px;
+    }
+
+    .home-fecha {
+        min-height: 49px;
+        padding: 5px 8px;
+    }
+
+    .home-fecha strong {
+        font-size: 20px;
+    }
+
+    .home-fecha span {
+        font-size: 13px;
+    }
+
+    .home-torneo-detalle h3 {
+        margin-bottom: 5px;
+        font-size: clamp(14px, 4vw, 17px);
+    }
+
+    .home-torneo-detalle p {
+        font-size: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .home-torneo-meta {
+        grid-column: 2;
+        gap: clamp(10px, 5vw, 24px);
+        margin-left: 0;
+        font-size: 12px;
+    }
+
+    .home-torneo-meta span img {
+        width: 15px;
+        height: 15px;
+    }
+
+    .home-torneo-link {
+        min-height: 36px;
+        margin: 7px 10px 9px;
+        font-size: 12px;
+    }
+
+    .home-dashboard {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .home-ranking {
+        display: none;
+    }
+
+    .home-estadisticas {
+        padding: 12px 10px;
+    }
+
+    .home-estadisticas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
-        padding: 5px 7px;
+    }
+
+    .home-estadistica {
+        min-height: 70px;
+        gap: 8px;
+        padding: 9px;
+    }
+
+    .home-estadistica-icono,
+    .home-estadistica-icono img {
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .home-estadistica strong {
+        font-size: 19px;
+    }
+
+    .home-estadistica small {
+        max-width: 105px;
+        font-size: 9px;
+        line-height: 1.15;
+        white-space: normal;
+    }
+
+    .home-cta {
+        min-height: 136px;
+        margin-top: 12px;
+        padding: 12px 15px;
+    }
+
+    .home-cta > div {
+        max-width: 58%;
+    }
+
+    .home-cta h3 {
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .home-cta p {
+        margin-bottom: 9px;
+        font-size: 11px;
+    }
+
+    .home-cta a {
+        min-height: 28px;
+        padding: 6px 13px;
+        font-size: 11px;
+    }
+
+    .cubo-img-cta {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 50%;
+    }
+
+    .cubo-img-cta img {
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .home-estadisticas .home-section-heading {
+        margin-bottom: 10px;
+    }
+
+    .home-ranking,
+    .home-estadisticas {
+        min-width: 0;
+    }
+
+    /* ← Home.css: permitir scroll horizontal de categorías en móvil */
+    .home-categorias {
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 390px) {
+    .home-hero {
+        min-height: 310px;
+    }
+
+    .home-hero h1 {
+        max-width: 170px;
+    }
+
+    .home-resumen {
+        gap: 4px;
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+
+    .home-resumen > div {
+        grid-template-columns: 23px auto;
+        column-gap: 4px;
+    }
+
+    .home-resumen img {
+        width: 22px;
+        height: 22px;
     }
 
     .home-resumen small {
         font-size: 7px;
     }
 
-    .home-button {
-        min-width: 106px;
-        font-size: 10px;
-    }
-
-    .home-torneos {
-        padding: 9px 7px;
-    }
-
-    .home-torneos-grid {
-        gap: 6px;
-    }
-
-    .home-torneo-imagen {
-        height: 92px;
-    }
-
-    .home-section-heading h2 {
-        font-size: 11px;
-    }
-
-    .home-categorias {
-        justify-content: flex-start;
-        overflow-x: auto;
-    }
-
-    .home-ranking-lista li {
-        grid-template-columns: 14px 25px minmax(60px, 1fr) 34px 20px 34px;
-        gap: 4px;
-    }
-
-    .home-ranking-lista strong {
-        font-size: 9px;
-    }
-
     .home-estadistica {
-        gap: 7px;
-        min-height: 58px;
+        gap: 6px;
         padding: 7px;
     }
 
-    .home-estadistica-icono {
-        flex-basis: 29px;
-        width: 29px;
-        height: 29px;
-        font-size: 16px;
+    .home-estadistica-icono,
+    .home-estadistica-icono img {
+        flex-basis: 30px;
+        width: 30px;
+        height: 30px;
     }
 
     .home-estadistica strong {
-        font-size: 14px;
+        font-size: 16px;
     }
 
+    /* ← Home.css: refinar aún más el texto secundario en pantallas mínimas */
     .home-estadistica small {
         font-size: 7px;
     }
-
 }

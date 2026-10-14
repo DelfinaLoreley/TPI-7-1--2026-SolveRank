@@ -40,24 +40,22 @@ function Login({ onRegister, onLogin }) {
 
 function hacerLogin(event, onLogin) {
     event.preventDefault();
+
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
-    
-    console.log('Email:', email);
-    console.log('Password:', password);
 
-    // Realizar la solicitud de inicio de sesión al backend pasando los datos de email y password como json
     axios.post('/auth/login', { email, password })
-        .then(response => {
-            console.log('Login successful:', response.data);
+        .then(() => {
             onLogin();
         })
         .catch(error => {
-            const message = error.response?.data?.message || 'No se pudo conectar con el servidor.';
-            console.error('Login failed:', message, error);
-            alert('Login failed: ' + message);
-        });
+            const message =
+                error.response?.data?.mensaje ||
+                error.response?.data?.message ||
+                'No se pudo conectar con el servidor.';
 
+            alert('No se pudo iniciar sesión: ' + message);
+        });
 }
 
 export default Login;
