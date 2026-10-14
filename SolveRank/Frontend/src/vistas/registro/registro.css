@@ -186,3 +186,33 @@
         margin-top: 20px;
     }
 }
+
+
+.registro-error {
+    margin: 18px 0 0;
+    color: #ff8d98;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.registro-boton:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.registro-volver-login {
+    display: block;
+    margin: 16px auto 0;
+    padding: 8px;
+    border: 0;
+    background: transparent;
+    color: #80adff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+}
+
+.registro-volver-login:hover {
+    text-decoration: underline;
+}
