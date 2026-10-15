@@ -1,10 +1,12 @@
-import '/PanelPrincipal.css';
+import './PanelPrincipal.css';
 
 import cuboBanner from '/src/assets/cubo-banner.svg';
-import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
-import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
-import torneosActivosIcon from '/src/assets/torneos-activo.svg';
-import cuboImg from '/src/assets/home/cubo-img-stat.png';
+import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
+import competidoresIcon2 from '/src/assets/Organizador/competidores-icon.png';
+import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';
+import torneosActivosIcon from '/src/assets/Organizador/torneosactivos-icon.png';
+import proxtorneosIcon from '/src/assets/Organizador/proximostorneos-icono.png';
+//import cuboImg from '/src/assets/Organizador/img-cubo-hom-removebg-preview.png';
 import calendarIcon from '/src/assets/home/iconos/Calendar.png';
 import guardarIcon from '/src/assets/home/iconos/guardado.png';
 import lugarIcon from '/src/assets/home/iconos/ubicacion-icon.png';
@@ -14,6 +16,8 @@ import imagenRioGrande from '/src/assets/home/cards-torneos/club_peon_peon.jfif'
 import imagenTella from '/src/assets/home/cards-torneos/Universidad_Torcuato_Di_Tella.jpg';
 import imagenMdq from '/src/assets/home/cards-torneos/club_defensores_de_belgrano.jpg';
 
+
+
 const torneos = [
     { nombre: 'Ushuaia Open 2027', fecha: ['18', 'SEP'], lugar: 'Ushuaia, Tierra Del Fuego, Argentina', categorias: 6, competidores: 40, estado: 'Inscripciones abiertas', estilo: 'ushuaia', imagen: imagenUshuaia },
     { nombre: 'Río Grande TDF 2026', fecha: ['26', 'SEP'], lugar: 'Río Grande, Tierra Del Fuego, Argentina', categorias: 11, competidores: 30, estado: 'Inscripciones próximamente', estilo: 'rio-grande', imagen: imagenRioGrande },
@@ -21,33 +25,33 @@ const torneos = [
     { nombre: 'MDQ Open 2026', fecha: ['23', 'OCT'], lugar: 'Mar del Plata, Buenos Aires, Argentina', categorias: 7, competidores: 40, estado: 'Inscripciones próximamente', estilo: 'mdq', imagen: imagenMdq },
 ];
 
-function PanelPrincipal(){
+function PanelPrincipal({ usuario }){
     return(
         <main className="panel-page">
             <div className="panel-contenido">
                 <section className="panel-hero" id="inicio">
                     <div className="panel-hero-texto">
-                        <h1>Hola, organizador</h1>
+                        <h1>Hola, {usuario?.nombre || 'organizador'}</h1>
                         <p>Aquí tienes un resumen de todos tus torneos.</p>
                         <div className="panel-resumen-container">
                             <div className="panel-resumen-card">
-                                <div><span className="resumen-icono azul">
+                                <div><span className="resumen-icono ">
                                     <img src={torneosIcon} alt="Torneos" /></span><strong>3</strong><small>Torneos creados</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
-                                <div><span className="resumen-icono azul">
+                                <div><span className="resumen-icono ">
                                     <img src={competidoresIcon2} alt="Competidores" /></span><strong>505</strong><small>Competidores</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
-                                <div><span className="resumen-icono azul">
+                                <div><span className="resumen-icono ">
                                     <img src={torneosActivosIcon} alt="Torneos" /></span><strong>3</strong><small>Torneos activos</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
-                                <div><span className="resumen-icono azul">
-                                    <img src={torneosActivosIcon} alt="Torneos" /></span><strong>9</strong><small>Próximos torneos</small>
+                                <div><span className="resumen-icono ">
+                                    <img src={proxtorneosIcon} alt="Torneos" /></span><strong>9</strong><small>Próximos torneos</small>
                                 </div>
                             </div>
                         </div>
@@ -59,13 +63,14 @@ function PanelPrincipal(){
                         <div className="panel-cta">
                             <div>
                                 <h3>¿Listo para crear un nuevo torneo?</h3>
-                                <p>Configurá las categorías, cronogramas, rondas y clasificaciones en pocos pasos.</p>
-                                <a href="#torneos">Crear torneo ⟶</a>
+                                <p>Configurá las categorías, cronogramas, <br className="panel-hero-br"/> rondas clasificaciones en pocos pasos.</p>
+                                <button><a href="#torneos">Crear torneo ⟶</a></button>
                             </div>
-                            <div className="cubo-img-cta">
-                                <img src={cuboImg} alt="" />
+                            <div className="panel-cubo-img-cta">
+                                <img src="/src/assets/organizador/img-cubo-hom-removebg-preview.png" alt="" />
                             </div>
                         </div>
+                    
                         <div className="accesos-rapidos-container">
                             <button className="acceso-rapido-btn">Crear <br/> Torneo</button>
                             <button className="acceso-rapido-btn">Mis Torneos <br/> en VIVO</button>
@@ -93,7 +98,7 @@ function PanelPrincipal(){
                                         <h3>{torneo.nombre}</h3>
                                         <p> <img src={lugarIcon} alt="Lugar"/> {torneo.lugar}</p>
                                     </div>
-                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.competidores} cupos</span></div>
+                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon} alt="Competidores"/> {torneo.competidores} cupos</span></div>
                                 </div>
                                 <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
                             </article>
