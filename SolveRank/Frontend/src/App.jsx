@@ -3,6 +3,7 @@ import './App.css'
 import { useEffect, useState } from 'react'
 import Login from './vistas/login/Login.jsx'
 import Registro from './vistas/registro/Registro.jsx'
+import CompletarRegistro from './vistas/registro/CompletarRegistro.jsx'
 import Home from './vistas/home/Home.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
@@ -22,6 +23,9 @@ function App() {
       .then(({ data }) => {
         if (activo) {
           setUsuario(data.usuario ?? null)
+          if (data.usuario?.perfilCompleto === false) {
+            setVista('completar-registro-google')
+          }
         }
       })
       .catch(() => {
@@ -46,7 +50,9 @@ function App() {
       const { data } = await axios.get('/auth/miusuario')
 
       setUsuario(data.usuario ?? null)
-      setVista('home')
+      setVista(data.usuario?.perfilCompleto === false
+        ? 'completar-registro-google'
+        : 'home')
     } catch (error) {
       console.error(
         'No se pudieron recuperar los datos del usuario:',
@@ -58,6 +64,18 @@ function App() {
       alert(
         'Se inició sesión, pero no se pudieron recuperar los datos del usuario. Volvé a intentarlo.'
       )
+    }
+  }
+
+  async function manejarPerfilGoogleCompletado() {
+    try {
+      const { data } = await axios.get('/auth/miusuario')
+      setUsuario(data.usuario ?? null)
+      setVista('home')
+      window.history.replaceState({}, document.title, window.location.pathname)
+    } catch (error) {
+      console.error('No se pudo actualizar la sesión:', error)
+      alert('Se guardó el perfil, pero no se pudieron recuperar tus datos. Actualizá la página.')
     }
   }
 
@@ -98,6 +116,8 @@ function App() {
 
       {vista === 'home'
         ? <Home />
+        : vista === 'completar-registro-google'
+        ? <CompletarRegistro onCompletado={manejarPerfilGoogleCompletado} />
         : vista === 'registro'
         ? (
             <Registro

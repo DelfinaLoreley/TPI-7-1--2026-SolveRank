@@ -104,16 +104,19 @@ async function registro(req, res) {
             fecha = fechaNacimiento;
         }
 
-        // Obtener el tipo de usuario configurado en el servidor
-        const tipoUsuarioId = Number(process.env.DEFAULT_USER_TYPE_ID);
+        // El registro público siempre asigna el rol Competidor; el cliente
+        // nunca puede elegir un rol con datos enviados en el formulario.
+        const [tipos] = await db.execute(
+            'SELECT idTipoUsuario FROM tipos_usuarios WHERE LOWER(Nombre) = LOWER(?)',
+            ['Competidor']
+        );
 
-        if (!Number.isSafeInteger(tipoUsuarioId) || tipoUsuarioId <= 0) {
-            console.error('DEFAULT_USER_TYPE_ID no está configurado correctamente');
-
-            return res.status(500).json({
-                mensaje: 'Error de configuración del servidor'
-            });
+        if (tipos.length === 0) {
+            console.error('No existe el rol Competidor en tipos_usuarios');
+            return res.status(500).json({ mensaje: 'Error de configuración del servidor' });
         }
+
+        const tipoUsuarioId = tipos[0].idTipoUsuario;
 
         // Comprobar que exista el país
         const [paises] = await db.execute(
@@ -124,20 +127,6 @@ async function registro(req, res) {
         if (paises.length === 0) {
             return res.status(400).json({
                 mensaje: 'El país seleccionado no existe'
-            });
-        }
-
-        // Comprobar que exista el tipo de usuario
-        const [tipos] = await db.execute(
-            'SELECT idTipoUsuario FROM tipos_usuarios WHERE idTipoUsuario = ?',
-            [tipoUsuarioId]
-        );
-
-        if (tipos.length === 0) {
-            console.error('No existe el tipo de usuario configurado');
-
-            return res.status(500).json({
-                mensaje: 'Error de configuración del servidor'
             });
         }
 
@@ -234,10 +223,12 @@ async function login(req, res) {
 
         // Buscar el usuario por correo
         const [usuarios] = await db.execute(
-            `SELECT idUsuario, Nombre, apellido, email,
-                    idPais, password_hash
-             FROM usuarios
-             WHERE email = ?`,
+            `SELECT u.idUsuario, u.Nombre, u.apellido, u.email,
+                    u.idPais, u.password_hash, u.idTipoUsuario,
+                    t.Nombre AS rol
+             FROM usuarios u
+             INNER JOIN tipos_usuarios t ON t.idTipoUsuario = u.idTipoUsuario
+             WHERE u.email = ?`,
             [correo]
         );
 
@@ -296,7 +287,9 @@ async function login(req, res) {
                 nombre: usuario.Nombre,
                 apellido: usuario.apellido,
                 email: usuario.email,
-                idPais: usuario.idPais
+                idPais: usuario.idPais,
+                idTipoUsuario: usuario.idTipoUsuario,
+                rol: usuario.rol
             }
         });
 
@@ -323,7 +316,8 @@ async function miusuario(req, res) {
                 email,
                 avatar_url,
                 idGenero,
-                wcaid
+                wcaid,
+                perfil_completo
             FROM usuarios
             WHERE idUsuario = ?;`,
             [req.usuario.idUsuario]
@@ -338,18 +332,20 @@ async function miusuario(req, res) {
         const usuario = usuarios[0];
 
         return res.json({
-        usuario: {
-            idUsuario: usuario.idUsuario,
-            idTipoUsuario: usuario.idTipoUsuario,
-            idPais: usuario.idPais,
-            nombre: usuario.Nombre,
-            apellido: usuario.apellido,
-            email: usuario.email,
-            fecha_Nacimiento: usuario.fecha_Nacimiento,
-            avatar_url: usuario.avatar_url,
-            idGenero: usuario.idGenero,
-            wcaid: usuario.wcaid
-        }
+            usuario: {
+                idUsuario: usuario.idUsuario,
+                idTipoUsuario: usuario.idTipoUsuario,
+                rol: req.usuario.rol,
+                idPais: usuario.idPais,
+                nombre: usuario.Nombre,
+                apellido: usuario.apellido,
+                email: usuario.email,
+                fecha_Nacimiento: usuario.fecha_Nacimiento,
+                avatar_url: usuario.avatar_url,
+                idGenero: usuario.idGenero,
+                wcaid: usuario.wcaid,
+                perfilCompleto: Boolean(usuario.perfil_completo)
+            }
         });
     } catch (error) {
         console.error('Error al consultar el usuario:', error.message);
@@ -357,6 +353,50 @@ async function miusuario(req, res) {
         return res.status(500).json({
             mensaje: 'No se pudo consultar el usuario'
         });
+    }
+}
+
+async function completarRegistroGoogle(req, res) {
+    try {
+        const { idPais, idgenero, fechaNacimiento } = req.body || {};
+        const paisId = Number(idPais);
+        const generoId = Number(idgenero);
+        if (!Number.isSafeInteger(paisId) || paisId <= 0 ||
+            !Number.isSafeInteger(generoId) || generoId <= 0 ||
+            typeof fechaNacimiento !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
+            return res.status(400).json({ mensaje: 'Completá país, género y fecha de nacimiento' });
+        }
+
+        const fecha = new Date(`${fechaNacimiento}T00:00:00Z`);
+        if (Number.isNaN(fecha.getTime()) || fecha.toISOString().slice(0, 10) !== fechaNacimiento ||
+            fechaNacimiento > new Date().toISOString().slice(0, 10)) {
+            return res.status(400).json({ mensaje: 'La fecha de nacimiento no es válida' });
+        }
+
+        const [referencias] = await db.execute(
+            `SELECT
+                (SELECT COUNT(*) FROM paises WHERE idPais = ?) AS pais,
+                (SELECT COUNT(*) FROM generos WHERE id = ?) AS genero`,
+            [paisId, generoId]);
+        if (!referencias[0].pais || !referencias[0].genero) {
+            return res.status(400).json({ mensaje: 'El país o género seleccionado no existe' });
+        }
+
+        const [resultado] = await db.execute(
+            `UPDATE usuarios
+             SET idPais = ?, idGenero = ?, fecha_Nacimiento = ?, perfil_completo = 1
+             WHERE idUsuario = ? AND google_id IS NOT NULL AND perfil_completo = 0`,
+            [paisId, generoId, fechaNacimiento, req.usuario.idUsuario]);
+        if (!resultado.affectedRows) {
+            const [usuarios] = await db.execute(
+                'SELECT idUsuario FROM usuarios WHERE idUsuario = ?', [req.usuario.idUsuario]);
+            if (!usuarios.length) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+            return res.status(409).json({ mensaje: 'El perfil ya fue completado o esta cuenta no requiere este paso' });
+        }
+        return res.json({ mensaje: 'Perfil completado correctamente' });
+    } catch (error) {
+        console.error('Error al completar el registro de Google:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo completar el perfil' });
     }
 }
 
@@ -428,4 +468,4 @@ async function setPassword(req, res) {
 }
 
 
-module.exports = { registro, login, miusuario, setPassword, logout };
+module.exports = { registro, login, miusuario, completarRegistroGoogle, setPassword, logout };

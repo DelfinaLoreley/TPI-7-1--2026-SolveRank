@@ -24,15 +24,7 @@ function crearToken(idUsuario) {
 }
 
 function iniciarGoogle(req, res) {
-    const idPais = req.query.idPais || '0';
-
-    if (!/^\d+$/.test(String(idPais))) {
-        return res.status(400).json({
-            mensaje: 'El país seleccionado no es válido'
-        });
-    }
-
-    const state = `${crypto.randomBytes(32).toString('hex')}:${idPais}`;
+    const state = crypto.randomBytes(32).toString('hex');
 
     res.cookie('google_oauth_state', state, {
         httpOnly: true,
@@ -63,9 +55,7 @@ async function callbackGoogle(req, res) {
         });
 
         if (error) {
-            return res.status(401).json({
-                mensaje: 'Se canceló o rechazó el acceso con Google'
-            });
+            return res.redirect(`${urlFrontend()}/?errorGoogle=cancelado`);
         }
 
         if (
@@ -76,18 +66,7 @@ async function callbackGoogle(req, res) {
             !estadoGuardado ||
             state !== estadoGuardado
         ) {
-            return res.status(400).json({
-                mensaje: 'La solicitud de autenticación no es válida'
-            });
-        }
-
-        const idPaisTexto = state.split(':').pop();
-        const idPais = Number(idPaisTexto);
-
-        if (!Number.isSafeInteger(idPais) || idPais < 0) {
-            return res.status(400).json({
-                mensaje: 'El país seleccionado no es válido'
-            });
+            return res.redirect(`${urlFrontend()}/?errorGoogle=solicitud`);
         }
 
         // Intercambiar el código por los tokens de Google
@@ -130,17 +109,7 @@ async function callbackGoogle(req, res) {
 
             const token = crearToken(usuario.idUsuario);
             guardarToken(res, token);
-            return res.json({
-                mensaje: 'Inicio de sesión con Google correcto',
-                //token,
-                usuario: {
-                    idUsuario: usuario.idUsuario,
-                    nombre: usuario.Nombre,
-                    apellido: usuario.apellido,
-                    email: usuario.email,
-                    idPais: usuario.idPais
-                }
-            });
+            return res.redirect(`${urlFrontend()}/`);
         }
 
         // Buscar una cuenta existente por correo verificado
@@ -157,9 +126,7 @@ async function callbackGoogle(req, res) {
 
             // No reemplazar la identidad de otra cuenta de Google
             if (usuario.google_id) {
-                return res.status(409).json({
-                    mensaje: 'Este correo ya está vinculado a otra cuenta de Google'
-                });
+                return res.redirect(`${urlFrontend()}/?errorGoogle=cuenta-vinculada`);
             }
 
             // Vincular Google a la cuenta existente
@@ -177,61 +144,25 @@ async function callbackGoogle(req, res) {
             );
 
             if (!vinculos.length || vinculos[0].google_id !== googleId) {
-                return res.status(409).json({
-                    mensaje: 'No se pudo vincular la cuenta de Google'
-                });
+                return res.redirect(`${urlFrontend()}/?errorGoogle=vinculo`);
             }
 
             const token = crearToken(usuario.idUsuario);
             guardarToken(res, token);
-
-            return res.json({
-                mensaje: 'Cuenta de Google vinculada correctamente',
-                //token,
-                usuario: {
-                    idUsuario: usuario.idUsuario,
-                    nombre: usuario.Nombre,
-                    apellido: usuario.apellido,
-                    email: usuario.email,
-                    idPais: usuario.idPais
-                }
-            });
-        }
-
-        // Si es un usuario nuevo, necesitamos el país
-        if (idPais === 0) {
-            return res.status(400).json({
-                mensaje: 'Seleccioná tu país y volvé a iniciar el registro con Google'
-            });
-        }
-
-        // Validar el país
-        const [paises] = await db.execute(
-            'SELECT idPais FROM paises WHERE idPais = ?',
-            [idPais]
-        );
-
-        if (paises.length === 0) {
-            return res.status(400).json({
-                mensaje: 'El país seleccionado no existe'
-            });
+            return res.redirect(`${urlFrontend()}/`);
         }
 
         // Obtener el tipo de usuario predeterminado
-        const tipoUsuarioId = Number(process.env.DEFAULT_USER_TYPE_ID);
-
-        if (!Number.isSafeInteger(tipoUsuarioId) || tipoUsuarioId <= 0) {
-            throw new Error('DEFAULT_USER_TYPE_ID no está configurado');
-        }
-
         const [tipos] = await db.execute(
-            'SELECT idTipoUsuario FROM tipos_usuarios WHERE idTipoUsuario = ?',
-            [tipoUsuarioId]
+            'SELECT idTipoUsuario FROM tipos_usuarios WHERE LOWER(Nombre) = LOWER(?)',
+            ['Competidor']
         );
 
         if (tipos.length === 0) {
-            throw new Error('El tipo de usuario predeterminado no existe');
+            throw new Error('No existe el rol Competidor en tipos_usuarios');
         }
+
+        const tipoUsuarioId = tipos[0].idTipoUsuario;
 
         // Obtener nombre y apellido de Google
         const nombre = (perfil.given_name || '').trim();
@@ -253,11 +184,10 @@ async function callbackGoogle(req, res) {
         const [resultado] = await db.execute(
             `INSERT INTO usuarios
                 (idTipoUsuario, idPais, Nombre, apellido,
-                 email, password_hash, google_id, avatar_url)
-             VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
+                 email, password_hash, google_id, avatar_url, perfil_completo)
+             VALUES (?, NULL, ?, ?, ?, NULL, ?, ?, 0)`,
             [
                 tipoUsuarioId,
-                idPais,
                 nombre,
                 apellido,
                 email,
@@ -268,17 +198,7 @@ async function callbackGoogle(req, res) {
 
         const token = crearToken(resultado.insertId);
         guardarToken(res, token);
-        return res.status(201).json({
-            mensaje: 'Usuario registrado con Google correctamente',
-            //token,
-            usuario: {
-                idUsuario: resultado.insertId,
-                nombre,
-                apellido,
-                email,
-                idPais
-            }
-        });
+        return res.redirect(`${urlFrontend()}/?completarRegistroGoogle=1`);
 
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
@@ -293,6 +213,10 @@ async function callbackGoogle(req, res) {
             mensaje: 'Ocurrió un error al autenticar con Google'
         });
     }
+}
+
+function urlFrontend() {
+    return (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
 }
 
 module.exports = {
