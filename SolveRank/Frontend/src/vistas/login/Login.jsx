@@ -25,7 +25,13 @@ function Login({ onRegister, onLogin }) {
                     </div>
                     <input className="caja" type="password" placeholder="Contraseña..." />
                     <button className="boton-iniciar" type="submit" onClick={(event) => hacerLogin(event, onLogin)}>Iniciar Sesión</button>
-                    <button className="boton-iniciar-google" type="submit"> <img src={googleIcon} alt="Google Icon" /> Iniciar Sesión con Google</button>
+                    <button
+                        className="boton-iniciar-google"
+                        type="button"
+                        onClick={() => { window.location.href = `${axios.defaults.baseURL}/auth/google`; }}
+                    >
+                        <img src={googleIcon} alt="" /> Iniciar Sesión con Google
+                    </button>
                     <div className="separator">
                         <hr />
                         <p>ó</p>
