@@ -25,6 +25,7 @@ function Navbar({
     vistaActiva,
     usuario,
     onInicio,
+    onPanelOrganizador,
     onIniciarSesion,
     onCerrarSesion,
 }) {
@@ -214,6 +215,19 @@ function Navbar({
                                     <img src={torneosIcon} alt="" />
                                     Mis Torneos
                                 </a>
+                                {usuario.rol === 'Organizador' && (
+                                    <a
+                                        href="#panel-organizador"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            cerrarMenu();
+                                            onPanelOrganizador?.();
+                                        }}
+                                    >
+                                        <img src={torneosIcon} alt="" />
+                                        Panel de organizador
+                                    </a>
+                                )}
 
                                 <hr className="site-navbar-dropdown-separator" />
 

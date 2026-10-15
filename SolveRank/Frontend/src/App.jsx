@@ -5,6 +5,7 @@ import Login from './vistas/login/Login.jsx'
 import Registro from './vistas/registro/Registro.jsx'
 import CompletarRegistro from './vistas/registro/CompletarRegistro.jsx'
 import Home from './vistas/home/Home.jsx'
+import PanelPrincipal from './vistas/Organizador/PanelPrincipal.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -25,6 +26,8 @@ function App() {
           setUsuario(data.usuario ?? null)
           if (data.usuario?.perfilCompleto === false) {
             setVista('completar-registro-google')
+          } else if (data.usuario?.rol === 'Organizador') {
+            setVista('panel-organizador')
           }
         }
       })
@@ -52,6 +55,8 @@ function App() {
       setUsuario(data.usuario ?? null)
       setVista(data.usuario?.perfilCompleto === false
         ? 'completar-registro-google'
+        : data.usuario?.rol === 'Organizador'
+        ? 'panel-organizador'
         : 'home')
     } catch (error) {
       console.error(
@@ -91,7 +96,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home'
+  const mostrarSitio = vista === 'home' || vista === 'panel-organizador'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -109,6 +114,9 @@ function App() {
           vistaActiva={vista}
           usuario={usuario}
           onInicio={() => setVista('home')}
+          onPanelOrganizador={() => {
+            if (usuario?.rol === 'Organizador') setVista('panel-organizador')
+          }}
           onIniciarSesion={() => setVista('login')}
           onCerrarSesion={manejarLogout}
         />
@@ -116,6 +124,10 @@ function App() {
 
       {vista === 'home'
         ? <Home />
+        : vista === 'panel-organizador'
+        ? usuario?.rol === 'Organizador'
+          ? <PanelPrincipal usuario={usuario} />
+          : <Home />
         : vista === 'completar-registro-google'
         ? <CompletarRegistro onCompletado={manejarPerfilGoogleCompletado} />
         : vista === 'registro'
