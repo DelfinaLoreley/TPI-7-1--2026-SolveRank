@@ -1,0 +1,369 @@
+:root{
+    --font: 'Instrument Sans';
+}
+
+.panel-page {
+    min-height: calc(100vh - var(--navbar-height, 58px));
+    overflow: hidden;
+    background: #020d22;
+    color: #f5f7fc;
+    font-family: var(--font), Arial, sans-serif;
+    font-size: 12px;
+}
+
+.panel-page *,
+.panel-page *::before,
+.panel-page *::after {
+    box-sizing: border-box;
+}
+
+.panel-page a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.panel-page button {
+    color: inherit;
+    font: inherit;
+}
+
+.panel-contenido {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 12px;
+}
+
+/*Panel hero section------------------------------------------------------------*/
+.panel-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 260px;
+    padding: 26px 33px;
+    isolation: isolate;
+}
+
+.panel-hero-texto {
+    position: relative;
+    z-index: 1;
+}
+
+.panel-hero h1 {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0 0 12px;
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+
+.panel-hero h1 span{
+    font-family: var(--font);
+}
+
+.panel-hero-texto > p {
+    margin: 0 0 16px;
+    color: #e0e6f1;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    font-family: var(--font2);
+}
+
+.panel-resumen-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    width: fit-content;
+    min-height: 42px;
+    padding: 15px 25px;
+    border: 1px solid #182743;
+    border-radius: 8px;
+    background: rgba(10, 22, 44, 0.88);
+    font-family: var(--font2);
+}
+
+.panel-resumen-card > div {
+    display: grid;
+    grid-template-columns: 22px auto;
+    align-items: center;
+    column-gap: 18px;
+}
+
+.panel-resumen img{
+    display: block;
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+}
+
+.resumen-icono {
+    grid-row: span 2;
+    font-size: 20px;
+}
+
+.panel-resumen-card strong {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.panel-resumen-card small {
+    color: #ffffff;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.home-cubo-escena {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    width: 55%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.home-cubo-escena img {
+    display: block;
+    width: auto;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+    object-position: 65% center;
+}
+
+/*Sección de torneos-------------------------------------------------------------*/
+
+.home-panel {
+    border: 1px solid #162540;
+    border-radius: 9px;
+    background: #09152b;
+}
+
+.home-torneos {
+    padding: 18px 10px 13px;
+}
+
+.home-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 22px;
+    margin-bottom: 15px;
+    margin-left: 10px;
+    padding: 0 5px;
+}
+
+.home-section-heading h2 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: var(--font2);
+    text-transform: uppercase;
+}
+
+.home-section-heading a {
+    color: #4385ff;
+    font-size: 12px;
+    white-space: nowrap;
+    font-family: var(--font2);
+}
+
+/*cards torneos----------------------------*/
+.home-torneos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.home-torneo-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #1b2b47;
+    border-radius: 8px;
+    background: #081329;
+}
+
+.home-torneo-imagen {
+    position: relative;
+    height: 102px;
+    overflow: hidden;
+    border-radius: 5px 5px 0 0;
+    background-color: #27374a;
+}
+
+.home-torneo-imagen::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 10, 23, 0.02) 42%, rgba(3, 10, 23, 0.38) 100%);
+    content: '';
+}
+
+.home-torneo-foto {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.home-estado {
+    position: absolute;
+    z-index: 1;
+    top: 14px;
+    left: 7px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background: #e78a22;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-family: var(--font2);
+}
+
+.home-estado.abiertas { background: #31a96c; }
+.home-estado.cerradas { background: #d83b40; }
+
+.home-torneo-btn-guardar {
+    position: absolute;
+    z-index: 1;
+    top: 14px;
+    right: 7px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.301);
+}
+.home-torneo-btn-guardar img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    object-fit: contain;
+}
+
+.home-torneo-info {
+    position: relative;
+    display: grid;
+    grid-template-columns: 43px minmax(0, 1fr);
+    column-gap: 9px;
+    row-gap: 8px;
+    min-height: 82px;
+    margin-top: -12px;
+    padding: 19px 10px 10px;
+    background: linear-gradient(180deg, rgba(8, 19, 41, 0) 0, #081329 15px, #081329 100%);
+    font-family: var(--font2);
+}
+
+.home-fecha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    min-height: 35px;
+    border-radius: 4px;
+    border: 1px solid #161E31;
+    background: #091124;
+    padding: 5px 9px;
+}
+
+.home-fecha strong {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.home-fecha span {
+    color: #ffffff;
+    font-size: 12px;
+}
+
+.home-torneo-detalle {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+}
+
+.home-torneo-detalle h3 {
+    overflow: hidden;
+    margin: 0 0 4px;
+    font-size: 13.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-torneo-detalle p {
+    overflow: hidden;
+    margin: 0 0 5px;
+    color: #aeb9ca;
+    font-size: 10px;
+    word-wrap: wrap;
+}
+
+.home-torneo-detalle p img{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    object-fit: contain;
+}
+
+.home-torneo-meta {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    gap: 16px;
+    color: #aeb9ca;
+    font-size: 13px;
+    margin-left: 8px;
+}
+
+.home-torneo-meta span {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font2);
+}
+
+.home-torneo-meta span img{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    object-fit: contain;
+}
+
+.home-torneo-link,
+.home-ranking-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    border-radius: 4px;
+    background: #0d1d3b;
+    color: #d6e3fa !important;
+    font-size: 12px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.home-torneo-link span {
+    margin-left: 10px;
+    padding-right: 7px;
+    color: #7dabff;
+    font-size: 17px;
+    line-height: 1;
+}
