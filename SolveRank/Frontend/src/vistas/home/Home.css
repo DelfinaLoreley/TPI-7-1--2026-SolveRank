@@ -167,6 +167,13 @@
     font-size: 20px;
 }
 
+.resumen-icono img {
+    display: block;
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain;
+}
+
 .home-resumen strong {
     font-size: 18px;
     line-height: 1;

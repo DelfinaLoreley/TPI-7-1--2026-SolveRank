@@ -6,6 +6,7 @@ import Registro from './vistas/registro/Registro.jsx'
 import CompletarRegistro from './vistas/registro/CompletarRegistro.jsx'
 import Home from './vistas/home/Home.jsx'
 import PanelPrincipal from './vistas/Organizador/PanelPrincipal.jsx'
+import CreacionTorneo from './vistas/torneos/CreacionTorneo.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -126,7 +127,14 @@ function App() {
         ? <Home />
         : vista === 'panel-organizador'
         ? usuario?.rol === 'Organizador'
-          ? <PanelPrincipal usuario={usuario} />
+          ? <PanelPrincipal
+              usuario={usuario}
+              onCrearTorneo={() => setVista('crear-torneo')}
+            />
+          : <Home />
+        : vista === 'crear-torneo'
+        ? usuario?.rol === 'Organizador'
+          ? <CreacionTorneo onSalir={() => setVista('panel-organizador')} />
           : <Home />
         : vista === 'completar-registro-google'
         ? <CompletarRegistro onCompletado={manejarPerfilGoogleCompletado} />
