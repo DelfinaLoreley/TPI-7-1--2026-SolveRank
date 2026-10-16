@@ -14,6 +14,7 @@ import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
 import estadisticasIcon from '/src/assets/home/iconos/estadisticas.png';
 import cuboImg from '/src/assets/home/cubo-img-stat.png';
+import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
 
 function fechaDeTorneo(fecha) {
     if (!fecha) return null;
@@ -38,13 +39,13 @@ function estadoInscripcion(torneo) {
     return 'Inscripciones cerradas';
 }
 
-const competidores = [
-    { nombre: 'Teodor Zajder', pais: 'Poland', bandera: '/src/assets/home/poland-fleg.png', tiempo: '2.76', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
-    { nombre: 'Yiheng Wang', pais: 'China', bandera: '/src/assets/home/china.flag.png', tiempo: '2.77', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
-    { nombre: 'Max Park', pais: 'USA', bandera: '/src/assets/home/usa-flag.png', tiempo: '3.13', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
-    { nombre: 'Qixian Sao', pais: 'China', bandera: '/src/assets/home/china.flag.png', tiempo: '3.24', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
-    { nombre: 'Ruihang Xu', pais: 'China', bandera: '/src/assets/home/china.flag.png', tiempo: '3.24', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
-];
+function formatearTiempoRanking(segundos) {
+    const valor = Number(segundos);
+    if (!Number.isFinite(valor)) return '—';
+    const minutos = Math.floor(valor / 60);
+    const restantes = Math.floor(valor % 60);
+    return minutos ? `${minutos}:${String(restantes).padStart(2, '0')}` : String(restantes);
+}
 
 const indicadoresEstadisticas = [
     { icono: '/src/assets/home/iconos/competidores-ic.png', clave: 'competidores', texto: 'Competidores registrados', color: 'violeta' },
@@ -56,6 +57,11 @@ const indicadoresEstadisticas = [
 function Home() {
     const [torneos, setTorneos] = useState([]);
     const [estadisticasReales, setEstadisticasReales] = useState(null);
+    const [categoriasRanking, setCategoriasRanking] = useState([]);
+    const [categoriaRanking, setCategoriaRanking] = useState('');
+    const [resultadosRanking, setResultadosRanking] = useState([]);
+    const [cargandoRanking, setCargandoRanking] = useState(false);
+    const [errorRanking, setErrorRanking] = useState('');
     const [cargandoTorneos, setCargandoTorneos] = useState(true);
     const [errorTorneos, setErrorTorneos] = useState('');
 
@@ -81,6 +87,35 @@ function Home() {
 
         return () => { activo = false; };
     }, []);
+
+    useEffect(() => {
+        let activo = true;
+        axios.get('/torneos/categorias')
+            .then(({ data }) => {
+                if (!activo) return;
+                const categorias = data.categorias ?? [];
+                setCategoriasRanking(categorias);
+                if (categorias.length) setCategoriaRanking(String(categorias[0].idCategoria));
+            })
+            .catch((error) => {
+                if (activo) setErrorRanking(error?.response?.data?.mensaje || 'No se pudieron cargar las categorías.');
+            });
+        return () => { activo = false; };
+    }, []);
+
+    useEffect(() => {
+        if (!categoriaRanking) return undefined;
+        let activo = true;
+        setCargandoRanking(true);
+        setErrorRanking('');
+        axios.get(`/torneos/ranking/${categoriaRanking}`)
+            .then(({ data }) => { if (activo) setResultadosRanking(data.resultados ?? []); })
+            .catch((error) => {
+                if (activo) setErrorRanking(error?.response?.data?.mensaje || 'No se pudo cargar este ranking.');
+            })
+            .finally(() => { if (activo) setCargandoRanking(false); });
+        return () => { activo = false; };
+    }, [categoriaRanking]);
 
     const urlBackend = axios.defaults.baseURL.replace(/\/api\/?$/, '');
 
@@ -157,27 +192,34 @@ function Home() {
                             <a href="#rankings">Ver rankings completos ⟶</a>
                         </div>
                         <div className="home-categorias" aria-label="Categorías de ranking">
-                            <button className="seleccionada" type="button">3x3x3</button>
-                            <button type="button">3x3 OH</button>
-                            <button type="button">2x2x2</button>
-                            <button type="button">4x4x4</button>
-                            <button type="button">Pyraminx</button>
-                            <button type="button">Megaminx</button>
-                            <button type="button">Square-1</button>
-                        </div>
-                        <ol className="home-ranking-lista">
-                            {competidores.map((competidor, i) => (
-                                <li key={competidor.nombre}>
-                                    <span className="ranking-puesto">{i + 1}</span>
-                                    <span className="ranking-avatar"><img src={competidor.avatar} alt={competidor.nombre} /></span>
-                                    <strong>{competidor.nombre}</strong>
-                                    <span className="ranking-pais">{competidor.pais}</span>
-                                    <span className="ranking-bandera"><img src={competidor.bandera} alt={competidor.pais}/></span>
-                                    <b>{competidor.tiempo}</b>
-                                </li>
+                            {categoriasRanking.map((categoria) => (
+                                <button
+                                    className={String(categoria.idCategoria) === categoriaRanking ? 'seleccionada' : ''}
+                                    type="button"
+                                    key={categoria.idCategoria}
+                                    aria-pressed={String(categoria.idCategoria) === categoriaRanking}
+                                    onClick={() => setCategoriaRanking(String(categoria.idCategoria))}
+                                >{categoria.categoria}</button>
                             ))}
+                        </div>
+                        <ol className="home-ranking-lista home-ranking-tabla" aria-label="Ranking de la categoría seleccionada">
+                            <li className="home-ranking-header">
+                                <span>#</span><span></span><span>Competidor</span><span>País</span><span>Mejor single</span>
+                            </li>
+                            {cargandoRanking ? <li className="home-ranking-mensaje">Cargando ranking…</li>
+                                : errorRanking ? <li className="home-ranking-mensaje" role="alert">{errorRanking}</li>
+                                : resultadosRanking.length === 0 ? <li className="home-ranking-mensaje">Todavía no hay resultados para esta categoría.</li>
+                                : resultadosRanking.map((competidor, index) => (
+                                    <li key={competidor.idUsuario}>
+                                        <span className="ranking-puesto">{index + 1}</span>
+                                        <span className="ranking-avatar"><img src={competidor.avatar_url || avatarPredeterminado} alt="" /></span>
+                                        <strong>{[competidor.nombre, competidor.apellido].filter(Boolean).join(' ')}</strong>
+                                        <span className="ranking-pais">{competidor.pais || '—'}</span>
+                                        <b>{formatearTiempoRanking(competidor.mejorTiempo)}</b>
+                                    </li>
+                                ))}
                         </ol>
-                        <a className="home-ranking-link" href="#rankings">Ver ranking de 3x3 ⟶</a>
+                        <a className="home-ranking-link" href="#rankings">Ver ranking de {categoriasRanking.find(({ idCategoria }) => String(idCategoria) === categoriaRanking)?.categoria || 'categoría'} ⟶</a>
                     </section>
 
                     <section className="home-panel home-estadisticas" id="estadisticas">

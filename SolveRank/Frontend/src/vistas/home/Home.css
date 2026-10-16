@@ -479,9 +479,11 @@
 .home-categorias {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 4px;
+    overflow-x: auto;
     margin-bottom: 14px;
+    padding-bottom: 3px;
 }
 
 .home-categorias button {
@@ -509,13 +511,35 @@
 
 .home-ranking-lista li {
     display: grid;
-    grid-template-columns: 15px 28px minmax(65px, 1fr) minmax(36px, 0.55fr) 22px 38px;
+    grid-template-columns: 20px 28px minmax(65px, 1fr) minmax(36px, 0.55fr) 56px;
     align-items: center;
     gap: 5px;
     margin: 2px;
     min-height: 29px;
     border-bottom: 1px solid #1a2941;
     font-family: var(--font2);
+}
+
+.home-ranking-lista li.home-ranking-header {
+    min-height: 27px;
+    border-bottom-color: #31415b;
+    color: #aebbd1;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.home-ranking-lista li.home-ranking-header span:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.home-ranking-lista li.home-ranking-mensaje {
+    display: block;
+    padding: 12px 4px;
+    color: #aebbd1;
+    font-size: 12px;
+    text-align: center;
 }
 
 .ranking-puesto {

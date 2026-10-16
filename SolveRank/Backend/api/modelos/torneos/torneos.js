@@ -51,6 +51,50 @@ async function usuariosConRol(connection, ids, rol) {
 }
 
 // Listado público de torneos.
+router.get('/categorias', async (req, res) => {
+    try {
+        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        return res.json({ categorias });
+    } catch (error) {
+        console.error('Error al obtener categorías para el ranking:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener las categorías' });
+    }
+});
+
+// Ranking por mejor tiempo individual registrado en cada categoría.
+router.get('/ranking/:idCategoria', async (req, res) => {
+    const idCategoria = Number(req.params.idCategoria);
+    if (!Number.isSafeInteger(idCategoria) || idCategoria <= 0) {
+        return res.status(400).json({ mensaje: 'La categoría indicada no es válida' });
+    }
+    try {
+        const [resultados] = await db.execute(
+            `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.avatar_url,
+                    p.pais,
+                    MIN(CASE
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) LIKE '%DNF%' THEN NULL
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2') THEN TIME_TO_SEC(i.tiempo) + 2
+                        ELSE TIME_TO_SEC(i.tiempo)
+                    END) AS mejorTiempo
+             FROM intentos_x_competidor i
+             INNER JOIN rondas_x_categoria_x_torneo rct
+                ON rct.idRonda = i.idRonda AND rct.idTorneo = i.idTorneo
+             INNER JOIN usuarios u ON u.idUsuario = i.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             WHERE rct.idCategoria = ?
+             GROUP BY u.idUsuario, u.Nombre, u.apellido, u.avatar_url, p.pais
+             HAVING mejorTiempo IS NOT NULL
+             ORDER BY mejorTiempo ASC, u.Nombre ASC, u.apellido ASC
+             LIMIT 10`,
+            [idCategoria]
+        );
+        return res.json({ resultados });
+    } catch (error) {
+        console.error('Error al obtener el ranking:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo obtener el ranking' });
+    }
+});
+
 router.get('/', async (req, res) => {
     try {
         const [torneos] = await db.execute(
