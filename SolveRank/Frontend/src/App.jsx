@@ -97,7 +97,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'panel-organizador'
+  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -134,7 +134,7 @@ function App() {
           : <Home />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
-          ? <CreacionTorneo onSalir={() => setVista('panel-organizador')} />
+          ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} />
           : <Home />
         : vista === 'completar-registro-google'
         ? <CompletarRegistro onCompletado={manejarPerfilGoogleCompletado} />
