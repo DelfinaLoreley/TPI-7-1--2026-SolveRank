@@ -70,7 +70,34 @@ router.get('/', async (req, res) => {
              GROUP BY t.idTorneo
              ORDER BY t.fecha_Inicio`
         );
-        return res.json({ torneos });
+        const [[competidores]] = await db.execute(
+            `SELECT COUNT(DISTINCT u.idUsuario) AS total
+             FROM usuarios u
+             INNER JOIN tipos_usuarios tu ON tu.idTipoUsuario = u.idTipoUsuario
+             WHERE LOWER(tu.Nombre) IN (LOWER(?), LOWER(?))`,
+            [ROLES.COMPETIDOR, ROLES.JUEZ]
+        );
+        const [[torneosEsteAnio]] = await db.execute(
+            'SELECT COUNT(*) AS total FROM torneos WHERE YEAR(fecha_Inicio) = YEAR(CURDATE())'
+        );
+        const [[paisesInscritos]] = await db.execute(
+            `SELECT COUNT(DISTINCT u.idPais) AS total
+             FROM usuarios_x_torneo ux
+             INNER JOIN usuarios u ON u.idUsuario = ux.idUsuario
+             WHERE u.idPais IS NOT NULL`
+        );
+        const [[resultadosRegistrados]] = await db.execute(
+            'SELECT COUNT(*) AS total FROM intentos_x_competidor'
+        );
+        return res.json({
+            torneos,
+            estadisticas: {
+                competidores: Number(competidores.total),
+                torneosEsteAnio: Number(torneosEsteAnio.total),
+                paises: Number(paisesInscritos.total),
+                resultadosRegistrados: Number(resultadosRegistrados.total)
+            }
+        });
     } catch (error) {
         console.error('Error al listar torneos:', error.message);
         return res.status(500).json({ mensaje: 'No se pudieron obtener los torneos' });

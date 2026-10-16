@@ -46,15 +46,16 @@ const competidores = [
     { nombre: 'Ruihang Xu', pais: 'China', bandera: '/src/assets/home/china.flag.png', tiempo: '3.24', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
 ];
 
-const estadisticas = [
-    { icono: '/src/assets/home/iconos/competidores-ic.png', valor: '1.812', texto: 'Competidores registrados', color: 'violeta' },
-    { icono: '/src/assets/home/iconos/torneos-ic.png', valor: '49', texto: 'Torneos este año', color: 'dorado' },
-    { icono: '/src/assets/home/iconos/paises-ic.png', valor: '15', texto: 'Países representados', color: 'azul' },
-    { icono: '/src/assets/home/iconos/resultados-ic.png', valor: '181.222', texto: 'Resultados registrados', color: 'verde' },
+const indicadoresEstadisticas = [
+    { icono: '/src/assets/home/iconos/competidores-ic.png', clave: 'competidores', texto: 'Competidores registrados', color: 'violeta' },
+    { icono: '/src/assets/home/iconos/torneos-ic.png', clave: 'torneosEsteAnio', texto: 'Torneos este año', color: 'dorado' },
+    { icono: '/src/assets/home/iconos/paises-ic.png', clave: 'paises', texto: 'Países representados', color: 'azul' },
+    { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
 function Home() {
     const [torneos, setTorneos] = useState([]);
+    const [estadisticasReales, setEstadisticasReales] = useState(null);
     const [cargandoTorneos, setCargandoTorneos] = useState(true);
     const [errorTorneos, setErrorTorneos] = useState('');
 
@@ -63,6 +64,7 @@ function Home() {
         axios.get('/torneos')
             .then(({ data }) => {
                 if (!activo) return;
+                setEstadisticasReales(data.estadisticas ?? null);
                 const hoy = new Date();
                 hoy.setHours(0, 0, 0, 0);
                 const proximos = (data.torneos ?? [])
@@ -102,11 +104,11 @@ function Home() {
                             <a href="#rankings" className="home-button secundario"><img src={rankingsIcon} alt="Rankings" /> Ver Rankings</a>
                         </div>
                         <div className="home-resumen">
-                            <div><span className="resumen-icono azul"><img src={competidoresIcon} alt="Competidores" /></span><strong>1.907</strong><small>Competidores</small></div>
+                            <div><span className="resumen-icono azul"><img src={competidoresIcon} alt="Competidores" /></span><strong>{estadisticasReales ? Number(estadisticasReales.competidores).toLocaleString('es-AR') : '—'}</strong><small>Competidores</small></div>
                             <hr/>
-                            <div><span className="resumen-icono dorado"><img src={torneosIcon2} alt="Torneos" /></span><strong>912</strong><small>Torneos este año</small></div>
+                            <div><span className="resumen-icono dorado"><img src={torneosIcon2} alt="Torneos" /></span><strong>{estadisticasReales ? Number(estadisticasReales.torneosEsteAnio).toLocaleString('es-AR') : '—'}</strong><small>Torneos este año</small></div>
                             <hr/>
-                            <div><span className="resumen-icono violeta"><img src={paisesIcon} alt="Países" /></span><strong>22</strong><small>Países</small></div>
+                            <div><span className="resumen-icono violeta"><img src={paisesIcon} alt="Países" /></span><strong>{estadisticasReales ? Number(estadisticasReales.paises).toLocaleString('es-AR') : '—'}</strong><small>Países de inscriptos</small></div>
                         </div>
                     </div>
                     <div className="home-cubo-escena">
@@ -183,12 +185,12 @@ function Home() {
                             <h2><span className="home-estadisticas-icon"><img src={estadisticasIcon} alt="Estadísticas" /></span> Estadísticas</h2>
                         </div>
                         <div className="home-estadisticas-grid">
-                            {estadisticas.map((dato) => (
+                            {indicadoresEstadisticas.map((dato) => (
                                 <article className="home-estadistica" key={dato.texto}>
                                     <span className={`home-estadistica-icono ${dato.color}`}>
                                         <img src={dato.icono} alt={dato.texto} />
                                     </span>
-                                    <div><strong>{dato.valor}</strong><small>{dato.texto}</small></div>
+                                    <div><strong>{estadisticasReales ? Number(estadisticasReales[dato.clave]).toLocaleString('es-AR') : '—'}</strong><small>{dato.texto}</small></div>
                                 </article>
                             ))}
                         </div>
