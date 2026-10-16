@@ -39,8 +39,8 @@ export const categorias = [
 
 export const categoriasDisponibles = categorias.map(({ id }) => id);
 
-export function etiquetaCategoria(id) {
-    return categorias.find((categoria) => categoria.id === id)?.etiqueta || id;
+export function etiquetaCategoria(id, catalogo = []) {
+    return catalogo.find((categoria) => String(categoria.id) === String(id))?.etiqueta || categorias.find((categoria) => categoria.id === id)?.etiqueta || id;
 }
 
 export { categoriasIcon };

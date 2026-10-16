@@ -41,9 +41,11 @@ export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, 
                     aria-label={etiqueta}
                 >
                     <option value="">Seleccioná una persona</option>
-                    {opciones.map((persona) => (
-                        <option key={persona} value={persona}>{persona}</option>
-                    ))}
+                    {opciones.map((persona) => {
+                        const value = typeof persona === 'string' ? persona : persona.value;
+                        const label = typeof persona === 'string' ? persona : persona.label;
+                        return <option key={value} value={value}>{label}</option>;
+                    })}
                 </select>
                 <button
                     className="creacion-equipo-agregar"
@@ -58,7 +60,7 @@ export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, 
                 <ul className="creacion-equipo-lista">
                     {formulario[`${nombre}Seleccionados`].map((persona) => (
                         <li key={persona}>
-                            {persona}
+                            {opciones.find((opcion) => String(typeof opcion === 'string' ? opcion : opcion.value) === String(persona))?.label || persona}
                             <button
                                 type="button"
                                 onClick={() => onQuitar(nombre, persona)}

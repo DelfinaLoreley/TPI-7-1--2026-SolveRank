@@ -9,7 +9,8 @@ export function PasoInformacion({
     onQuitarPersona,
     error,
     organizador,
-    imagen
+    imagen,
+    catalogos
 }) {
     return (
         <>
@@ -74,7 +75,7 @@ export function PasoInformacion({
                     <CampoEquipo
                         etiqueta="Seleccioná el/los jueces"
                         nombre="jueces"
-                        opciones={['Feliks Zemdegs', 'Guido Diepietro']}
+                        opciones={catalogos.jueces.map((u) => ({ value: u.idUsuario, label: `${u.nombre} ${u.apellido}` }))}
                         formulario={formulario}
                         onCambio={onCambio}
                         onAgregar={onAgregarPersona}
@@ -88,11 +89,11 @@ export function PasoInformacion({
                         <span className="creacion-subida">
                             <img src={iconoSubida} alt="" />
                             <span>{imagen?.name || 'Poné una imagen del local del torneo, o la ciudad.'}</span>
-                            <small>JPG, SVG, PNG.</small>
+                            <small>JPG o PNG, máximo 5 MB.</small>
                             <input
                                 type="file"
                                 name="imagen"
-                                accept="image/jpeg,image/png,image/svg+xml"
+                                accept="image/jpeg,image/png"
                                 onChange={onCambioImagen}
                                 aria-label="Elegir imagen del torneo"
                             />
@@ -119,29 +120,22 @@ export function PasoInformacion({
                     <div className="creacion-ubicacion">
                         <CampoSelect
                             etiqueta="País"
-                            opciones={['Argentina', 'Chile', 'Uruguay', 'Brasil']}
+                            opciones={catalogos.paises.map((p) => ({ value: p.idPais, label: p.pais }))}
                             name="pais"
                             value={formulario.pais}
                             onChange={onCambio}
                         />
                         <CampoSelect
                             etiqueta="Provincia o estado"
-                            opciones={[
-                                'Buenos Aires', 'Catamarca', 'Chaco', 'Chubut',
-                                'Ciudad Autónoma de Buenos Aires', 'Córdoba', 'Corrientes',
-                                'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja',
-                                'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta',
-                                'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe',
-                                'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'
-                            ]}
+                            opciones={catalogos.provincias.filter((p) => String(p.idPais) === String(formulario.pais)).map((p) => ({ value: p.idProvincia, label: p.provincia }))}
                             name="provincia"
                             value={formulario.provincia}
                             onChange={onCambio}
                         />
                     </div>
-                    <Campo
+                    <CampoSelect
                         etiqueta="Ciudad"
-                        placeholder="Seleccioná la ciudad"
+                        opciones={catalogos.ciudades.filter((c) => String(c.idProvincia) === String(formulario.provincia)).map((c) => ({ value: c.idCiudad, label: c.ciudad }))}
                         name="ciudad"
                         value={formulario.ciudad}
                         onChange={onCambio}
@@ -158,7 +152,7 @@ export function PasoInformacion({
                     <CampoEquipo
                         etiqueta="Seleccioná el/los delegados de la WCA"
                         nombre="delegados"
-                        opciones={['Guido Diepietro', 'Feliks Zemdegs']}
+                        opciones={catalogos.delegados.map((u) => ({ value: u.idUsuario, label: `${u.nombre} ${u.apellido}` }))}
                         formulario={formulario}
                         onCambio={onCambio}
                         onAgregar={onAgregarPersona}

@@ -1,7 +1,27 @@
 const router = require('express').Router();
 const db = require('../../config/db/conexion');
+const fs = require('fs/promises');
+const path = require('path');
+const crypto = require('crypto');
 const verificarToken = require('../../middleware/authMiddleware');
 const { ROLES, permitirRoles } = require('../../middleware/autorizacion');
+
+// Catálogos que necesita el formulario de creación.
+router.get('/catalogos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
+    try {
+        const [paises] = await db.execute('SELECT idPais, pais FROM paises ORDER BY pais');
+        const [provincias] = await db.execute('SELECT idProvincia, provincia, idPais FROM provincias ORDER BY provincia');
+        const [ciudades] = await db.execute('SELECT idCiudad, ciudad, idProvincia FROM ciudades ORDER BY ciudad');
+        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        const [formatos] = await db.execute('SELECT idFormato, formato FROM formatos ORDER BY idFormato');
+        const [jueces] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.JUEZ]);
+        const [delegados] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.DELEGADO]);
+        return res.json({ paises, provincias, ciudades, categorias, formatos, jueces, delegados });
+    } catch (error) {
+        console.error('Error al cargar catálogos de torneo:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron cargar los datos del formulario' });
+    }
+});
 
 const camposTorneo = [
     'idPais', 'idProvicncia', 'idCiudad', 'fecha_Inicio', 'fecha_fin',
@@ -101,6 +121,14 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
     if (obligatorios.some((campo) => body[campo] === undefined || body[campo] === null || body[campo] === '')) {
         return res.status(400).json({ mensaje: 'Faltan campos obligatorios del torneo' });
     }
+    const categorias = normalizarIds(body.categorias ?? []);
+    const formatos = body.formatos && typeof body.formatos === 'object' ? body.formatos : {};
+    const rondas = body.rondas && typeof body.rondas === 'object' && !Array.isArray(body.rondas) ? body.rondas : null;
+    const cronograma = Array.isArray(body.cronograma) ? body.cronograma : null;
+    if (!categorias || !categorias.length || !rondas || !cronograma ||
+        categorias.some((id) => !formatos[id] || !Array.isArray(rondas[id]) || !rondas[id].length)) {
+        return res.status(400).json({ mensaje: 'Completá categorías, formatos, rondas y cronograma válidos' });
+    }
     if (typeof body.nombre !== 'string' || body.nombre.trim().length > 100 ||
         typeof body.Contacto_Organizador !== 'string' || body.Contacto_Organizador.trim().length > 250 ||
         typeof body.direccion !== 'string' || body.direccion.trim().length > 150 ||
@@ -118,6 +146,7 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
     }
 
     let connection;
+    let archivoImagenGuardado;
     try {
         connection = await db.getConnection();
         await connection.beginTransaction();
@@ -140,11 +169,47 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
             return res.status(400).json({ mensaje: 'Cada usuario designado debe tener el rol correspondiente' });
         }
 
+        const placeholdersCategorias = categorias.map(() => '?').join(',');
+        const [categoriasValidas] = await connection.execute(
+            `SELECT idCategoria FROM categorias WHERE idCategoria IN (${placeholdersCategorias})`, categorias
+        );
+        const [formatosValidos] = await connection.execute('SELECT idFormato FROM formatos');
+        const idsFormatosValidos = new Set(formatosValidos.map((item) => Number(item.idFormato)));
+        if (categoriasValidas.length !== categorias.length || categorias.some((id) => !idsFormatosValidos.has(Number(formatos[id])))) {
+            await connection.rollback();
+            return res.status(400).json({ mensaje: 'Hay categorías o formatos que no existen' });
+        }
+
+        let pathImagen = null;
+        if (body.imagenBase64) {
+            const coincidencia = typeof body.imagenBase64 === 'string'
+                ? body.imagenBase64.match(/^data:image\/(png|jpeg);base64,([A-Za-z0-9+/]+={0,2})$/)
+                : null;
+            if (!coincidencia) {
+                await connection.rollback();
+                return res.status(400).json({ mensaje: 'La imagen debe ser un archivo JPG o PNG válido' });
+            }
+            const bufferImagen = Buffer.from(coincidencia[2], 'base64');
+            const esPng = coincidencia[1] === 'png' && bufferImagen.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+            const esJpeg = coincidencia[1] === 'jpeg' && bufferImagen[0] === 0xff && bufferImagen[1] === 0xd8 && bufferImagen[2] === 0xff;
+            if (bufferImagen.length > 5 * 1024 * 1024 || (!esPng && !esJpeg)) {
+                await connection.rollback();
+                return res.status(400).json({ mensaje: 'La imagen debe ser JPG o PNG y no superar los 5 MB' });
+            }
+            const extension = esPng ? 'png' : 'jpg';
+            const nombreArchivo = `${crypto.randomUUID()}.${extension}`;
+            const directorio = path.join(__dirname, '../../../public/torneos');
+            await fs.mkdir(directorio, { recursive: true });
+            archivoImagenGuardado = path.join(directorio, nombreArchivo);
+            await fs.writeFile(archivoImagenGuardado, bufferImagen, { flag: 'wx' });
+            pathImagen = `/uploads/torneos/${nombreArchivo}`;
+        }
+
         const columnas = ['idUsuario', ...camposTorneo];
         const valores = [
             req.usuario.idUsuario,
             ...camposTorneo.map((campo) => {
-                const valor = body[campo];
+                const valor = campo === 'pathImagen' ? pathImagen : body[campo];
                 if (['idPais', 'idProvicncia', 'idCiudad', 'limite_participantes'].includes(campo)) {
                     return Number(valor);
                 }
@@ -157,6 +222,33 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
              VALUES (${columnas.map(() => '?').join(', ')})`,
             valores
         );
+
+        const rondasPersistidas = new Map();
+        for (const idCategoria of categorias) {
+            await connection.execute('INSERT INTO categorias_x_torneo (idTorneo, idCategoria) VALUES (?, ?)', [creacion.insertId, idCategoria]);
+            await connection.execute('INSERT INTO formato_x_categoria_x_torneo (idFormato, idCategoria, idTorneo) VALUES (?, ?, ?)', [Number(formatos[idCategoria]), idCategoria, creacion.insertId]);
+            for (const ronda of rondas[idCategoria]) {
+                if (!ronda.nombre || !ronda.cutoff || !ronda.tiempoLimite || !Number.isInteger(Number(ronda.porcentajeAvance))) {
+                    throw Object.assign(new Error('Configuración de ronda inválida'), { code: 'INVALID_ROUND' });
+                }
+                const [insertRonda] = await connection.execute(
+                    'INSERT INTO rondas (ronda, cutoff, tiempoLimite, porcentajeAvance) VALUES (?, ?, ?, ?)',
+                    [ronda.nombre, ronda.cutoff, ronda.tiempoLimite, Number(ronda.porcentajeAvance)]
+                );
+                rondasPersistidas.set(`${idCategoria}:${ronda.nombre}`, insertRonda.insertId);
+                await connection.execute('INSERT INTO rondas_x_categoria_x_torneo (idTorneo, idRonda, idCategoria) VALUES (?, ?, ?)', [creacion.insertId, insertRonda.insertId, idCategoria]);
+            }
+        }
+        for (const actividad of cronograma) {
+            const idRonda = actividad.idRonda || rondasPersistidas.get(`${actividad.idCategoria}:${actividad.ronda}`);
+            if (!actividad.idCategoria || !idRonda || !actividad.horaInicio || !actividad.horaFin) {
+                throw Object.assign(new Error('Actividad de cronograma inválida'), { code: 'INVALID_SCHEDULE' });
+            }
+            await connection.execute(
+                'INSERT INTO cronograma_x_torneo (idtorneo, idcategoria, idronda, evento, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?, ?)',
+                [creacion.insertId, Number(actividad.idCategoria), Number(idRonda), actividad.evento || null, actividad.horaInicio, actividad.horaFin]
+            );
+        }
 
         for (const idUsuario of jueces) {
             await connection.execute(
@@ -175,9 +267,13 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
         return res.status(201).json({ mensaje: 'Torneo creado correctamente', idTorneo: creacion.insertId });
     } catch (error) {
         if (connection) await connection.rollback();
+        if (archivoImagenGuardado) await fs.unlink(archivoImagenGuardado).catch(() => {});
         console.error('Error al crear torneo:', error.message);
         if (error.code === 'ER_NO_REFERENCED_ROW_2') {
             return res.status(400).json({ mensaje: 'El país, provincia o ciudad seleccionados no existen o no coinciden' });
+        }
+        if (error.code === 'INVALID_ROUND' || error.code === 'INVALID_SCHEDULE') {
+            return res.status(400).json({ mensaje: 'La configuración de rondas o cronograma no es válida' });
         }
         return res.status(500).json({ mensaje: 'No se pudo crear el torneo' });
     } finally {

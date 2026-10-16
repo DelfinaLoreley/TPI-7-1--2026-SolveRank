@@ -1,6 +1,6 @@
 import { etiquetaCategoria } from './datosCategorias';
 
-export function PasoRevision({ formulario, cronograma }) {
+export function PasoRevision({ formulario, cronograma, catalogo = [] }) {
     return (
         <>
             <div className="creacion-seccion-intro">
@@ -50,7 +50,7 @@ export function PasoRevision({ formulario, cronograma }) {
                         {formulario.categorias.length
                             ? formulario.categorias.map((categoria) => (
                                 <span className="creacion-chip" key={categoria}>
-                                    {etiquetaCategoria(categoria)}
+                                {etiquetaCategoria(categoria, catalogo)}
                                 </span>
                             ))
                             : <span className="creacion-resumen-vacio">Sin categorías seleccionadas</span>}
@@ -62,7 +62,7 @@ export function PasoRevision({ formulario, cronograma }) {
                     <ul className="creacion-resumen-actividades">
                         {formulario.categorias.map((categoria) => (
                             <li key={`ronda-${categoria}`}>
-                                <span>{etiquetaCategoria(categoria)}</span>
+                                <span>{etiquetaCategoria(categoria, catalogo)}</span>
                                 <span>{formulario.rondas[categoria]?.cantidad || 3} rondas</span>
                             </li>
                         ))}

@@ -1,7 +1,7 @@
 import { categorias, categoriasIcon } from './datosCategorias';
 
-export function PasoCategorias({ seleccionadas, onAlternarCategoria, onSeleccionarTodas, onDeseleccionarTodas, error }) {
-    const todasSeleccionadas = seleccionadas.length === categorias.length;
+export function PasoCategorias({ catalogo = categorias, seleccionadas, onAlternarCategoria, onSeleccionarTodas, onDeseleccionarTodas, error }) {
+    const todasSeleccionadas = seleccionadas.length === catalogo.length;
     const ningunaSeleccionada = seleccionadas.length === 0;
 
     return (
@@ -34,7 +34,7 @@ export function PasoCategorias({ seleccionadas, onAlternarCategoria, onSeleccion
             </div>
 
             <div className="creacion-categorias" role="group" aria-label="Categorías del torneo">
-                {categorias.map(({ id, etiqueta, icono }) => {
+                {catalogo.map(({ id, etiqueta, icono }) => {
                     const seleccionada = seleccionadas.includes(id);
 
                     return (

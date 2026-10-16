@@ -134,7 +134,10 @@ function App() {
           : <Home />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
-          ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} />
+          ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} onPublicar={async (datos) => {
+              await axios.post('/torneos', datos)
+              setVista('panel-organizador')
+            }} />
           : <Home />
         : vista === 'completar-registro-google'
         ? <CompletarRegistro onCompletado={manejarPerfilGoogleCompletado} />
