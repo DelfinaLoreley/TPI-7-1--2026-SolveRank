@@ -259,6 +259,14 @@
     padding: 18px 10px 13px;
 }
 
+.panel-torneos-mensaje {
+    grid-column: 1 / -1;
+    margin: 18px 10px;
+    color: #aebbd1;
+    font-size: 14px;
+    font-family: var(--font2);
+}
+
 .home-section-heading {
     display: flex;
     align-items: center;

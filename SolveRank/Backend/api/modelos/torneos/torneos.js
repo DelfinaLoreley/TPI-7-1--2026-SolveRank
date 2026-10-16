@@ -156,12 +156,14 @@ router.get('/mis-torneos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), asy
                     t.Fecha_Inicio_Inscripcion, t.Fecha_fin_Inscripcion,
                     t.limite_participantes, t.pathImagen, t.Lugar_Venue,
                     p.pais, pr.provincia, c.ciudad,
-                    COUNT(DISTINCT ux.idUsuario) AS inscriptos
+                    COUNT(DISTINCT ux.idUsuario) AS inscriptos,
+                    COUNT(DISTINCT cxt.idCategoria) AS categorias
              FROM torneos t
              LEFT JOIN paises p ON p.idPais = t.idPais
              LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
              LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
              LEFT JOIN usuarios_x_torneo ux ON ux.idTorneo = t.idTorneo
+             LEFT JOIN categorias_x_torneo cxt ON cxt.idTorneo = t.idTorneo
              WHERE t.idUsuario = ?
              GROUP BY t.idTorneo
              ORDER BY t.fecha_Inicio`,

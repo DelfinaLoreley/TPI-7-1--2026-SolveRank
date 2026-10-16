@@ -1,4 +1,6 @@
 import './PanelPrincipal.css';
+import { useEffect, useState } from 'react';
+import axios from '../../axiosApi';
 
 import cuboBanner from '/src/assets/cubo-banner.svg';
 import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
@@ -7,28 +9,62 @@ import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';
 import torneosActivosIcon from '/src/assets/Organizador/torneosactivos-icon.png';
 import proxtorneosIcon from '/src/assets/Organizador/proximostorneos-icono.png';
 import calendarIcon from '/src/assets/home/iconos/Calendar.png';
-import guardarIcon from '/src/assets/home/iconos/guardado.png';
 import lugarIcon from '/src/assets/home/iconos/ubicacion-icon.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
-import imagenUshuaia from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
-import imagenRioGrande from '/src/assets/home/cards-torneos/club_peon_peon.jfif';
-import imagenTella from '/src/assets/home/cards-torneos/Universidad_Torcuato_Di_Tella.jpg';
-import imagenMdq from '/src/assets/home/cards-torneos/club_defensores_de_belgrano.jpg';
 
 import GraficoDona from './GraficoDona';
 import GraficoBarras from './GraficoBarras';
 
 
-const torneos = [
-    { nombre: 'Ushuaia Open 2027', fecha: ['18', 'SEP'], lugar: 'Ushuaia, Tierra Del Fuego, Argentina', categorias: 6, competidores: 40, estado: 'Inscripciones abiertas', estilo: 'ushuaia', imagen: imagenUshuaia },
-    { nombre: 'Río Grande TDF 2026', fecha: ['26', 'SEP'], lugar: 'Río Grande, Tierra Del Fuego, Argentina', categorias: 11, competidores: 30, estado: 'Inscripciones próximamente', estilo: 'rio-grande', imagen: imagenRioGrande },
-    { nombre: 'Chau Invierno En El Tella 2026', fecha: ['16', 'SEP'], lugar: 'Buenos Aires, Buenos Aires, Argentina', categorias: 12, competidores: 100, estado: 'Inscripciones cerradas', estilo: 'tella', imagen: imagenTella },
-    { nombre: 'MDQ Open 2026', fecha: ['23', 'OCT'], lugar: 'Mar del Plata, Buenos Aires, Argentina', categorias: 7, competidores: 40, estado: 'Inscripciones próximamente', estilo: 'mdq', imagen: imagenMdq },
-];
+function convertirFecha(fecha) {
+    if (!fecha) return null;
+    if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        const [anio, mes, dia] = fecha.split('-').map(Number);
+        return new Date(anio, mes - 1, dia);
+    }
+    const valor = fecha instanceof Date ? fecha : new Date(String(fecha).replace(' ', 'T'));
+    return Number.isNaN(valor.getTime()) ? null : valor;
+}
 
-
+function estadoInscripcion(torneo, ahora = new Date()) {
+    const apertura = convertirFecha(torneo.Fecha_Inicio_Inscripcion);
+    const cierre = convertirFecha(torneo.Fecha_fin_Inscripcion);
+    if (!apertura || !cierre) return 'Sin fechas de inscripción';
+    apertura.setHours(0, 0, 0, 0);
+    cierre.setHours(23, 59, 59, 999);
+    if (ahora < apertura) return 'Inscripciones próximamente';
+    if (ahora <= cierre) return 'Inscripciones abiertas';
+    return 'Inscripciones cerradas';
+}
 
 function PanelPrincipal({ usuario, onCrearTorneo }){
+    const [torneos, setTorneos] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        let activo = true;
+        axios.get('/torneos/mis-torneos')
+            .then(({ data }) => { if (activo) setTorneos(data.torneos ?? []); })
+            .catch((err) => { if (activo) setError(err?.response?.data?.mensaje || 'No se pudieron cargar tus torneos.'); })
+            .finally(() => { if (activo) setCargando(false); });
+        return () => { activo = false; };
+    }, []);
+
+    const ahora = new Date();
+    const resumen = torneos.reduce((total, torneo) => {
+        const inicio = convertirFecha(torneo.fecha_Inicio);
+        const fin = convertirFecha(torneo.fecha_fin);
+        const estado = estadoInscripcion(torneo, ahora);
+        if (inicio && fin && inicio <= ahora && fin >= ahora) total.enVivo += 1;
+        if (inicio && inicio > ahora) total.proximos += 1;
+        if (estado === 'Inscripciones abiertas') total.inscripcionesAbiertas += 1;
+        if (fin && fin < ahora) total.finalizados += 1;
+        total.competidores += Number(torneo.inscriptos) || 0;
+        return total;
+    }, { enVivo: 0, proximos: 0, inscripcionesAbiertas: 0, finalizados: 0, competidores: 0 });
+
+    const urlBackend = axios.defaults.baseURL.replace(/\/api\/?$/, '');
     return(
         <main className="panel-page">
             <div className="panel-contenido">
@@ -39,22 +75,22 @@ function PanelPrincipal({ usuario, onCrearTorneo }){
                         <div className="panel-resumen-container">
                             <div className="panel-resumen-card">
                                 <div><span className="panel-resumen-icono">
-                                    <img src={torneosIcon} alt="Torneos" /></span><strong>3</strong><small>Torneos creados</small>
+                                    <img src={torneosIcon} alt="Torneos" /></span><strong>{cargando ? '—' : torneos.length}</strong><small>Torneos creados</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
                                 <div><span className="panel-resumen-icono">
-                                    <img src={competidoresIcon2} alt="Competidores" /></span><strong>505</strong><small>Competidores</small>
+                                    <img src={competidoresIcon2} alt="Competidores" /></span><strong>{cargando ? '—' : resumen.competidores}</strong><small>Inscripciones</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
                                 <div><span className="panel-resumen-icono">
-                                    <img src={torneosActivosIcon} alt="Torneos" /></span><strong>3</strong><small>Torneos activos</small>
+                                    <img src={torneosActivosIcon} alt="Torneos" /></span><strong>{cargando ? '—' : resumen.enVivo}</strong><small>Torneos activos</small>
                                 </div>
                             </div>
                             <div className="panel-resumen-card">
                                 <div><span className="panel-resumen-icono">
-                                    <img src={proxtorneosIcon} alt="Torneos" /></span><strong>9</strong><small>Próximos torneos</small>
+                                    <img src={proxtorneosIcon} alt="Torneos" /></span><strong>{cargando ? '—' : resumen.proximos}</strong><small>Próximos torneos</small>
                                 </div>
                             </div>
                         </div>
@@ -88,24 +124,30 @@ function PanelPrincipal({ usuario, onCrearTorneo }){
                         <a href="#torneos">Ver todos ⟶</a>
                     </div>
                     <div className="home-torneos-grid">
-                        {torneos.map((torneo) => (
-                            <article className="home-torneo-card" key={torneo.nombre}>
-                                <div className={`home-torneo-imagen ${torneo.estilo}`}>
-                                    <img className="home-torneo-foto" src={torneo.imagen} alt={`Sede del torneo ${torneo.nombre}`} />
-                                    <span className={`home-estado ${torneo.estado === 'Inscripciones abiertas' ? 'abiertas' : torneo.estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{torneo.estado}</span>
-                                    <button className="home-torneo-btn-guardar"><img src={guardarIcon} alt="Guardar torneo"/></button>
-                                </div>
-                                <div className="home-torneo-info">
-                                    <div className="home-fecha"><strong>{torneo.fecha[0]}</strong><span>{torneo.fecha[1]}</span></div>
-                                    <div className="home-torneo-detalle">
-                                        <h3>{torneo.nombre}</h3>
-                                        <p> <img src={lugarIcon} alt="Lugar"/> {torneo.lugar}</p>
+                        {cargando ? <p className="panel-torneos-mensaje" role="status">Cargando tus torneos…</p>
+                            : error ? <p className="panel-torneos-mensaje" role="alert">{error}</p>
+                            : torneos.length === 0 ? <p className="panel-torneos-mensaje">Todavía no creaste torneos.</p>
+                            : torneos.map((torneo) => {
+                                const fecha = convertirFecha(torneo.fecha_Inicio);
+                                const estado = estadoInscripcion(torneo, ahora);
+                                const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
+                                const imagen = torneo.pathImagen ? `${urlBackend}${torneo.pathImagen}` : cuboBanner;
+                                return <article className="home-torneo-card" key={torneo.idTorneo}>
+                                    <div className="home-torneo-imagen">
+                                        <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
+                                        <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{estado}</span>
                                     </div>
-                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon} alt="Competidores"/> {torneo.competidores} cupos</span></div>
-                                </div>
-                                <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
-                            </article>
-                        ))}
+                                    <div className="home-torneo-info">
+                                        <div className="home-fecha"><strong>{fecha ? fecha.toLocaleDateString('es-AR', { day: '2-digit' }) : '—'}</strong><span>{fecha ? fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase() : '—'}</span></div>
+                                        <div className="home-torneo-detalle">
+                                            <h3>{torneo.nombre}</h3>
+                                            <p><img src={lugarIcon} alt="Lugar"/> {lugar || torneo.Lugar_Venue || 'Ubicación a confirmar'}</p>
+                                        </div>
+                                        <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {Number(torneo.categorias) || 0} categorías</span><span><img src={competidoresIcon} alt="Inscripciones"/> {Number(torneo.inscriptos) || 0}/{torneo.limite_participantes} inscriptos</span></div>
+                                    </div>
+                                    <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
+                                </article>;
+                            })}
                     </div>
                 </section>
 
@@ -114,21 +156,21 @@ function PanelPrincipal({ usuario, onCrearTorneo }){
                     <div className="tarjeta-estadisticas">
                         <h2>Inscripciones por torneo</h2>
                         {/* El gráfico toma automáticamente el ancho de la tarjeta */}
-                        <GraficoBarras />
+                            <GraficoBarras torneos={torneos} />
                     </div>
 
                     {/* Tarjeta del Gráfico de Dona */}
                     <div className="tarjeta-estadisticas">
                         <h2>Estado de mis torneos</h2>
                         <div style={{ height: '220px', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                            <GraficoDona />
+                            <GraficoDona resumen={resumen} total={torneos.length} />
                         </div>
 
                         <div className="resumen-torneos">
-                            <div className="resumen-item"><span>En vivo</span> <span>2</span></div>
-                            <div className="resumen-item"><span>Inscripciones abiertas</span> <span>2</span></div>
-                            <div className="resumen-item"><span>Próximos</span> <span>2</span></div>
-                            <div className="resumen-item"><span>Finalizados</span> <span>2</span></div>
+                            <div className="resumen-item"><span>En vivo</span> <span>{cargando ? '—' : resumen.enVivo}</span></div>
+                            <div className="resumen-item"><span>Inscripciones abiertas</span> <span>{cargando ? '—' : resumen.inscripcionesAbiertas}</span></div>
+                            <div className="resumen-item"><span>Próximos</span> <span>{cargando ? '—' : resumen.proximos}</span></div>
+                            <div className="resumen-item"><span>Finalizados</span> <span>{cargando ? '—' : resumen.finalizados}</span></div>
                         </div>
                     </div>
                 </section>

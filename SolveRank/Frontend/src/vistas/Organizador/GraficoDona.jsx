@@ -5,35 +5,36 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Plugin personalizado para dibujar el texto en el centro
-const textoCentralPlugin = {
+const textoCentralPlugin = (total) => ({
   id: 'textoCentral',
   beforeDraw: function(chart) {
     const ctx = chart.ctx;
-    const textX = chart.getDatasetMeta(0).data[0].x;
-    const textY = chart.getDatasetMeta(0).data[0].y;
+    const centro = chart.getDatasetMeta(0).data[0];
+    if (!centro) return;
+    const textX = centro.x;
+    const textY = centro.y;
     
     ctx.restore();
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     
-    // Número 12
     ctx.font = "bold 45px Inter";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("12", textX, textY - 10);
+    ctx.fillText(String(total), textX, textY - 10);
     
     // Palabra "Torneos"
     ctx.font = "20px Instrument Sans";
     ctx.fillText("Torneos", textX, textY + 15);
     ctx.save();
   }
-};
+});
 
-const GraficoDona = () => {
+const GraficoDona = ({ resumen, total = 0 }) => {
   const data = {
     labels: ['En vivo', 'Inscripciones abiertas', 'Próximos', 'Finalizados'],
     datasets: [{
-      data: [2, 2, 2, 2], 
-      backgroundColor: ['#00a800', '#1d63ed', '#ff8c00', '#6b32ec', '#1246B4'], 
+      data: [resumen.enVivo, resumen.inscripcionesAbiertas, resumen.proximos, resumen.finalizados],
+      backgroundColor: ['#00a800', '#1d63ed', '#ff8c00', '#6b32ec'],
       borderWidth: 0, 
       cutout: '70%', 
     }]
@@ -56,7 +57,7 @@ const GraficoDona = () => {
   };
 
   // Pasamos el plugin al componente
-  return <Doughnut data={data} options={options} plugins={[textoCentralPlugin]} />;
+  return <Doughnut data={data} options={options} plugins={[textoCentralPlugin(total)]} />;
 };
 
 export default GraficoDona;
