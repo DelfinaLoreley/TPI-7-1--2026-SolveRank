@@ -20,6 +20,7 @@ import userNotLogged from '/src/assets/home/iconos/icon-user.png';
 import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
 import menuCelu from '/src/assets/home/iconos/Menu.png';
+import panelOrgIcon from '/src/assets/home/iconos/panel-principal-icon.png';
 
 function Navbar({
     vistaActiva,
@@ -224,7 +225,7 @@ function Navbar({
                                             onPanelOrganizador?.();
                                         }}
                                     >
-                                        <img src={torneosIcon} alt="" />
+                                        <img src={panelOrgIcon} alt="" />
                                         Panel de organizador
                                     </a>
                                 )}
