@@ -1,9 +1,7 @@
 import './Home.css';
+import { useEffect, useState } from 'react';
+import axios from '../../axiosApi';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
-import imagenUshuaia from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
-import imagenRioGrande from '/src/assets/home/cards-torneos/club_peon_peon.jfif';
-import imagenTella from '/src/assets/home/cards-torneos/Universidad_Torcuato_Di_Tella.jpg';
-import imagenMdq from '/src/assets/home/cards-torneos/club_defensores_de_belgrano.jpg';
 import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
 import rankingsIcon from '/src/assets/home/iconos/rankings-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/organizadores-azul-icon.png';
@@ -17,12 +15,28 @@ import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
 import estadisticasIcon from '/src/assets/home/iconos/estadisticas.png';
 import cuboImg from '/src/assets/home/cubo-img-stat.png';
 
-const torneos = [
-    { nombre: 'Ushuaia Open 2027', fecha: ['18', 'SEP'], lugar: 'Ushuaia, Tierra Del Fuego, Argentina', categorias: 6, competidores: 40, estado: 'Inscripciones abiertas', estilo: 'ushuaia', imagen: imagenUshuaia },
-    { nombre: 'Río Grande TDF 2026', fecha: ['26', 'SEP'], lugar: 'Río Grande, Tierra Del Fuego, Argentina', categorias: 11, competidores: 30, estado: 'Inscripciones próximamente', estilo: 'rio-grande', imagen: imagenRioGrande },
-    { nombre: 'Chau Invierno En El Tella 2026', fecha: ['16', 'SEP'], lugar: 'Buenos Aires, Buenos Aires, Argentina', categorias: 12, competidores: 100, estado: 'Inscripciones cerradas', estilo: 'tella', imagen: imagenTella },
-    { nombre: 'MDQ Open 2026', fecha: ['23', 'OCT'], lugar: 'Mar del Plata, Buenos Aires, Argentina', categorias: 7, competidores: 40, estado: 'Inscripciones próximamente', estilo: 'mdq', imagen: imagenMdq },
-];
+function fechaDeTorneo(fecha) {
+    if (!fecha) return null;
+    if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        const [anio, mes, dia] = fecha.split('-').map(Number);
+        return new Date(anio, mes - 1, dia);
+    }
+    const valor = fecha instanceof Date ? fecha : new Date(String(fecha).replace(' ', 'T'));
+    return Number.isNaN(valor.getTime()) ? null : valor;
+}
+
+function estadoInscripcion(torneo) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const apertura = fechaDeTorneo(torneo.Fecha_Inicio_Inscripcion);
+    const cierre = fechaDeTorneo(torneo.Fecha_fin_Inscripcion);
+    if (!apertura || !cierre) return 'Inscripción sin fechas';
+    apertura.setHours(0, 0, 0, 0);
+    cierre.setHours(23, 59, 59, 999);
+    if (hoy < apertura) return 'Inscripciones próximamente';
+    if (hoy <= cierre) return 'Inscripciones abiertas';
+    return 'Inscripciones cerradas';
+}
 
 const competidores = [
     { nombre: 'Teodor Zajder', pais: 'Poland', bandera: '/src/assets/home/poland-fleg.png', tiempo: '2.76', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
@@ -40,6 +54,34 @@ const estadisticas = [
 ];
 
 function Home() {
+    const [torneos, setTorneos] = useState([]);
+    const [cargandoTorneos, setCargandoTorneos] = useState(true);
+    const [errorTorneos, setErrorTorneos] = useState('');
+
+    useEffect(() => {
+        let activo = true;
+        axios.get('/torneos')
+            .then(({ data }) => {
+                if (!activo) return;
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                const proximos = (data.torneos ?? [])
+                    .map((torneo) => ({ ...torneo, fechaObjeto: fechaDeTorneo(torneo.fecha_Inicio) }))
+                    .filter((torneo) => torneo.fechaObjeto && torneo.fechaObjeto >= hoy)
+                    .sort((a, b) => a.fechaObjeto - b.fechaObjeto)
+                    .slice(0, 4);
+                setTorneos(proximos);
+            })
+            .catch((error) => {
+                if (activo) setErrorTorneos(error?.response?.data?.mensaje || 'No se pudieron cargar los torneos.');
+            })
+            .finally(() => { if (activo) setCargandoTorneos(false); });
+
+        return () => { activo = false; };
+    }, []);
+
+    const urlBackend = axios.defaults.baseURL.replace(/\/api\/?$/, '');
+
     return (
         <main className="home-page">
             <div className="home-contenido">
@@ -78,24 +120,31 @@ function Home() {
                         <a href="#torneos">Ver todos ⟶</a>
                     </div>
                     <div className="home-torneos-grid">
-                        {torneos.map((torneo) => (
-                            <article className="home-torneo-card" key={torneo.nombre}>
-                                <div className={`home-torneo-imagen ${torneo.estilo}`}>
-                                    <img className="home-torneo-foto" src={torneo.imagen} alt={`Sede del torneo ${torneo.nombre}`} />
-                                    <span className={`home-estado ${torneo.estado === 'Inscripciones abiertas' ? 'abiertas' : torneo.estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{torneo.estado}</span>
+                        {cargandoTorneos ? <p className="home-torneos-mensaje" role="status">Cargando torneos…</p>
+                            : errorTorneos ? <p className="home-torneos-mensaje" role="alert">{errorTorneos}</p>
+                            : torneos.length === 0 ? <p className="home-torneos-mensaje">Todavía no hay próximos torneos publicados.</p>
+                            : torneos.map((torneo) => {
+                                const fecha = torneo.fechaObjeto;
+                                const estado = estadoInscripcion(torneo);
+                                const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
+                                const imagen = torneo.pathImagen ? `${urlBackend}${torneo.pathImagen}` : cuboImagen;
+                                return <article className="home-torneo-card" key={torneo.idTorneo}>
+                                <div className="home-torneo-imagen">
+                                    <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
+                                    <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{estado}</span>
                                     <button className="home-torneo-btn-guardar"><img src={guardarIcon} alt="Guardar torneo"/></button>
                                 </div>
                                 <div className="home-torneo-info">
-                                    <div className="home-fecha"><strong>{torneo.fecha[0]}</strong><span>{torneo.fecha[1]}</span></div>
+                                    <div className="home-fecha"><strong>{fecha.toLocaleDateString('es-AR', { day: '2-digit' })}</strong><span>{fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase()}</span></div>
                                     <div className="home-torneo-detalle">
                                         <h3>{torneo.nombre}</h3>
-                                        <p> <img src={lugarIcon} alt="Lugar"/> {torneo.lugar}</p>
+                                        <p> <img src={lugarIcon} alt="Lugar"/> {lugar || torneo.Lugar_Venue || 'Ubicación a confirmar'}</p>
                                     </div>
-                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.competidores} cupos</span></div>
+                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.inscriptos}/{torneo.limite_participantes} inscriptos</span></div>
                                 </div>
                                 <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
-                            </article>
-                        ))}
+                            </article>;
+                            })}
                     </div>
                 </section>
 

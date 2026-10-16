@@ -255,6 +255,14 @@
     gap: 8px;
 }
 
+.home-torneos-mensaje {
+    grid-column: 1 / -1;
+    margin: 18px 10px;
+    color: #aebbd1;
+    font-size: 14px;
+    font-family: var(--font2);
+}
+
 .home-torneo-card {
     min-width: 0;
     overflow: hidden;
