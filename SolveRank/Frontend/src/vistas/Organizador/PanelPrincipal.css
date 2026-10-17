@@ -221,7 +221,7 @@
     white-space: nowrap;
 }
 
-.home-cubo-escena2 {
+.home-cubo-escena {
     position: absolute;
     top: 0;
     right: 0;
@@ -234,7 +234,7 @@
     pointer-events: none;
 }
 
-.home-cubo-escena2 img {
+.home-cubo-escena img {
     display: block;
     width: auto;
     height: 50%;
@@ -257,6 +257,14 @@
 
 .home-torneos {
     padding: 18px 10px 13px;
+}
+
+.panel-torneos-mensaje {
+    grid-column: 1 / -1;
+    margin: 18px 10px;
+    color: #aebbd1;
+    font-size: 14px;
+    font-family: var(--font2);
 }
 
 .home-section-heading {
@@ -468,12 +476,57 @@
     margin: 10px;
 }
 
+.home-torneo-link {
+    width: calc(100% - 20px);
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
 .home-torneo-link span {
     margin-left: 10px;
     padding-right: 7px;
     color: #7dabff;
     font-size: 17px;
     line-height: 1;
+}
+
+.home-torneo-mezclas-acciones {
+    margin: 0 10px 10px;
+}
+
+.home-torneo-mezclas-btn {
+    width: 100%;
+    min-height: 32px;
+    padding: 7px 10px;
+    border: 1px solid #3974d4;
+    border-radius: 5px;
+    background: #164c9f;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.home-torneo-mezclas-btn:hover:not(:disabled) {
+    background: #2364c2;
+}
+
+.home-torneo-mezclas-btn:disabled {
+    border-color: #26364f;
+    background: #17243a;
+    color: #8998ad;
+    cursor: not-allowed;
+}
+
+.home-torneo-mezclas-mensaje {
+    margin: 7px 2px 0;
+    color: #aeb9ca;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .panel-estadisticas {
@@ -552,7 +605,7 @@
         display: none;
     }
 
-    .home-cubo-escena2 {
+    .home-cubo-escena {
         top: -5%;
         right: -4%;
         bottom: auto;
@@ -561,7 +614,7 @@
         opacity: 0.82;
     }
 
-    .home-cubo-escena2 img {
+    .home-cubo-escena img {
         width: 100%;
         height: 100%;
         object-fit: cover;
