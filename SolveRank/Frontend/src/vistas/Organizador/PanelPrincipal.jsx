@@ -59,7 +59,7 @@ function PanelPrincipal({ usuario, onCrearTorneo }){
                             </div>
                         </div>
                     </div>
-                    <div className="home-cubo-escena">
+                    <div className="home-cubo-escena2">
                         <img src={cuboBanner} alt="Cubo de Rubik" />
                     </div>
                     <div className="panel-container2">
