@@ -263,6 +263,13 @@
     background: #081329;
 }
 
+.home-torneos-mensaje {
+    grid-column: 1 / -1;
+    margin: 8px 0;
+    color: #c0c8d7;
+    text-align: center;
+}
+
 .home-torneo-imagen {
     position: relative;
     height: 102px;
@@ -429,9 +436,14 @@
     margin: 10px;
 }
 
+.home-torneo-link {
+    border: 0;
+    cursor: pointer;
+}
+
 .home-torneo-link span {
     margin-left: 10px;
-    padding-right: 7px;
+    padding-right: 3px 70px;
     color: #7dabff;
     font-size: 17px;
     line-height: 1;

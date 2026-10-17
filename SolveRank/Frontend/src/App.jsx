@@ -7,6 +7,7 @@ import CompletarRegistro from './vistas/registro/CompletarRegistro.jsx'
 import Home from './vistas/home/Home.jsx'
 import PanelPrincipal from './vistas/Organizador/PanelPrincipal.jsx'
 import CreacionTorneo from './vistas/torneos/CreacionTorneo.jsx'
+import TorneoDetalle from './vistas/torneos/detalle/TorneoDetalle.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -15,6 +16,7 @@ function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
   const [vista, setVista] = useState('home')
   const [usuario, setUsuario] = useState(null)
+  const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
 
   // Recuperar la sesión al abrir o actualizar la página.
@@ -97,7 +99,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo'
+  const mostrarSitio = vista === 'home' || vista === 'detalle-torneo' || vista === 'panel-organizador' || vista === 'crear-torneo'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -124,7 +126,16 @@ function App() {
       )}
 
       {vista === 'home'
-        ? <Home />
+        ? <Home onVerTorneo={(torneo) => {
+            setTorneoSeleccionado(torneo)
+            setVista('detalle-torneo')
+          }} />
+        : vista === 'detalle-torneo'
+        ? <TorneoDetalle
+            torneo={torneoSeleccionado}
+            usuario={usuario}
+            onSalir={() => setVista('home')}
+          />
         : vista === 'panel-organizador'
         ? usuario?.rol === 'Organizador'
           ? <PanelPrincipal

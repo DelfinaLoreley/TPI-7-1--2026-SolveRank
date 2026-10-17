@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import './Home.css';
+import axios from '../../axiosApi';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
 import imagenUshuaia from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
 import imagenRioGrande from '/src/assets/home/cards-torneos/club_peon_peon.jfif';
@@ -12,17 +14,51 @@ import torneosIcon2 from '/src/assets/home/iconos/torneos-amarillo-icon.png';
 import calendarIcon from '/src/assets/home/iconos/Calendar.png';
 import guardarIcon from '/src/assets/home/iconos/guardado.png';
 import lugarIcon from '/src/assets/home/iconos/ubicacion-icon.png';
-import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
 import estadisticasIcon from '/src/assets/home/iconos/estadisticas.png';
 import cuboImg from '/src/assets/home/cubo-img-stat.png';
 
-const torneos = [
-    { nombre: 'Ushuaia Open 2027', fecha: ['18', 'SEP'], lugar: 'Ushuaia, Tierra Del Fuego, Argentina', categorias: 6, competidores: 40, estado: 'Inscripciones abiertas', estilo: 'ushuaia', imagen: imagenUshuaia },
-    { nombre: 'Río Grande TDF 2026', fecha: ['26', 'SEP'], lugar: 'Río Grande, Tierra Del Fuego, Argentina', categorias: 11, competidores: 30, estado: 'Inscripciones próximamente', estilo: 'rio-grande', imagen: imagenRioGrande },
-    { nombre: 'Chau Invierno En El Tella 2026', fecha: ['16', 'SEP'], lugar: 'Buenos Aires, Buenos Aires, Argentina', categorias: 12, competidores: 100, estado: 'Inscripciones cerradas', estilo: 'tella', imagen: imagenTella },
-    { nombre: 'MDQ Open 2026', fecha: ['23', 'OCT'], lugar: 'Mar del Plata, Buenos Aires, Argentina', categorias: 7, competidores: 40, estado: 'Inscripciones próximamente', estilo: 'mdq', imagen: imagenMdq },
-];
+const imagenesTorneos = [imagenUshuaia, imagenRioGrande, imagenTella, imagenMdq];
+
+function fechaLocal(fecha) {
+    if (!fecha) return null;
+    const partes = String(fecha).slice(0, 10).split('-').map(Number);
+    if (partes.length !== 3 || partes.some(Number.isNaN)) return null;
+    return new Date(partes[0], partes[1] - 1, partes[2]);
+}
+
+function fechaCorta(fecha) {
+    const valor = fechaLocal(fecha);
+    if (!valor) return ['—', ''];
+    return [
+        String(valor.getDate()).padStart(2, '0'),
+        valor.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase()
+    ];
+}
+
+function estadoInscripcion(torneo) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const apertura = fechaLocal(torneo.Fecha_Inicio_Inscripcion);
+    const cierre = fechaLocal(torneo.Fecha_fin_Inscripcion);
+    if (apertura && hoy < apertura) return 'Inscripciones próximamente';
+    if (cierre && hoy > cierre) return 'Inscripciones cerradas';
+    return 'Inscripciones abiertas';
+}
+
+function adaptarTorneo(torneo, indice) {
+    const fecha = fechaCorta(torneo.fecha_Inicio);
+    const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
+    return {
+        ...torneo,
+        fecha,
+        lugar: lugar || torneo.Lugar_Venue || 'Ubicación por confirmar',
+        competidores: Number(torneo.limite_participantes) || 0,
+        estado: estadoInscripcion(torneo),
+        estilo: `torneo-${indice % imagenesTorneos.length}`,
+        imagen: torneo.pathImagen || imagenesTorneos[indice % imagenesTorneos.length]
+    };
+}
 
 const competidores = [
     { nombre: 'Teodor Zajder', pais: 'Poland', bandera: '/src/assets/home/poland-fleg.png', tiempo: '2.76', avatar: '/src/assets/home/iconos/user-pfp-icon.png' },
@@ -39,7 +75,34 @@ const estadisticas = [
     { icono: '/src/assets/home/iconos/resultados-ic.png', valor: '181.222', texto: 'Resultados registrados', color: 'verde' },
 ];
 
-function Home() {
+function Home({ onVerTorneo }) {
+    const [torneos, setTorneos] = useState([]);
+    const [cargandoTorneos, setCargandoTorneos] = useState(true);
+    const [errorTorneos, setErrorTorneos] = useState('');
+
+    useEffect(() => {
+        let activo = true;
+
+        axios.get('/torneos')
+            .then(({ data }) => {
+                if (activo) {
+                    setTorneos((data.torneos || []).map(adaptarTorneo));
+                    setErrorTorneos('');
+                }
+            })
+            .catch((error) => {
+                console.error('No se pudieron cargar los torneos:', error);
+                if (activo) setErrorTorneos('No se pudieron cargar los torneos. Intentá nuevamente más tarde.');
+            })
+            .finally(() => {
+                if (activo) setCargandoTorneos(false);
+            });
+
+        return () => {
+            activo = false;
+        };
+    }, []);
+
     return (
         <main className="home-page">
             <div className="home-contenido">
@@ -78,8 +141,13 @@ function Home() {
                         <a href="#torneos">Ver todos ⟶</a>
                     </div>
                     <div className="home-torneos-grid">
+                        {cargandoTorneos && <p className="home-torneos-mensaje">Cargando torneos...</p>}
+                        {errorTorneos && <p className="home-torneos-mensaje" role="alert">{errorTorneos}</p>}
+                        {!cargandoTorneos && !errorTorneos && torneos.length === 0 && (
+                            <p className="home-torneos-mensaje">Todavía no hay torneos publicados.</p>
+                        )}
                         {torneos.map((torneo) => (
-                            <article className="home-torneo-card" key={torneo.nombre}>
+                            <article className="home-torneo-card" key={torneo.idTorneo}>
                                 <div className={`home-torneo-imagen ${torneo.estilo}`}>
                                     <img className="home-torneo-foto" src={torneo.imagen} alt={`Sede del torneo ${torneo.nombre}`} />
                                     <span className={`home-estado ${torneo.estado === 'Inscripciones abiertas' ? 'abiertas' : torneo.estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{torneo.estado}</span>
@@ -91,9 +159,11 @@ function Home() {
                                         <h3>{torneo.nombre}</h3>
                                         <p> <img src={lugarIcon} alt="Lugar"/> {torneo.lugar}</p>
                                     </div>
-                                    <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.competidores} cupos</span></div>
+                                    <div className="home-torneo-meta"><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.competidores} cupos</span></div>
                                 </div>
-                                <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
+                                <button className="home-torneo-link" type="button" onClick={() => onVerTorneo(torneo)}>
+                                    Ver torneo <span>⟶</span>
+                                </button>
                             </article>
                         ))}
                     </div>

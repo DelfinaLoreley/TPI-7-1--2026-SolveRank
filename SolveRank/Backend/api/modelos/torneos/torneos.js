@@ -81,6 +81,94 @@ router.get('/mis-torneos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), asy
     }
 });
 
+router.post('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMPETIDOR), async (req, res) => {
+    const idTorneo = Number(req.params.idTorneo);
+    if (!Number.isSafeInteger(idTorneo) || idTorneo <= 0) {
+        return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    }
+
+    let connection;
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
+
+        const [torneos] = await connection.execute(
+            `SELECT idTorneo, limite_participantes,
+                    Fecha_Inicio_Inscripcion <= CURDATE()
+                    AND Fecha_fin_Inscripcion >= CURDATE() AS inscripcionAbierta
+             FROM torneos
+             WHERE idTorneo = ?
+             FOR UPDATE`,
+            [idTorneo]
+        );
+        if (!torneos.length) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        }
+
+        const torneo = torneos[0];
+        if (!torneo.inscripcionAbierta) {
+            await connection.rollback();
+            return res.status(400).json({ mensaje: 'La inscripción a este torneo no está abierta' });
+        }
+
+        const [inscripcionesPrevias] = await connection.execute(
+            'SELECT 1 FROM usuarios_x_torneo WHERE idTorneo = ? AND idUsuario = ?',
+            [idTorneo, req.usuario.idUsuario]
+        );
+        if (inscripcionesPrevias.length) {
+            await connection.rollback();
+            return res.status(409).json({ mensaje: 'Ya estás inscripto en este torneo' });
+        }
+
+        const [conteos] = await connection.execute(
+            'SELECT COUNT(*) AS inscriptos FROM usuarios_x_torneo WHERE idTorneo = ?',
+            [idTorneo]
+        );
+        if (Number(conteos[0].inscriptos) >= Number(torneo.limite_participantes)) {
+            await connection.rollback();
+            return res.status(409).json({ mensaje: 'El torneo ya alcanzó su límite de participantes' });
+        }
+
+        await connection.execute(
+            'INSERT INTO usuarios_x_torneo (idTorneo, idUsuario) VALUES (?, ?)',
+            [idTorneo, req.usuario.idUsuario]
+        );
+        await connection.commit();
+        return res.status(201).json({ mensaje: 'La inscripción se confirmó correctamente' });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        console.error('Error al confirmar la inscripción al torneo:', error.message);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ mensaje: 'Ya estás inscripto en este torneo' });
+        }
+        return res.status(500).json({ mensaje: 'No se pudo confirmar la inscripción' });
+    } finally {
+        connection?.release();
+    }
+});
+
+router.delete('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMPETIDOR), async (req, res) => {
+    const idTorneo = Number(req.params.idTorneo);
+    if (!Number.isSafeInteger(idTorneo) || idTorneo <= 0) {
+        return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    }
+
+    try {
+        const [resultado] = await db.execute(
+            'DELETE FROM usuarios_x_torneo WHERE idTorneo = ? AND idUsuario = ?',
+            [idTorneo, req.usuario.idUsuario]
+        );
+        if (!resultado.affectedRows) {
+            return res.status(404).json({ mensaje: 'No tenés una inscripción para cancelar en este torneo' });
+        }
+        return res.json({ mensaje: 'La inscripción se canceló correctamente' });
+    } catch (error) {
+        console.error('Error al cancelar la inscripción al torneo:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo cancelar la inscripción' });
+    }
+});
+
 // Solo Organizador puede crear torneos y designar sus jueces/delegados.
 router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     const body = req.body || {};
