@@ -8,7 +8,7 @@
     --detalle-azul: #1678ff;
     --detalle-violeta: #5038ff;
     min-height: 100vh;
-    padding: 28px 14px 60px;
+    padding: 28px 14px 18px;
     background:
         radial-gradient(ellipse at 50% -10%, rgb(39 82 171 / 18%), transparent 45%),
         var(--detalle-fondo);
@@ -117,6 +117,20 @@
     background: #142442;
 }
 
+.tag-estado-evento {
+    background: #142442;
+}
+
+.tag-estado-evento-en-curso {
+    background: #15472d;
+    color: #83e6a6;
+}
+
+.tag-estado-evento-finalizado {
+    background: #3b2630;
+    color: #e9a8b5;
+}
+
 .torneo-detalle-btns {
     display: flex;
     flex-wrap: wrap;
@@ -164,8 +178,14 @@
     font-size: 12px;
 }
 
-.navbar-torneo-detalle span {
+.navbar-torneo-detalle span,
+.navbar-torneo-detalle button {
     padding: 0 5px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
 }
 
 .navbar-torneo-detalle .activo {

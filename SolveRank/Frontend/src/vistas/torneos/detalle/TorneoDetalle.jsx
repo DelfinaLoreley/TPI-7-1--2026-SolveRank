@@ -3,7 +3,10 @@ import calendarIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
 import ubicacionIcon from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import enVivoIcon from '/src/assets/torneos/en-vivo-icon.svg';
+import { useEffect, useState } from 'react';
 import Inscripcion from './Inscripcion.jsx';
+import TorneoGeneral from './TorneoGeneral.jsx';
+import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
 
 function fechaLegible(fecha) {
@@ -19,6 +22,14 @@ function fechaLegible(fecha) {
 
 function TorneoDetalle({ torneo, usuario, onSalir }) {
     const esCompetidor = usuario?.rol === 'Competidor';
+    const [seccionActiva, setSeccionActiva] = useState('general');
+
+    useEffect(() => {
+        if (seccionActiva === 'inscripcion') {
+            document.getElementById('seccion-inscripcion')?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [seccionActiva]);
+
     if (!torneo) return null;
 
     const inscriptos = Number(torneo.inscriptos) || 0;
@@ -26,6 +37,7 @@ function TorneoDetalle({ torneo, usuario, onSalir }) {
     const cuposRestantes = Math.max(limite - inscriptos, 0);
     const lugar = [torneo.ciudad, torneo.pais].filter(Boolean).join(', ') || torneo.Lugar_Venue || 'Ubicación por confirmar';
     const inscripcionesAbiertas = torneo.estado === 'Inscripciones abiertas';
+    const estado = estadoTorneo(torneo);
 
     return (
         <main className="torneo-detalle-page">
@@ -58,6 +70,7 @@ function TorneoDetalle({ torneo, usuario, onSalir }) {
                             <div className="torneo-detalle-tags">
                                 <span className={inscripcionesAbiertas ? 'tag-inscripciones' : 'tag-estado-torneo'}>{torneo.estado}</span>
                                 <span className="tag-cupos-restantes">Quedan {cuposRestantes} cupos</span>
+                                <span className={`tag-estado-evento tag-estado-evento-${estado.toLowerCase().replace(' ', '-')}`}>{estado}</span>
                             </div>
 
                             <div className="torneo-detalle-btns">
@@ -65,7 +78,7 @@ function TorneoDetalle({ torneo, usuario, onSalir }) {
                                     <button
                                         className="btn-inscribirme"
                                         type="button"
-                                        onClick={() => document.getElementById('seccion-inscripcion')?.scrollIntoView({ behavior: 'smooth' })}
+                                        onClick={() => setSeccionActiva('inscripcion')}
                                     >
                                         Inscribirme →
                                     </button>
@@ -77,15 +90,31 @@ function TorneoDetalle({ torneo, usuario, onSalir }) {
                 </header>
 
                 <div className="navbar-torneo-detalle">
-                        <span>General</span>
+                        <button
+                            className={seccionActiva === 'general' ? 'activo' : ''}
+                            type="button"
+                            onClick={() => setSeccionActiva('general')}
+                        >
+                            General
+                        </button>
                         <span>Categorías</span>
                         <span>Cronograma</span>
-                        {esCompetidor && <span className="activo">Inscripción</span>}
+                        {esCompetidor && (
+                            <button
+                                className={seccionActiva === 'inscripcion' ? 'activo' : ''}
+                                type="button"
+                                onClick={() => setSeccionActiva('inscripcion')}
+                            >
+                                Inscripción
+                            </button>
+                        )}
                         <span>Competidores</span>
                         <span>Importante</span>
                 </div>
 
-                {esCompetidor && (
+                {seccionActiva === 'general' && <TorneoGeneral torneo={torneo} />}
+
+                {esCompetidor && seccionActiva === 'inscripcion' && (
                     <div id="seccion-inscripcion">
                         <Inscripcion torneo={torneo} />
                     </div>

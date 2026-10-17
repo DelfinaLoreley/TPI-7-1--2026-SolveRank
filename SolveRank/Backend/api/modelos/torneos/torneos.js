@@ -39,11 +39,28 @@ router.get('/', async (req, res) => {
                     t.Fecha_fin_Inscripcion, t.limite_participantes,
                     t.pathImagen, t.Lugar_Venue, t.direccion,
                     p.pais, pr.provincia, c.ciudad,
+                    t.Contacto_Organizador,
+                    MAX(CONCAT_WS(' ', NULLIF(TRIM(o.Nombre), ''), NULLIF(TRIM(o.apellido), ''))) AS organizador,
+                    (SELECT GROUP_CONCAT(
+                        CONCAT_WS(' ', NULLIF(TRIM(j.Nombre), ''), NULLIF(TRIM(j.apellido), ''))
+                        ORDER BY j.Nombre, j.apellido SEPARATOR ', '
+                     )
+                     FROM jueces_x_torneo jt
+                     INNER JOIN usuarios j ON j.idUsuario = jt.idUsuario
+                     WHERE jt.idTorneo = t.idTorneo) AS jueces,
+                    (SELECT GROUP_CONCAT(
+                        CONCAT_WS(' ', NULLIF(TRIM(d.Nombre), ''), NULLIF(TRIM(d.apellido), ''))
+                        ORDER BY d.Nombre, d.apellido SEPARATOR ', '
+                     )
+                     FROM delegados_X_torneo dt
+                     INNER JOIN usuarios d ON d.idUsuario = dt.idUsuario
+                     WHERE dt.idtorneo = t.idTorneo) AS delegados,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos
              FROM torneos t
              LEFT JOIN paises p ON p.idPais = t.idPais
              LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
              LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
+             LEFT JOIN usuarios o ON o.idUsuario = t.idUsuario
              LEFT JOIN usuarios_x_torneo ux ON ux.idTorneo = t.idTorneo
              GROUP BY t.idTorneo
              ORDER BY t.fecha_Inicio`
