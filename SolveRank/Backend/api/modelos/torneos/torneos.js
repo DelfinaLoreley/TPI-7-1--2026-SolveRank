@@ -50,6 +50,263 @@ async function usuariosConRol(connection, ids, rol) {
     return usuarios.length === ids.length;
 }
 
+function idValido(valor) {
+    const id = Number(valor);
+    return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+async function verificarAccesoResultados(connection, usuario, idTorneo) {
+    const [torneos] = await connection.execute(
+        `SELECT idTorneo, idUsuario AS idOrganizador,
+                (CURDATE() BETWEEN DATE(fecha_Inicio) AND DATE(fecha_fin)) AS enCurso
+         FROM torneos WHERE idTorneo = ?`,
+        [idTorneo]
+    );
+    if (!torneos.length) return { estado: 'no-encontrado' };
+    const torneo = torneos[0];
+    if (!Boolean(torneo.enCurso)) return { estado: 'fuera-de-fecha' };
+
+    if (usuario.rol === ROLES.ORGANIZADOR && Number(torneo.idOrganizador) === Number(usuario.idUsuario)) {
+        return { estado: 'autorizado', torneo };
+    }
+    if (usuario.rol === ROLES.DELEGADO) {
+        const [designaciones] = await connection.execute(
+            'SELECT 1 FROM delegados_X_torneo WHERE idtorneo = ? AND idUsuario = ? LIMIT 1',
+            [idTorneo, usuario.idUsuario]
+        );
+        if (designaciones.length) return { estado: 'autorizado', torneo };
+    }
+    return { estado: 'sin-permiso' };
+}
+
+function normalizarIntento(valor) {
+    if (typeof valor !== 'string') return null;
+    const texto = valor.trim().toUpperCase();
+    if (!texto) return { tiempo: null, penalizacion: null };
+    if (texto === 'DNF' || texto === 'DNS') return { tiempo: null, penalizacion: texto };
+    const coincidencia = texto.match(/^(?:(\d{1,2}):)?([0-5]?\d)\.(\d{1,3})(\+2)?$/);
+    if (!coincidencia) return null;
+    const minutos = Number(coincidencia[1] || 0);
+    const segundos = Number(coincidencia[2]);
+    const fraccion = coincidencia[3].padEnd(3, '0');
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+    const tiempo = `${String(horas).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}:${String(segundos).padStart(2, '0')}.${fraccion}`;
+    return { tiempo, penalizacion: coincidencia[4] ? '+2' : null };
+}
+
+function resultadosValidos(intentos, cantidadEsperada) {
+    if (!Number.isInteger(cantidadEsperada) || cantidadEsperada <= 0
+        || !Array.isArray(intentos) || intentos.length !== cantidadEsperada) return null;
+    const intentosNormalizados = intentos.map(normalizarIntento);
+    if (intentosNormalizados.some((intento) => intento === null || (!intento.tiempo && !intento.penalizacion))) return null;
+    return intentosNormalizados;
+}
+
+function tiempoLegible(tiempo) {
+    if (!tiempo) return '';
+    const [horas, minutos, segundos] = String(tiempo).split(':');
+    const [segundo, fraccion = '00'] = String(segundos).split('.');
+    const totalMinutos = Number(horas) * 60 + Number(minutos);
+    const decimales = fraccion.padEnd(2, '0').replace(/0+$/, '').padEnd(2, '0');
+    const parteSegundos = `${String(Number(segundo)).padStart(2, '0')}.${decimales}`;
+    return totalMinutos
+        ? `${String(totalMinutos).padStart(2, '0')}:${parteSegundos}`
+        : parteSegundos;
+}
+
+router.get('/:idTorneo/resultados/acceso', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        const acceso = await verificarAccesoResultados(db, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        if (acceso.estado === 'fuera-de-fecha') return res.status(403).json({ mensaje: 'La carga de resultados solo está disponible durante las fechas del torneo' });
+        if (acceso.estado !== 'autorizado') return res.status(403).json({ mensaje: 'No tenés permisos para cargar resultados en este torneo' });
+
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.tiempoLimite, f.formato, f.cantidad_Solves AS cantidadIntentos,
+                    (SELECT COUNT(DISTINCT ci.idUsuario)
+                     FROM categorias_x_inscripcion ci
+                     WHERE ci.idTorneo = rct.idTorneo AND ci.idCategoria = rct.idCategoria) AS totalCompetidores,
+                    (SELECT COUNT(DISTINCT i.idUsuario)
+                     FROM intentos_x_competidor i
+                     WHERE i.idTorneo = rct.idTorneo AND i.idRonda = rct.idRonda) AS competidoresConResultados,
+                    (SELECT cx.hora_inicio
+                     FROM cronograma_x_torneo cx
+                     WHERE cx.idtorneo = rct.idTorneo AND cx.idronda = rct.idRonda
+                     ORDER BY cx.hora_inicio LIMIT 1) AS horaInicio,
+                    (SELECT cx.hora_fin
+                     FROM cronograma_x_torneo cx
+                     WHERE cx.idtorneo = rct.idTorneo AND cx.idronda = rct.idRonda
+                     ORDER BY cx.hora_inicio LIMIT 1) AS horaFin
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ?
+             ORDER BY c.categoria, rct.idRonda`,
+            [idTorneo]
+        );
+        return res.json({ torneo: acceso.torneo, rondas });
+    } catch (error) {
+        console.error('Error al consultar acceso a carga de resultados:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo consultar el acceso a resultados' });
+    }
+});
+
+router.get('/:idTorneo/resultados/rondas/:idRonda', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    const idRonda = idValido(req.params.idRonda);
+    if (!idTorneo || !idRonda) return res.status(400).json({ mensaje: 'El torneo o la ronda indicados no son válidos' });
+    try {
+        const acceso = await verificarAccesoResultados(db, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        if (acceso.estado === 'fuera-de-fecha') return res.status(403).json({ mensaje: 'La consulta de resultados solo está disponible durante las fechas del torneo' });
+        if (acceso.estado !== 'autorizado') return res.status(403).json({ mensaje: 'No tenés permisos para consultar resultados de este torneo' });
+
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.tiempoLimite, f.formato, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ? AND rct.idRonda = ?`,
+            [idTorneo, idRonda]
+        );
+        if (!rondas.length) return res.status(404).json({ mensaje: 'La ronda no pertenece a este torneo' });
+
+        const [competidores] = await db.execute(
+            `SELECT u.idUsuario, u.wcaid, CONCAT_WS(' ', u.Nombre, u.apellido) AS nombre,
+                    p.pais, COUNT(DISTINCT ci.idCategoria) AS categorias
+             FROM usuarios_x_torneo ux
+             INNER JOIN usuarios u ON u.idUsuario = ux.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idUsuario = ux.idUsuario AND ci.idTorneo = ux.idTorneo
+             WHERE ux.idTorneo = ? AND ci.idCategoria = ?
+             GROUP BY u.idUsuario, u.wcaid, u.Nombre, u.apellido, p.pais
+             ORDER BY nombre`,
+            [idTorneo, rondas[0].idCategoria]
+        );
+        const [intentos] = await db.execute(
+            `SELECT id, idUsuario, tiempo, penalizacion
+             FROM intentos_x_competidor
+             WHERE idTorneo = ? AND idRonda = ?
+             ORDER BY idUsuario, id`,
+            [idTorneo, idRonda]
+        );
+        const resultadosPorUsuario = new Map();
+        for (const competidor of competidores) resultadosPorUsuario.set(Number(competidor.idUsuario), { intentos: [] });
+        for (const intento of intentos) {
+            const resultado = resultadosPorUsuario.get(Number(intento.idUsuario));
+            if (!resultado) continue;
+            resultado.intentos.push(['DNF', 'DNS'].includes(String(intento.penalizacion).toUpperCase())
+                ? String(intento.penalizacion).toUpperCase()
+                : `${tiempoLegible(intento.tiempo)}${intento.penalizacion === '+2' ? '+2' : ''}`);
+        }
+        const competidoresConResultados = competidores.map((competidor) => ({
+            ...competidor,
+            ...(resultadosPorUsuario.get(Number(competidor.idUsuario)) || { intentos: [] }),
+        }));
+        return res.json({ ronda: rondas[0], competidores: competidoresConResultados });
+    } catch (error) {
+        console.error('Error al obtener resultados de la ronda:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener los resultados de la ronda' });
+    }
+});
+
+router.post('/:idTorneo/resultados/rondas/:idRonda', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    const idRonda = idValido(req.params.idRonda);
+    const idUsuario = idValido(req.body?.idUsuario);
+    if (!idTorneo || !idRonda || !idUsuario) return res.status(400).json({ mensaje: 'El torneo, la ronda o el competidor no son válidos' });
+    if (!Array.isArray(req.body?.intentos)) return res.status(400).json({ mensaje: 'Ingresá los intentos según el formato configurado para la ronda' });
+
+    let connection;
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
+        const acceso = await verificarAccesoResultados(connection, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        }
+        if (acceso.estado === 'fuera-de-fecha') {
+            await connection.rollback();
+            return res.status(403).json({ mensaje: 'La carga de resultados solo está disponible durante las fechas del torneo' });
+        }
+        if (acceso.estado !== 'autorizado') {
+            await connection.rollback();
+            return res.status(403).json({ mensaje: 'No tenés permisos para cargar resultados en este torneo' });
+        }
+
+        const [rondas] = await connection.execute(
+            `SELECT rct.idCategoria, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ? AND rct.idRonda = ?`,
+            [idTorneo, idRonda]
+        );
+        if (!rondas.length) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'La ronda no pertenece a este torneo' });
+        }
+        const cantidadIntentos = Number(rondas[0].cantidadIntentos);
+        if (!Number.isInteger(cantidadIntentos) || cantidadIntentos <= 0) {
+            await connection.rollback();
+            return res.status(409).json({ mensaje: 'La categoría de esta ronda no tiene un formato configurado' });
+        }
+        const resultados = resultadosValidos(req.body.intentos, cantidadIntentos);
+        if (!resultados) {
+            await connection.rollback();
+            return res.status(400).json({ mensaje: 'Completá todos los intentos del formato configurado con MM:SS.CC, +2, DNF o DNS' });
+        }
+        const [inscripciones] = await connection.execute(
+            `SELECT 1 FROM usuarios_x_torneo ux
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idUsuario = ux.idUsuario AND ci.idTorneo = ux.idTorneo
+             WHERE ux.idTorneo = ? AND ux.idUsuario = ? AND ci.idCategoria = ?
+             LIMIT 1`,
+            [idTorneo, idUsuario, rondas[0].idCategoria]
+        );
+        if (!inscripciones.length) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'El competidor no está inscripto en esta categoría' });
+        }
+
+        await connection.execute(
+            'DELETE FROM intentos_x_competidor WHERE idTorneo = ? AND idRonda = ? AND idUsuario = ?',
+            [idTorneo, idRonda, idUsuario]
+        );
+        const insertarIntento = async (intento) => {
+            await connection.execute(
+                `INSERT INTO intentos_x_competidor
+                    (idTorneo, idRonda, idUsuario, tiempo, penalizacion)
+                 VALUES (?, ?, ?, ?, ?)`,
+                [idTorneo, idRonda, idUsuario, intento.tiempo || '00:00:00.00', intento.penalizacion]
+            );
+        };
+        for (const intento of resultados) await insertarIntento(intento);
+        await connection.commit();
+        return res.json({ mensaje: 'Se guardaron los resultados del competidor' });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        console.error('Error al guardar resultados de competidor:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron guardar los resultados' });
+    } finally {
+        connection?.release();
+    }
+});
+
 // Listado público de torneos.
 router.get('/categorias', async (req, res) => {
     try {
@@ -72,7 +329,7 @@ router.get('/ranking/:idCategoria', async (req, res) => {
             `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.avatar_url,
                     p.pais,
                     MIN(CASE
-                        WHEN UPPER(COALESCE(i.penalizacion, '')) LIKE '%DNF%' THEN NULL
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('DNF', 'DNS') THEN NULL
                         WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2') THEN TIME_TO_SEC(i.tiempo) + 2
                         ELSE TIME_TO_SEC(i.tiempo)
                     END) AS mejorTiempo

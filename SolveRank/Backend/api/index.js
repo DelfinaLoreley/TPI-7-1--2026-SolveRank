@@ -4,7 +4,7 @@ const db = require('./config/db/conexion');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { PORT } = process.env;
+const PORT = Number(process.env.PORT) || 3000;
 const cookieParser = require('cookie-parser');
 const app = express();
 app.use(express.json({ limit: '8mb' }));

@@ -6,6 +6,8 @@ import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-ic
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
 import MezclasTorneo from './MezclasTorneo.jsx';
+import CargaResultadosTorneo from './CargaResultadosTorneo.jsx';
+import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
 import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
 
@@ -33,6 +35,9 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const [error, setError] = useState('');
     const [seccionActiva, setSeccionActiva] = useState('general');
     const [puedeVerMezclas, setPuedeVerMezclas] = useState(false);
+    const [accesoResultados, setAccesoResultados] = useState(null);
+    const [errorAccesoResultados, setErrorAccesoResultados] = useState('');
+    const [rondaSeleccionada, setRondaSeleccionada] = useState('');
 
     useEffect(() => {
         let activo = true;
@@ -54,6 +59,40 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
             .catch(() => { if (activo) setPuedeVerMezclas(false); });
         return () => { activo = false; };
     }, [idTorneo, usuario?.rol]);
+
+    useEffect(() => {
+        let activo = true;
+        if (!['Organizador', 'Delegado'].includes(usuario?.rol)) {
+            return () => { activo = false; };
+        }
+        axios.get(`/torneos/${idTorneo}/resultados/acceso`)
+            .then(({ data }) => {
+                if (activo) {
+                    setAccesoResultados({
+                        idTorneo: String(idTorneo),
+                        idUsuario: String(usuario.idUsuario),
+                        permitido: true,
+                        rondas: data.rondas ?? [],
+                    });
+                    setErrorAccesoResultados('');
+                }
+            })
+            .catch((err) => {
+                if (!activo) return;
+                setAccesoResultados({
+                    idTorneo: String(idTorneo),
+                    idUsuario: String(usuario.idUsuario),
+                    permitido: false,
+                    rondas: [],
+                });
+                if (err?.response?.status !== 403) {
+                    setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudo consultar el acceso a la carga de resultados.');
+                } else {
+                    setErrorAccesoResultados('');
+                }
+            });
+        return () => { activo = false; };
+    }, [idTorneo, usuario?.idUsuario, usuario?.rol]);
 
     const categorias = useMemo(() => {
         const unicas = new Map();
@@ -80,6 +119,10 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const limite = Number(torneo.limite_participantes) || 0;
     const cuposRestantes = Math.max(limite - (Number(torneo.inscriptos) || 0), 0);
     const estado = estadoTorneo(torneo);
+    const resultadosAutorizados = ['Organizador', 'Delegado'].includes(usuario?.rol)
+        && accesoResultados?.idTorneo === String(idTorneo)
+        && accesoResultados?.idUsuario === String(usuario?.idUsuario)
+        && accesoResultados.permitido;
     const estadoRegistro = estadoInscripcion(torneo);
     const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ') || torneo.Lugar_Venue || 'Ubicación por confirmar';
     const puedeInscribirse = ['Competidor', 'Juez'].includes(usuario?.rol);
@@ -88,9 +131,38 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         ['categorias', 'Categorías'],
         ...(puedeVerMezclas ? [['mezclas', 'Mezclas']] : []),
         ['cronograma', 'Cronograma'],
+        ...(resultadosAutorizados ? [['resultados', 'Resultados']] : []),
         ['importante', 'Información importante'],
         ...(puedeInscribirse ? [['inscripcion', 'Inscripción']] : [])
     ];
+
+    async function volverPanelResultados() {
+        setRondaSeleccionada('');
+        try {
+            const { data } = await axios.get(`/torneos/${idTorneo}/resultados/acceso`);
+            setAccesoResultados({
+                idTorneo: String(idTorneo),
+                idUsuario: String(usuario.idUsuario),
+                permitido: true,
+                rondas: data.rondas ?? [],
+            });
+            setErrorAccesoResultados('');
+        } catch (err) {
+            setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudo actualizar el estado de las rondas.');
+        }
+    }
+
+    if (seccionActiva === 'resultados' && resultadosAutorizados && rondaSeleccionada) {
+        return (
+            <CargaResultadosTorneo
+                idTorneo={idTorneo}
+                torneo={torneo}
+                rondas={accesoResultados.rondas}
+                rondaSeleccionada={rondaSeleccionada}
+                onVolver={volverPanelResultados}
+            />
+        );
+    }
 
     return (
         <main className="torneo-detalle-page">
@@ -126,11 +198,18 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
                 <nav className="navbar-torneo-detalle" aria-label="Secciones del torneo">
                     {secciones.map(([id, etiqueta]) => (
-                        <button className={seccionActiva === id ? 'activo' : ''} type="button" key={id} onClick={() => setSeccionActiva(id)}>
+                        <button className={seccionActiva === id ? 'activo' : ''} type="button" key={id} onClick={() => {
+                            setSeccionActiva(id);
+                            setRondaSeleccionada('');
+                        }}>
                             {etiqueta}
                         </button>
                     ))}
                 </nav>
+
+                {errorAccesoResultados && ['Organizador', 'Delegado'].includes(usuario?.rol) && (
+                    <p role="alert">{errorAccesoResultados}</p>
+                )}
 
                 {seccionActiva === 'general' && <TorneoGeneral torneo={torneo} />}
 
@@ -152,6 +231,15 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 )}
 
                 {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} />}
+
+                {seccionActiva === 'resultados' && resultadosAutorizados && (
+                    <PanelResultadosTorneo
+                        torneo={torneo}
+                        rondas={accesoResultados.rondas}
+                        cronograma={detalle.cronograma ?? []}
+                        onSeleccionarRonda={(idRonda) => setRondaSeleccionada(String(idRonda))}
+                    />
+                )}
 
                 {seccionActiva === 'cronograma' && (
                     <section className="torneo-detalle-contenido">
