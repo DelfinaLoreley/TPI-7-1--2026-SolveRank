@@ -221,7 +221,7 @@
     white-space: nowrap;
 }
 
-.home-cubo-escena {
+.home-cubo-escena2 {
     position: absolute;
     top: 0;
     right: 0;
@@ -234,7 +234,7 @@
     pointer-events: none;
 }
 
-.home-cubo-escena img {
+.home-cubo-escena2 img {
     display: block;
     width: auto;
     height: 50%;
@@ -605,7 +605,7 @@
         display: none;
     }
 
-    .home-cubo-escena {
+    .home-cubo-escena2 {
         top: -5%;
         right: -4%;
         bottom: auto;
@@ -614,7 +614,7 @@
         opacity: 0.82;
     }
 
-    .home-cubo-escena img {
+    .home-cubo-escena2 img {
         width: 100%;
         height: 100%;
         object-fit: cover;
