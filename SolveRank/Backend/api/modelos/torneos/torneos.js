@@ -406,6 +406,7 @@ router.get('/mis-torneos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), asy
                     COUNT(DISTINCT cxt.idCategoria) AS categorias,
                     COUNT(DISTINCT rct.idRonda) AS rondasTotales,
                     COUNT(DISTINCT CASE WHEN m.id IS NOT NULL THEN rct.idRonda END) AS rondasConMezclas
+                    COUNT(DISTINCT cxt.idCategoria) AS categorias
              FROM torneos t
              LEFT JOIN paises p ON p.idPais = t.idPais
              LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia

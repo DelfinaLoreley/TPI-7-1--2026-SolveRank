@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import { PasoCategorias } from './pasos/PasoCategorias';
 import { PasoCronograma } from './pasos/PasoCronograma';
@@ -6,8 +6,9 @@ import { PasoInformacion } from './pasos/PasoInformacion';
 import { PasoInscripcion } from './pasos/PasoInscripcion';
 import { PasoRevision } from './pasos/PasoRevision';
 import { PasoRondas } from './pasos/PasoRondas';
-import { categoriasDisponibles } from './pasos/datosCategorias';
+import { categorias as categoriasBase } from './pasos/datosCategorias';
 import { generarCronograma } from './pasos/generarCronograma';
+import axios from '../../axiosApi';
 import './CreacionTorneo.css';
 
 const pasos = [
@@ -77,26 +78,55 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
     const [mensaje, setMensaje] = useState('');
     const [enviando, setEnviando] = useState(false);
     const [imagen, setImagen] = useState(null);
+    const [catalogos, setCatalogos] = useState({ paises: [], provincias: [], ciudades: [], categorias: [], formatos: [], jueces: [], delegados: [] });
+    const [cargandoCatalogos, setCargandoCatalogos] = useState(true);
+    const [errorCatalogos, setErrorCatalogos] = useState('');
+    useEffect(() => {
+        let activo = true;
+        axios.get('/torneos/catalogos').then(({ data }) => { if (activo) setCatalogos(data); })
+            .catch((error) => { if (activo) setErrorCatalogos(error?.response?.data?.mensaje || 'No se pudieron cargar los datos del torneo.'); })
+            .finally(() => { if (activo) setCargandoCatalogos(false); });
+        return () => { activo = false; };
+    }, []);
+    const categoriasVista = catalogos.categorias.map((categoria) => {
+        const base = categoriasBase.find((item) => item.id.toLowerCase() === categoria.categoria.toLowerCase() || item.etiqueta.toLowerCase() === categoria.categoria.toLowerCase());
+        return { id: String(categoria.idCategoria), etiqueta: categoria.categoria, icono: base?.icono };
+    });
     const cronograma = generarCronograma(
         formulario.fechaInicio,
         formulario.categorias,
-        formulario.rondas
+        formulario.rondas,
+        categoriasVista
     );
 
     function manejarCambio(event) {
         const { name, value } = event.target;
-        setFormulario((actual) => ({ ...actual, [name]: value }));
+        setFormulario((actual) => ({ ...actual, [name]: value,
+            ...(name === 'pais' ? { provincia: '', ciudad: '' } : {}),
+            ...(name === 'provincia' ? { ciudad: '' } : {}) }));
         setErrores((actuales) => ({ ...actuales, [name]: '' }));
         setMensaje('');
     }
 
     function manejarCambioImagen(event) {
-        setImagen(event.target.files?.[0] || null);
+        const archivo = event.target.files?.[0] || null;
+        if (archivo && !['image/jpeg', 'image/png'].includes(archivo.type)) {
+            setMensaje('La imagen debe estar en formato JPG o PNG.');
+            event.target.value = '';
+            return;
+        }
+        if (archivo && archivo.size > 5 * 1024 * 1024) {
+            setMensaje('La imagen no puede superar los 5 MB.');
+            event.target.value = '';
+            return;
+        }
+        setImagen(archivo);
+        setMensaje('');
         setMensaje('');
     }
 
     function agregarPersona(nombre) {
-        const valor = formulario[nombre].trim();
+        const valor = formulario[nombre];
         const campoSeleccionados = `${nombre}Seleccionados`;
         if (!valor || formulario[campoSeleccionados].includes(valor)) return;
         setFormulario((actual) => ({
@@ -125,12 +155,61 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
     }
 
     function seleccionarTodasLasCategorias() {
-        setFormulario((actual) => ({ ...actual, categorias: categoriasDisponibles }));
+        setFormulario((actual) => ({ ...actual, categorias: categoriasVista.map(({ id }) => id) }));
         setErrores((actuales) => ({ ...actuales, categorias: '' }));
     }
 
     function deseleccionarTodasLasCategorias() {
         setFormulario((actual) => ({ ...actual, categorias: [] }));
+    }
+
+    async function publicar() {
+        if (!onPublicar) return;
+        setEnviando(true);
+        setMensaje('');
+        try {
+            const sqlDateTime = (value) => value ? `${value.replace('T', ' ')}:00` : '';
+            const formatos = {};
+            const rondas = {};
+            formulario.categorias.forEach((id) => {
+                const config = formulario.rondas[id] || {};
+                const formato = catalogos.formatos.find((item) => item.formato.toUpperCase() === String(config.formato || 'AO5').toUpperCase()) || catalogos.formatos[0];
+                if (formato) formatos[id] = formato.idFormato;
+                rondas[id] = Array.from({ length: Math.max(1, Number(config.cantidad) || 3) }, (_, index) => {
+                    const detalle = config.rondas?.[String(index + 1)] || {};
+                    const parseTime = (value, fallback) => {
+                        const match = String(value || '').match(/^(\d{1,2}):(\d{2})(?:\.\d+)?$/);
+                        return match ? `00:${match[1].padStart(2, '0')}:${match[2]}` : fallback;
+                    };
+                    return { nombre: `Ronda ${index + 1}`, cutoff: parseTime(detalle.cutoff, '00:00:00'), tiempoLimite: parseTime(detalle.limite, '00:10:00'), porcentajeAvance: Math.max(0, Math.min(100, parseInt(detalle.avance, 10) || 0)) };
+                });
+            });
+            const toSqlTime = (value) => `${value.slice(0, 5)}:00`;
+            const cronogramaApi = cronograma.filter((item) => /Ronda \d+|Final/.test(item.nombre)).map((item) => {
+                const categoria = formulario.categorias.find((id) => item.nombre.startsWith(categoriasVista.find((c) => c.id === id)?.etiqueta || '\u0000')) || formulario.categorias[0];
+                const numero = Number(item.nombre.match(/Ronda (\d+)/)?.[1]) || rondas[categoria]?.length || 1;
+                return { idCategoria: Number(categoria), ronda: `Ronda ${numero}`, evento: item.nombre, horaInicio: toSqlTime(item.comienzo), horaFin: toSqlTime(item.fin) };
+            });
+            const imagenData = imagen ? await new Promise((resolve, reject) => {
+                const lector = new FileReader();
+                lector.onload = () => resolve(lector.result);
+                lector.onerror = () => reject(new Error('No se pudo leer la imagen seleccionada'));
+                lector.readAsDataURL(imagen);
+            }) : null;
+            await onPublicar({
+                idPais: Number(formulario.pais), idProvicncia: Number(formulario.provincia), idCiudad: Number(formulario.ciudad),
+                fecha_Inicio: sqlDateTime(formulario.fechaInicio), fecha_fin: sqlDateTime(formulario.fechaFin),
+                Fecha_Inicio_Inscripcion: formulario.aperturaInscripcion, Fecha_fin_Inscripcion: formulario.cierreInscripcion,
+                nombre: formulario.nombre.trim(), Contacto_Organizador: formulario.contacto.trim() || usuario?.email || 'Contacto pendiente',
+                descripcion: formulario.descripcion, Lugar_Venue: formulario.sede, direccion: formulario.direccion,
+                limite_participantes: Number(formulario.cupoMaximo),
+                imagenBase64: imagenData,
+                jueces: formulario.juecesSeleccionados.map(Number), delegados: formulario.delegadosSeleccionados.map(Number),
+                categorias: formulario.categorias.map(Number), formatos, rondas, cronograma: cronogramaApi
+            });
+        } catch (error) {
+            setMensaje(error?.response?.data?.mensaje || 'No se pudo publicar el torneo. Revisá los datos e intentá nuevamente.');
+        } finally { setEnviando(false); }
     }
 
     function cambiarConfiguracionRonda(categoria, configuracion) {
@@ -199,32 +278,6 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
         setPasoActual((actual) => Math.max(actual - 1, 0));
     }
 
-    async function publicar() {
-        if (!onPublicar) {
-            setMensaje('La maqueta está lista para conectar con la acción de publicación del backend.');
-            return;
-        }
-
-        setEnviando(true);
-        setMensaje('');
-        try {
-            await onPublicar({
-                ...formulario,
-                imagen,
-                cronograma,
-                cupoMaximo: Number(formulario.cupoMaximo)
-            });
-        } catch (error) {
-            console.error('No se pudo publicar el torneo:', error);
-            setMensaje(
-                error?.response?.data?.mensaje ||
-                'No se pudo publicar el torneo. Revisá los datos e intentá nuevamente.'
-            );
-        } finally {
-            setEnviando(false);
-        }
-    }
-
     function renderizarPaso() {
         switch (pasoActual) {
             case 0:
@@ -241,6 +294,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                                     error={errores}
                                     organizador={nombreOrganizador}
                                     imagen={imagen}
+                                    catalogos={catalogos}
                                 />
                             </div>
                             {mensaje && <p className="creacion-mensaje" role="status">{mensaje}</p>}
@@ -255,6 +309,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                     <section className="creacion-panel" aria-labelledby="creacion-paso-titulo">
                         <div id="creacion-paso-titulo">
                             <PasoCategorias
+                                catalogo={categoriasVista}
                                 seleccionadas={formulario.categorias}
                                 onAlternarCategoria={alternarCategoria}
                                 onSeleccionarTodas={seleccionarTodasLasCategorias}
@@ -273,6 +328,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                                 categorias={formulario.categorias}
                                 configuraciones={formulario.rondas}
                                 onCambioConfiguracion={cambiarConfiguracionRonda}
+                                catalogo={categoriasVista}
                             />
                         </div>
                         {mensaje && <p className="creacion-mensaje" role="status">{mensaje}</p>}
@@ -292,7 +348,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                 return (
                     <section className="creacion-panel" aria-labelledby="creacion-paso-titulo">
                         <div id="creacion-paso-titulo">
-                            <PasoRevision formulario={formulario} cronograma={cronograma} />
+                        <PasoRevision formulario={formulario} cronograma={cronograma} catalogo={categoriasVista} />
                         </div>
                         {mensaje && <p className="creacion-mensaje" role="status">{mensaje}</p>}
                     </section>
@@ -325,7 +381,10 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                     }}
                 />
 
-                {renderizarPaso()}
+                {errorCatalogos && <p className="creacion-error" role="alert">{errorCatalogos}</p>}
+                {cargandoCatalogos && <p className="creacion-nota" role="status">Cargando catálogos…</p>}
+
+                {!cargandoCatalogos && !errorCatalogos && renderizarPaso()}
 
                 <footer className="creacion-acciones">
                     <button
@@ -338,7 +397,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                     </button>
                     <span className="creacion-guardado">Los datos se mantienen mientras completás el formulario.</span>
                     {pasoActual < pasos.length - 1 ? (
-                        <button className="creacion-boton-primario" type="button" onClick={avanzar}>
+                        <button className="creacion-boton-primario" type="button" onClick={avanzar} disabled={cargandoCatalogos || !!errorCatalogos}>
                             Siguiente <span aria-hidden="true">→</span>
                         </button>
                     ) : (

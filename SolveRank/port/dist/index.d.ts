@@ -1,0 +1,11 @@
+import type { ExportOptions, GenerateOptions, RenderOptions } from './core/types.js';
+export { TNoodle } from './client.js';
+export { TNoodleError, type ErrorCode } from './core/errors.js';
+export { EVENTS, isEventId, type EventId, type PuzzleId } from './events/catalog.js';
+export { ENGINE, LIMITS } from './core/types.js';
+export type { ClientOptions, ExportOptions, GenerateOptions, RenderOptions, Scramble, ScrambleAttempt, ScrambleBatch, Sheet, } from './core/types.js';
+export declare const generateScrambles: (options: GenerateOptions) => Promise<import("./core/types.js").ScrambleBatch>;
+export declare const renderScrambleSvg: (options: RenderOptions) => Promise<string>;
+export declare const createScrambleSheetsPdf: (options: ExportOptions) => Promise<Buffer<ArrayBufferLike>>;
+export declare const createScrambleArchive: (options: ExportOptions) => Promise<Buffer<ArrayBufferLike>>;
+export declare const closeWorkers: () => Promise<void>;

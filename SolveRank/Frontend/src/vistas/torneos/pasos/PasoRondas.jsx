@@ -19,7 +19,7 @@ function obtenerConfiguracion(configuraciones, categoria) {
     return configuraciones[categoria] || configuracionPredeterminada;
 }
 
-export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion }) {
+export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion, catalogo = [] }) {
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(categorias[0] || '');
     const [rondaActiva, setRondaActiva] = useState('1');
     const categoriaActiva = categorias.includes(categoriaSeleccionada)
@@ -70,7 +70,7 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion 
                             etiqueta="Seleccioná la categoría"
                             opciones={categorias.map((categoria) => ({
                                 value: categoria,
-                                label: etiquetaCategoria(categoria)
+                                label: etiquetaCategoria(categoria, catalogo)
                             }))}
                             value={categoriaActiva}
                             onChange={(event) => {
@@ -88,8 +88,8 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion 
                         />
                         <CampoSelect
                             etiqueta="Formato"
-                            opciones={['Ao5', 'Mo3', 'Bo2', 'Bo1']}
-                            value={configuracion.formato || 'Ao5'}
+                            opciones={['AO5', 'MO3', 'BO3', 'BO1']}
+                            value={configuracion.formato || 'AO5'}
                             onChange={(event) => onCambioConfiguracion(categoriaActiva, {
                                 ...configuracion,
                                 formato: event.target.value
@@ -149,7 +149,7 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion 
                                         <div className="creacion-ronda-detalle">
                                             <strong>{ronda.nombre}</strong>
                                             <div>
-                                                <span>Formato: {configuracion.formato || 'Ao5'}</span>
+                                <span>Formato: {configuracion.formato || 'AO5'}</span>
                                                 <span>Límite: {datos.limite || '—'}</span>
                                                 <span>Cutoff: {datos.cutoff || '—'}</span>
                                                 <span>Avanzan: {ronda.final ? '—' : datos.avance || '—'}</span>

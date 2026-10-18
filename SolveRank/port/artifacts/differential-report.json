@@ -1,0 +1,99 @@
+{
+  "reference": "unmodified tnoodle-lib v0.20.0 on OpenJDK",
+  "compiler": "TeaVM 0.12.3",
+  "puzzles": {
+    "222": {
+      "vectors": 55,
+      "milliseconds": 4494
+    },
+    "333": {
+      "vectors": 64,
+      "milliseconds": 4946
+    },
+    "444": {
+      "vectors": 82,
+      "milliseconds": 56196
+    },
+    "555": {
+      "vectors": 100,
+      "milliseconds": 13140
+    },
+    "666": {
+      "vectors": 118,
+      "milliseconds": 26212
+    },
+    "777": {
+      "vectors": 136,
+      "milliseconds": 54370
+    },
+    "333ni": {
+      "vectors": 64,
+      "milliseconds": 3242
+    },
+    "444ni": {
+      "vectors": 82,
+      "milliseconds": 31732
+    },
+    "555ni": {
+      "vectors": 100,
+      "milliseconds": 16929
+    },
+    "333fm": {
+      "vectors": 64,
+      "milliseconds": 4241
+    },
+    "clock": {
+      "vectors": 128,
+      "milliseconds": 4845
+    },
+    "minx": {
+      "vectors": 75,
+      "milliseconds": 5998
+    },
+    "pyram": {
+      "vectors": 35,
+      "milliseconds": 679
+    },
+    "skewb": {
+      "vectors": 27,
+      "milliseconds": 789
+    },
+    "sq1": {
+      "vectors": 163,
+      "milliseconds": 4195
+    }
+  },
+  "tables": {
+    "333": "1881562152:1465585813:1892359906:939183090:1596368911:-903439692:1813061745:758334706:-447624306:-977006570",
+    "444": "592659929:-504123277:-285253200:-743237920:-365471615:-948306625:-1300276211:-1924714573",
+    "sq1": "-1400649222:-1475561192:-740867951:-1698158495:1434550369:86698123:-1106918285:-1698357567:-1288429887:-439806015"
+  },
+  "vectors": 1293,
+  "upstreamRegressions": [
+    {
+      "puzzle": "444ni",
+      "seed": 1,
+      "operation": "post-generation canonicalization",
+      "reference": "AlgorithmBuilder assertion in unmodified JVM source; not used by generation/render/export"
+    },
+    {
+      "puzzle": "444ni",
+      "seed": 87,
+      "operation": "post-generation canonicalization",
+      "reference": "AlgorithmBuilder assertion in unmodified JVM source; not used by generation/render/export"
+    },
+    {
+      "puzzle": "444ni",
+      "seed": -2147483648,
+      "operation": "post-generation canonicalization",
+      "reference": "AlgorithmBuilder assertion in unmodified JVM source; not used by generation/render/export"
+    },
+    {
+      "puzzle": "clock",
+      "seed": 87,
+      "operation": "post-generation canonicalization",
+      "reference": "AlgorithmBuilder assertion in unmodified JVM source; not used by generation/render/export"
+    }
+  ],
+  "engineSha256": "065fde94364025b8ac17f3ad41c21d3b32a8f8f93661d6868fc0ff31251acd93"
+}

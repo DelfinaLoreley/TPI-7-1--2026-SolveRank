@@ -4,17 +4,13 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const GraficoBarras = () => {
+const GraficoBarras = ({ torneos = [] }) => {
   const data = {
-    labels: [
-      ['Río Grande', 'TDF 2026'], 
-      ['Ushuaia Open', '2027'], 
-      ['Nacionales', 'Argentinas', 'SDE 2026'] 
-    ],
+    labels: torneos.map((torneo) => torneo.nombre),
     datasets: [
       {
         label: 'Inscripciones',
-        data: [15, 40, 80], 
+        data: torneos.map((torneo) => Number(torneo.inscriptos) || 0),
         backgroundColor: '#5b32ec', 
         borderRadius: 4,
         barPercentage: 0.7, 
@@ -22,7 +18,7 @@ const GraficoBarras = () => {
       },
       {
         label: 'Cupos',
-        data: [40, 45, 100], 
+        data: torneos.map((torneo) => Number(torneo.limite_participantes) || 0),
         backgroundColor: '#1d63ed', 
         borderRadius: 4,
         barPercentage: 0.7,
@@ -54,13 +50,9 @@ const GraficoBarras = () => {
       },
       y: {
         beginAtZero: true,
-        max: 200,
         ticks: { color: '#ffffff', font: { size: 14 }, padding: 10 },
         grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
         border: { display: false }, 
-        afterBuildTicks: (axis) => {
-          axis.ticks = [0, 15, 30, 45, 80, 100, 120, 140, 160].map(v => ({ value: v }));
-        }
       }
     }
   };

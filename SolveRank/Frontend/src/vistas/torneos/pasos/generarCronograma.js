@@ -45,7 +45,7 @@ function formatearHora(fecha) {
     }).format(fecha);
 }
 
-export function generarCronograma(fechaInicio, categorias, rondas) {
+export function generarCronograma(fechaInicio, categorias, rondas, catalogo = []) {
     if (!fechaInicio || categorias.length === 0) return [];
 
     const inicio = new Date(fechaInicio);
@@ -79,7 +79,7 @@ export function generarCronograma(fechaInicio, categorias, rondas) {
             if (numero > cantidad) return;
 
             agregarActividad(
-                `${etiquetaCategoria(categoria)} - Ronda ${numero}`,
+                `${etiquetaCategoria(categoria, catalogo)} - Ronda ${numero}`,
                 50,
                 iconosCategoria[categoria]
             );
@@ -87,7 +87,7 @@ export function generarCronograma(fechaInicio, categorias, rondas) {
     }
 
     categorias.forEach((categoria) => {
-        agregarActividad(`${etiquetaCategoria(categoria)} - Final`, 50, iconosCategoria[categoria]);
+            agregarActividad(`${etiquetaCategoria(categoria, catalogo)} - Final`, 50, iconosCategoria[categoria]);
     });
 
     agregarActividad('Premiación', 30, iconPremiacion );

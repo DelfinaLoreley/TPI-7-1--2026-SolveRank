@@ -37,20 +37,10 @@ function estadoInscripcion(torneo, ahora = new Date()) {
     return 'Inscripciones cerradas';
 }
 
-function inscripcionFinalizada(torneo, ahora = new Date()) {
-    const cierre = convertirFecha(torneo.Fecha_fin_Inscripcion);
-    if (!cierre) return false;
-    cierre.setHours(23, 59, 59, 999);
-    return ahora > cierre;
-}
-
-function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
+function PanelPrincipal({ usuario, onCrearTorneo }){
     const [torneos, setTorneos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
-    const [generandoTorneoId, setGenerandoTorneoId] = useState(null);
-    const [mensajesMezclas, setMensajesMezclas] = useState({});
-    const [ahora, setAhora] = useState(() => new Date());
 
     useEffect(() => {
         let activo = true;
@@ -61,11 +51,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
         return () => { activo = false; };
     }, []);
 
-    useEffect(() => {
-        const intervalo = window.setInterval(() => setAhora(new Date()), 30_000);
-        return () => window.clearInterval(intervalo);
-    }, []);
-
+    const ahora = new Date();
     const resumen = torneos.reduce((total, torneo) => {
         const inicio = convertirFecha(torneo.fecha_Inicio);
         const fin = convertirFecha(torneo.fecha_fin);
@@ -79,53 +65,6 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
     }, { enVivo: 0, proximos: 0, inscripcionesAbiertas: 0, finalizados: 0, competidores: 0 });
 
     const urlBackend = axios.defaults.baseURL.replace(/\/api\/?$/, '');
-
-    async function generarMezclasTorneo(torneo) {
-        if (usuario?.rol !== 'Organizador' || !inscripcionFinalizada(torneo)) return;
-        setGenerandoTorneoId(torneo.idTorneo);
-        setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: 'Buscando rondas pendientes…' }));
-        try {
-            const { data } = await axios.get(`/torneos/${torneo.idTorneo}/mis-rondas`);
-            const rondas = data.rondas ?? [];
-            if (!rondas.length) {
-                setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: 'Este torneo no tiene rondas configuradas.' }));
-                return;
-            }
-
-            const pendientes = rondas.filter((ronda) => Number(ronda.mezclasExistentes) === 0);
-            if (!pendientes.length) {
-                setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: 'Todas las rondas ya tienen mezclas.' }));
-                return;
-            }
-
-            const generadas = [];
-            const fallidas = [];
-            for (const ronda of pendientes) {
-                try {
-                    await axios.post(`/mezclas/torneos/${torneo.idTorneo}/rondas/${ronda.idRonda}/generar`, { grupo: 'A' });
-                    generadas.push(`${ronda.categoria} ${ronda.ronda}`);
-                } catch (err) {
-                    fallidas.push(`${ronda.categoria} ${ronda.ronda}: ${err?.response?.data?.mensaje || 'no se pudieron generar las mezclas'}`);
-                }
-            }
-
-            const partes = [];
-            if (generadas.length) partes.push(`Mezclas generadas para ${generadas.length} ronda${generadas.length === 1 ? '' : 's'}.`);
-            if (rondas.length - pendientes.length) partes.push(`${rondas.length - pendientes.length} ronda${rondas.length - pendientes.length === 1 ? '' : 's'} ya tenía mezclas.`);
-            if (fallidas.length) partes.push(`No se pudieron generar: ${fallidas.join(' · ')}`);
-            setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: partes.join(' ') }));
-
-            if (generadas.length) {
-                const actualizados = await axios.get('/torneos/mis-torneos');
-                setTorneos(actualizados.data.torneos ?? []);
-            }
-        } catch (err) {
-            setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: err?.response?.data?.mensaje || 'No se pudieron consultar las rondas.' }));
-        } finally {
-            setGenerandoTorneoId(null);
-        }
-    }
-
     return(
         <main className="panel-page">
             <div className="panel-contenido">
@@ -228,6 +167,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                             )}
                                         </div>
                                     )}
+                                    <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
                                 </article>;
                             })}
                     </div>
