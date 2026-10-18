@@ -54,7 +54,7 @@ const indicadoresEstadisticas = [
     { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
-function Home({ onVerTorneo }) {
+function Home({ onVerTorneo, onVerTodosTorneos }) {
     const [torneos, setTorneos] = useState([]);
     const [estadisticasReales, setEstadisticasReales] = useState(null);
     const [categoriasRanking, setCategoriasRanking] = useState([]);
@@ -154,7 +154,10 @@ function Home({ onVerTorneo }) {
                 <section className="home-panel home-torneos" id="torneos">
                     <div className="home-section-heading">
                         <h2><img src={calendarIcon}/> Próximos torneos</h2>
-                        <a href="#torneos">Ver todos ⟶</a>
+                        <a href="#torneos" onClick={(evento) => {
+                            evento.preventDefault();
+                            onVerTodosTorneos?.();
+                        }}>Ver todos ⟶</a>
                     </div>
                     <div className="home-torneos-grid">
                         {cargandoTorneos ? <p className="home-torneos-mensaje" role="status">Cargando torneos…</p>

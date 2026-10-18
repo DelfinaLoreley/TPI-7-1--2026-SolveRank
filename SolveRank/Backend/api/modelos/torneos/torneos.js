@@ -350,13 +350,15 @@ router.get('/', async (req, res) => {
                     t.pathImagen, t.Lugar_Venue, t.direccion,
                     p.pais, pr.provincia, c.ciudad,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos,
-                    COUNT(DISTINCT cxt.idCategoria) AS categorias
+                    COUNT(DISTINCT cxt.idCategoria) AS categorias,
+                    GROUP_CONCAT(DISTINCT cat.categoria ORDER BY cat.idCategoria SEPARATOR '|') AS categoriasLista
              FROM torneos t
              LEFT JOIN paises p ON p.idPais = t.idPais
              LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
              LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
              LEFT JOIN usuarios_x_torneo ux ON ux.idTorneo = t.idTorneo
              LEFT JOIN categorias_x_torneo cxt ON cxt.idTorneo = t.idTorneo
+             LEFT JOIN categorias cat ON cat.idCategoria = cxt.idCategoria
              GROUP BY t.idTorneo
              ORDER BY t.fecha_Inicio`
         );

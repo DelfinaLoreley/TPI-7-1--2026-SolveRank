@@ -8,6 +8,7 @@ import Home from './vistas/home/Home.jsx'
 import PanelPrincipal from './vistas/Organizador/PanelPrincipal.jsx'
 import CreacionTorneo from './vistas/torneos/CreacionTorneo.jsx'
 import TorneoDetalle from './vistas/torneos/TorneoDetalle.jsx'
+import ListadoTorneo from './vistas/torneos/ListadoTorneo.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -106,7 +107,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo'
+  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -124,6 +125,7 @@ function App() {
           vistaActiva={vista}
           usuario={usuario}
           onInicio={() => setVista('home')}
+          onTorneos={() => setVista('listado-torneos')}
           onPanelOrganizador={() => {
             if (usuario?.rol === 'Organizador') setVista('panel-organizador')
           }}
@@ -133,7 +135,9 @@ function App() {
       )}
 
       {vista === 'home'
-        ? <Home onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'home')} />
+        ? <Home onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'home')} onVerTodosTorneos={() => setVista('listado-torneos')} />
+        : vista === 'listado-torneos'
+        ? <ListadoTorneo onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'listado-torneos')} />
         : vista === 'panel-organizador'
         ? usuario?.rol === 'Organizador'
           ? <PanelPrincipal

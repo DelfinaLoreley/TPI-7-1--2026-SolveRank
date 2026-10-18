@@ -1,0 +1,818 @@
+.listado-torneos {
+    min-height: calc(100vh - var(--navbar-height, 58px));
+    background: #020d22;
+    color: #f5f7fc;
+    font-family: var(--font1, 'Inclusive Sans'), Arial, sans-serif;
+    font-size: 12px;
+}
+
+.listado-torneos *,
+.listado-torneos *::before,
+.listado-torneos *::after {
+    box-sizing: border-box;
+}
+
+.listado-torneos button,
+.listado-torneos input,
+.listado-torneos select {
+    font: inherit;
+}
+
+.listado-torneos-contenido {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 10px 16px;
+}
+
+.listado-torneos-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 102px;
+    overflow: hidden;
+    padding: 12px 35px;
+    isolation: isolate;
+}
+
+.listado-torneos-hero > div {
+    position: relative;
+    z-index: 1;
+}
+
+.listado-torneos-hero h1 {
+    margin: 0 0 10px;
+    font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.listado-torneos-hero p {
+    margin: 0;
+    color: #e0e6f1;
+    font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.listado-torneos-hero > img {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    right: 0;
+    width: min(52%, 380px);
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+}
+
+.listado-torneos-panel {
+    overflow: hidden;
+    padding: 10px;
+    border: 1px solid #162540;
+    border-radius: 10px;
+    background: #09152b;
+}
+
+.listado-torneos-controles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: start;
+}
+
+.listado-torneos-filtros {
+    display: grid;
+    gap: 9px;
+}
+
+.listado-filtro-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid #1c2b45;
+    border-radius: 7px;
+    background: #0b1730;
+}
+
+.listado-filtro-busqueda svg {
+    flex: 0 0 17px;
+    width: 17px;
+    fill: none;
+    stroke: #9bbdf3;
+    stroke-linecap: round;
+    stroke-width: 2;
+}
+
+.listado-filtro-busqueda input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #f5f7fc;
+    font-size: 12px;
+}
+
+.listado-filtro-busqueda input::placeholder {
+    color: #8290a7;
+    opacity: 1;
+}
+
+.listado-filtros-selectores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.listado-filtro-select {
+    position: relative;
+    display: block;
+    min-width: 130px;
+    max-width: 200px;
+}
+
+.listado-filtro-select select {
+    width: 100%;
+    height: 29px;
+    appearance: none;
+    padding: 0 25px 0 9px;
+    border: 1px solid #1c2b45;
+    border-radius: 7px;
+    background: #101d34;
+    color: #e5eaf4;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.listado-filtro-select::after {
+    position: absolute;
+    top: 12px;
+    right: 9px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid #e5eaf4;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: '';
+    pointer-events: none;
+}
+
+.listado-filtros-selectores > .listado-filtro-select {
+    flex: 1 1 120px;
+}
+
+.listado-torneos-pestanas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.listado-torneos-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+}
+
+.listado-torneos-pestanas button {
+    min-height: 29px;
+    padding: 0 12px;
+    border: 1px solid #1c2b45;
+    border-radius: 7px;
+    background: #101d34;
+    color: #e5eaf4;
+    cursor: pointer;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.listado-torneos-pestanas button.activa {
+    border-color: #2767db;
+    background: #235ecc;
+    color: #fff;
+}
+
+.listado-torneos-inscripciones {
+    min-height: 29px;
+    padding: 0 12px;
+    border: 1px solid #1c2b45;
+    border-radius: 7px;
+    background: #101d34;
+    color: #e5eaf4;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.listado-torneos-inscripciones.activa {
+    border-color: #2767db;
+    background: #235ecc;
+    color: #fff;
+}
+
+@media (min-width: 761px) {
+    .listado-torneos-pestanas button:nth-child(3) {
+        display: none;
+    }
+}
+
+.listado-orden {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: #f5f7fc;
+    font-size: 10px;
+}
+
+.listado-orden::after {
+    position: absolute;
+    top: 12px;
+    right: 9px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid #e5eaf4;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: '';
+    pointer-events: none;
+}
+
+.listado-orden-select {
+    min-width: 145px;
+    height: 29px;
+    appearance: none;
+    padding: 0 25px 0 9px;
+    border: 1px solid #1c2b45;
+    border-radius: 7px;
+    background: #101d34;
+    color: #e5eaf4;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10px;
+    outline: 0;
+}
+
+.listado-filtros-error {
+    margin: 0;
+    color: #ffb1b1;
+    font-size: 10px;
+}
+
+.listado-filtro-solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.listado-torneos-resumen {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 4px;
+    color: #e5eaf4;
+    font-size: 10px;
+}
+
+.listado-torneos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px 8px;
+    padding: 4px 0;
+}
+
+.listado-torneos-mensaje {
+    margin: 25px 8px;
+    color: #aebbd1;
+    font-size: 13px;
+}
+
+.listado-torneo-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #1b2b47;
+    border-radius: 8px;
+    background: #081329;
+}
+
+.listado-torneo-imagen {
+    position: relative;
+    height: 94px;
+    overflow: hidden;
+    background: #17243a;
+}
+
+.listado-torneo-imagen::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 10, 23, .03) 40%, rgba(3, 10, 23, .5) 100%);
+    content: '';
+    pointer-events: none;
+}
+
+.listado-torneo-imagen > img:first-child {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.listado-torneo-estado {
+    position: absolute;
+    z-index: 1;
+    top: 8px;
+    left: 7px;
+    max-width: calc(100% - 45px);
+    overflow: hidden;
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: #e78a22;
+    color: #fff;
+    font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.listado-torneo-estado.abiertas { background: #218a4c; }
+.listado-torneo-estado.cerradas { background: #bf2427; }
+
+.listado-torneo-guardar {
+    position: absolute;
+    z-index: 1;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border: 0;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, .35);
+    cursor: pointer;
+}
+
+.listado-torneo-guardar img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+}
+
+.listado-torneo-guardar.guardado {
+    background: #235ecc;
+}
+
+.listado-torneo-info {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 8px;
+    row-gap: 7px;
+    min-height: 105px;
+    margin-top: -10px;
+    padding: 13px 8px 8px;
+    background: linear-gradient(180deg, rgba(8, 19, 41, 0) 0, #081329 14px, #081329 100%);
+    font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
+}
+
+.listado-torneo-fecha {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    min-height: 34px;
+    padding: 4px 5px;
+    border: 1px solid #1b2b47;
+    border-radius: 4px;
+    background: #091124;
+}
+
+.listado-torneo-fecha strong {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.listado-torneo-fecha span {
+    font-size: 9px;
+}
+
+.listado-torneo-detalle {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    align-self: center;
+}
+
+.listado-torneo-detalle h2 {
+    overflow: hidden;
+    margin: 0 0 4px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.listado-torneo-detalle p {
+    display: flex;
+    align-items: flex-start;
+    overflow: hidden;
+    margin: 0;
+    color: #aeb9ca;
+    font-size: 8px;
+    line-height: 1.3;
+}
+
+.listado-torneo-detalle p img {
+    flex: 0 0 10px;
+    width: 10px;
+    height: 10px;
+    margin-right: 3px;
+    object-fit: contain;
+}
+
+.listado-torneo-meta {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 0 2px;
+    color: #c2ccdc;
+    font-size: 8px;
+}
+
+.listado-torneo-meta span {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.listado-torneo-meta img {
+    width: 12px;
+    height: 12px;
+    margin-right: 3px;
+    object-fit: contain;
+}
+
+.listado-torneo-ver {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: center;
+    min-height: 22px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: #0d1d3b;
+    color: #d6e3fa;
+    cursor: pointer;
+    font-size: 8px;
+}
+
+.listado-torneo-ver span:last-child {
+    margin-left: 8px;
+    color: #9bbdf3;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.listado-torneos-paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    min-height: 28px;
+    margin-top: 7px;
+    color: #f5f7fc;
+    font-size: 10px;
+}
+
+.listado-torneos-paginacion div {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #183464;
+}
+
+.listado-torneos-paginacion button,
+.listado-torneos-paginacion div span {
+    display: grid;
+    width: 24px;
+    height: 22px;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 12px;
+}
+
+.listado-torneos-paginacion button {
+    cursor: pointer;
+}
+
+.listado-torneos-paginacion button:disabled {
+    color: #8998b2;
+    cursor: default;
+}
+
+@media (max-width: 760px) {
+    .listado-torneos-contenido {
+        padding: 0 15px 16px;
+    }
+
+    .listado-torneos-hero {
+        min-height: 79px;
+        padding: 10px 0;
+    }
+
+    .listado-torneos-hero h1 {
+        margin-bottom: 8px;
+        font-size: 18px;
+    }
+
+    .listado-torneos-hero p {
+        font-size: 10px;
+        font-weight: 400;
+    }
+
+    .listado-torneos-hero > img {
+        width: 50%;
+        object-position: right center;
+    }
+
+    .listado-torneos-panel {
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .listado-torneos-controles {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .listado-torneos-filtros {
+        width: 100%;
+        gap: 12px;
+    }
+
+    .listado-filtro-busqueda {
+        height: 45px;
+        padding: 0 11px;
+    }
+
+    .listado-filtro-busqueda svg {
+        flex-basis: 18px;
+        width: 18px;
+    }
+
+    .listado-filtro-busqueda input {
+        font-size: 12px;
+    }
+
+    .listado-torneos-pestanas {
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .listado-torneos-acciones {
+        width: 100%;
+    }
+
+    .listado-torneos-inscripciones {
+        display: none;
+    }
+
+    .listado-torneos-pestanas button {
+        min-width: 0;
+        padding: 0 5px;
+        font-size: 10px;
+    }
+
+    .listado-filtros-selectores {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .listado-filtros-selectores > .listado-filtro-select {
+        min-width: 0;
+        max-width: none;
+    }
+
+    .listado-filtro-select select {
+        height: 32px;
+        padding-left: 7px;
+        font-size: 9px;
+    }
+
+    .listado-filtro-select::after {
+        right: 7px;
+    }
+
+    .listado-orden {
+        gap: 7px;
+    }
+
+    .listado-torneos-resumen {
+        justify-content: flex-end;
+        min-height: 30px;
+        padding-right: 3px;
+        font-size: 10px;
+    }
+
+    .listado-orden-select {
+        min-width: 135px;
+        max-width: 155px;
+        height: 32px;
+        font-size: 9px;
+    }
+
+    .listado-torneos-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+        padding: 3px 10px 1px;
+    }
+
+    .listado-torneo-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        padding: 11px;
+        border-width: 2px;
+        border-radius: 13px;
+        background: #081329;
+    }
+
+    .listado-torneo-imagen {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        order: 0;
+        height: 25px;
+        overflow: visible;
+        background: transparent;
+    }
+
+    .listado-torneo-imagen::after,
+    .listado-torneo-imagen > img:first-child {
+        display: none;
+    }
+
+    .listado-torneo-estado {
+        position: static;
+        max-width: calc(100% - 42px);
+        padding: 4px 6px;
+        font-size: 9px;
+    }
+
+    .listado-torneo-guardar {
+        position: static;
+        width: 27px;
+        height: 27px;
+        background: #030d20;
+    }
+
+    .listado-torneo-info {
+        grid-template-columns: 55px minmax(0, 1fr);
+        column-gap: 10px;
+        row-gap: 11px;
+        min-height: 0;
+        margin-top: 0;
+        padding: 6px 0 0;
+        background: none;
+    }
+
+    .listado-torneo-fecha {
+        grid-row: 1;
+        min-height: 51px;
+        padding: 4px;
+        border-radius: 6px;
+    }
+
+    .listado-torneo-fecha strong {
+        font-size: 20px;
+    }
+
+    .listado-torneo-fecha span {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .listado-torneo-detalle {
+        grid-row: 1;
+    }
+
+    .listado-torneo-detalle h2 {
+        margin-bottom: 7px;
+        font-size: 15px;
+    }
+
+    .listado-torneo-detalle p {
+        align-items: center;
+        font-size: 9px;
+    }
+
+    .listado-torneo-detalle p img {
+        flex-basis: 12px;
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
+    }
+
+    .listado-torneo-meta {
+        grid-column: 1 / -1;
+        gap: 6px;
+        padding: 0 34px 0 5px;
+        font-size: 11px;
+    }
+
+    .listado-torneo-meta span {
+        gap: 4px;
+    }
+
+    .listado-torneo-meta img {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+    }
+
+    .listado-torneo-ver {
+        position: absolute;
+        right: 11px;
+        bottom: 8px;
+        display: grid;
+        width: 28px;
+        height: 28px;
+        min-height: 0;
+        padding: 0;
+        background: transparent;
+    }
+
+    .listado-torneo-ver span:first-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        clip-path: inset(50%);
+    }
+
+    .listado-torneo-ver span:last-child {
+        margin: 0;
+        font-size: 27px;
+    }
+
+    .listado-torneos-paginacion {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 390px) {
+    .listado-torneos-contenido {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .listado-torneos-panel {
+        padding: 9px;
+    }
+
+    .listado-torneos-pestanas {
+        gap: 5px;
+    }
+
+    .listado-torneos-pestanas button {
+        font-size: 9px;
+    }
+
+    .listado-torneos-grid {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .listado-torneo-card {
+        padding: 10px;
+    }
+
+    .listado-torneo-detalle h2 {
+        font-size: 14px;
+    }
+}
