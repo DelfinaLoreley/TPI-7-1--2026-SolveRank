@@ -1,0 +1,42 @@
+{
+  "name": "tnoodle-native",
+  "version": "0.1.0",
+  "description": "Native Node.js TNoodle scrambling library for unofficial competitions",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "engines": { "node": ">=22.0.0" },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": [
+    "dist", "src", "LICENSE", "NOTICE", "licenses", "README.md",
+    "tools/native/pom.xml", "tools/native/prepare.mjs", "tools/native/build.ps1",
+    "tools/native/stamp.mjs", "tools/native/java", "tools/native/upstream",
+    "tools/native/source-hashes.json", "tools/native/upstream-hashes.json", "tools/native/engine-sha256.txt",
+    "tools/copy-engine.mjs", "tools/reference/sources.json", "tsconfig.json",
+    "test", "tools/reference-test.mjs", "tools/verify-package.mjs", "examples"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node tools/copy-engine.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run build && node --test --test-concurrency=1 test/*.test.mjs",
+    "test:reference": "node tools/reference-test.mjs",
+    "test:package": "node tools/verify-package.mjs",
+    "engine:prepare": "node tools/native/prepare.mjs",
+    "engine:build": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/native/build.ps1",
+    "example": "node examples/generate.mjs"
+  },
+  "dependencies": {
+    "fflate": "0.8.2",
+    "pdfkit": "0.17.2",
+    "svg-to-pdfkit": "0.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pdfkit": "^0.17.0",
+    "@types/svg-to-pdfkit": "^0.1.3",
+    "@xmldom/xmldom": "^0.8.11",
+    "pdfjs-dist": "^5.4.296",
+    "typescript": "^5.9.3"
+  }
+}

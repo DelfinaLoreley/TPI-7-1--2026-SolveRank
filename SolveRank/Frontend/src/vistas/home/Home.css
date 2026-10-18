@@ -437,6 +437,13 @@
     margin: 10px;
 }
 
+.home-torneo-link {
+    width: calc(100% - 20px);
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
 .home-torneo-link span {
     margin-left: 10px;
     padding-right: 7px;

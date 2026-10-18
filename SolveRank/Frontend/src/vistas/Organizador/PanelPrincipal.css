@@ -476,12 +476,57 @@
     margin: 10px;
 }
 
+.home-torneo-link {
+    width: calc(100% - 20px);
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
 .home-torneo-link span {
     margin-left: 10px;
     padding-right: 7px;
     color: #7dabff;
     font-size: 17px;
     line-height: 1;
+}
+
+.home-torneo-mezclas-acciones {
+    margin: 0 10px 10px;
+}
+
+.home-torneo-mezclas-btn {
+    width: 100%;
+    min-height: 32px;
+    padding: 7px 10px;
+    border: 1px solid #3974d4;
+    border-radius: 5px;
+    background: #164c9f;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.home-torneo-mezclas-btn:hover:not(:disabled) {
+    background: #2364c2;
+}
+
+.home-torneo-mezclas-btn:disabled {
+    border-color: #26364f;
+    background: #17243a;
+    color: #8998ad;
+    cursor: not-allowed;
+}
+
+.home-torneo-mezclas-mensaje {
+    margin: 7px 2px 0;
+    color: #aeb9ca;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .panel-estadisticas {

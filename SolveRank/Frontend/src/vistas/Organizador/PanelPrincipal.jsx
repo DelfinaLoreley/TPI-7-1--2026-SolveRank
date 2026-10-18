@@ -145,6 +145,28 @@ function PanelPrincipal({ usuario, onCrearTorneo }){
                                         </div>
                                         <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {Number(torneo.categorias) || 0} categorías</span><span><img src={competidoresIcon} alt="Inscripciones"/> {Number(torneo.inscriptos) || 0}/{torneo.limite_participantes} inscriptos</span></div>
                                     </div>
+                                    <button className="home-torneo-link" type="button" onClick={() => onVerTorneo?.(torneo)}>Ver torneo <span>⟶</span></button>
+                                    {usuario?.rol === 'Organizador' && (
+                                        <div className="home-torneo-mezclas-acciones">
+                                            <button
+                                                className="home-torneo-mezclas-btn"
+                                                type="button"
+                                                onClick={() => generarMezclasTorneo(torneo)}
+                                                disabled={!inscripcionFinalizada(torneo, ahora) || generandoTorneoId !== null ||
+                                                    (Number(torneo.rondasTotales) > 0 && Number(torneo.rondasConMezclas) >= Number(torneo.rondasTotales))}
+                                                title={!inscripcionFinalizada(torneo, ahora) ? 'Se habilita cuando cierre la inscripción' : undefined}
+                                            >
+                                                {generandoTorneoId === torneo.idTorneo
+                                                    ? 'Generando…'
+                                                    : Number(torneo.rondasTotales) > 0 && Number(torneo.rondasConMezclas) >= Number(torneo.rondasTotales)
+                                                        ? 'Mezclas generadas'
+                                                        : 'Generar mezclas'}
+                                            </button>
+                                            {mensajesMezclas[torneo.idTorneo] && (
+                                                <p className="home-torneo-mezclas-mensaje" role="status">{mensajesMezclas[torneo.idTorneo]}</p>
+                                            )}
+                                        </div>
+                                    )}
                                     <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
                                 </article>;
                             })}

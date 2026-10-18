@@ -54,7 +54,7 @@ const indicadoresEstadisticas = [
     { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
-function Home() {
+function Home({ onVerTorneo }) {
     const [torneos, setTorneos] = useState([]);
     const [estadisticasReales, setEstadisticasReales] = useState(null);
     const [categoriasRanking, setCategoriasRanking] = useState([]);
@@ -179,7 +179,7 @@ function Home() {
                                     </div>
                                     <div className="home-torneo-meta"><span><img src={categoriasIcon} alt="Categorías"/> {torneo.categorias} categorías</span><span> <img src={competidoresIcon2} alt="Competidores"/> {torneo.inscriptos}/{torneo.limite_participantes} inscriptos</span></div>
                                 </div>
-                                <a className="home-torneo-link" href="#torneos">Ver torneo <span>⟶</span></a>
+                                <button className="home-torneo-link" type="button" onClick={() => onVerTorneo?.(torneo)}>Ver torneo <span>⟶</span></button>
                             </article>;
                             })}
                     </div>

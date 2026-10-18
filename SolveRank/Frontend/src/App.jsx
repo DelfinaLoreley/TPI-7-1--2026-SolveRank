@@ -7,6 +7,7 @@ import CompletarRegistro from './vistas/registro/CompletarRegistro.jsx'
 import Home from './vistas/home/Home.jsx'
 import PanelPrincipal from './vistas/Organizador/PanelPrincipal.jsx'
 import CreacionTorneo from './vistas/torneos/CreacionTorneo.jsx'
+import TorneoDetalle from './vistas/torneos/TorneoDetalle.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -15,7 +16,15 @@ function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
   const [vista, setVista] = useState('home')
   const [usuario, setUsuario] = useState(null)
+  const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
+  const [volverDetalleA, setVolverDetalleA] = useState('home')
   const [cargandoSesion, setCargandoSesion] = useState(true)
+
+  function abrirDetalleTorneo(torneo, volverA = 'home') {
+    setTorneoSeleccionado(torneo)
+    setVolverDetalleA(volverA)
+    setVista('detalle-torneo')
+  }
 
   // Recuperar la sesión al abrir o actualizar la página.
   useEffect(() => {
@@ -97,7 +106,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo'
+  const mostrarSitio = vista === 'home' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -124,14 +133,21 @@ function App() {
       )}
 
       {vista === 'home'
-        ? <Home />
+        ? <Home onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'home')} />
         : vista === 'panel-organizador'
         ? usuario?.rol === 'Organizador'
           ? <PanelPrincipal
               usuario={usuario}
               onCrearTorneo={() => setVista('crear-torneo')}
+              onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'panel-organizador')}
             />
           : <Home />
+        : vista === 'detalle-torneo'
+        ? <TorneoDetalle
+            idTorneo={torneoSeleccionado?.idTorneo}
+            usuario={usuario}
+            onSalir={() => setVista(volverDetalleA)}
+          />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
           ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} onPublicar={async (datos) => {
