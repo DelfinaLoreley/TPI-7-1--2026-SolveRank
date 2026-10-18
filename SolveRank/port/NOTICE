@@ -1,0 +1,52 @@
+tnoodle-native 0.1.0
+
+This is an unofficial derivative of TNoodle, not an official WCA scramble
+program and not endorsed by the World Cube Association.
+
+The scrambling and drawing engine derives from:
+  https://github.com/thewca/tnoodle-lib
+  v0.20.0, commit b7f9bfeca5d43856e551e975ba305c36a3b86fcb
+  GNU GPL version 3. See LICENSE and tools/native/upstream.
+
+The original authors include Jeremy Fleischman, Shuang Chen and the other
+TNoodle contributors identified in the preserved source headers and history.
+min2phase and threephase: Copyright Shuang Chen, GPL version 3 or later.
+The combined port is distributed under GPL-3.0-only. This does not remove
+the additional permissions individual upstream files grant.
+
+Modifications in this port:
+  - Ahead-of-time translation to standalone CommonJS JavaScript with TeaVM.
+  - Explicit Java-compatible integer rejection sampling backed by node:crypto.
+  - Removal of JVM SecureRandom providers and seeded production APIs.
+  - Fixed default 3x3 distance configuration (no JVM environment override).
+  - Removal of private-move/debug logs; explicit errors on 3x3 solver failure.
+  - XML escaping in the svglite serializer.
+  - Native bridge, development diagnostics, TypeScript API and worker scheduling.
+  - New PDF/ZIP document layout implemented independently using Node libraries.
+
+tools/native/prepare.mjs records all source adaptations. The unmodified engine
+sources, development bridge, build instructions and source checksums are
+included as corresponding source. Java/Maven are development tools only;
+no Java runtime, JVM, bytecode interpreter or WebAssembly is shipped/required
+by the runtime entry point. TeaVM emits direct JavaScript and only reachable
+class-library helpers, not the entire JRE.
+
+Generated code includes TeaVM runtime/class-library helpers, Apache-2.0:
+  Copyright Alexey Andreev and contributors.
+  See licenses/TeaVM-LICENSE and licenses/TeaVM-NOTICE.
+
+Runtime dependencies:
+  pdfkit 0.17.2: MIT, Copyright Devon Govett and contributors.
+  svg-to-pdfkit 0.1.8: MIT, Copyright SVG-to-PDFKit contributors.
+  fflate 0.8.2: MIT, Copyright Arjun Barrett.
+Their license texts are included in licenses and in their npm packages.
+Their transitive dependencies retain their individual license notices.
+
+The AGPL-3.0 TNoodle server was consulted for event/export concepts only;
+no Kotlin server, iText, server PDF templates, logos or UI code is copied.
+The current event catalog is fixed to the 17 events in WCA Regulation 9b,
+checked on 2026-10-16. FTO is not included in the public API.
+
+GPL distribution obligations apply to this derivative. Before combining it
+with a proprietary backend or distributing a combined application, review
+the applicable licensing obligations. This notice is not legal advice.
