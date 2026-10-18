@@ -9,7 +9,6 @@ body{
 :root{
     --font: 'Inclusive Sans', Courier, monospace;
     --color: white;
-    color-scheme: dark;
 }
 
 .logo{
@@ -28,25 +27,6 @@ body{
     border-radius: 8px;
     padding: 3%;   
     margin-bottom: 20px; 
-    color-scheme: dark;
-}
-
-select.caja {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 15px center !important;
-    background-size: 16px !important;
-    padding-right: 40px !important;
-}
-
-/* 3. Intento de color de fondo por si el navegador lo soporta */
-select.caja option {
-    background-color: #051028 !important;
-    color: white !important;
 }
 
 .caja::placeholder{
