@@ -15,7 +15,7 @@ import recordsIconSeleccionado from '/src/assets/home/iconos/records-icon-select
 import liveIcon from '/src/assets/home/iconos/solverank-live-icon.png';
 import liveIconSeleccionado from '/src/assets/home/iconos/solverank-live-azul-icon.png';
 import searchIcon from '/src/assets/home/iconos/search-icon.png';
-import chevronIcon from '/src/assets/home/iconos/chevron-icon.png';
+import chevronIcon from '/src/assets/home/iconos/chevron-icon.svg';
 import userNotLogged from '/src/assets/home/iconos/icon-user.png';
 import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
@@ -25,6 +25,7 @@ function Navbar({
     vistaActiva,
     usuario,
     onInicio,
+    onTorneos,
     onPanelOrganizador,
     onIniciarSesion,
     onCerrarSesion,
@@ -53,6 +54,7 @@ function Navbar({
             etiqueta: 'Todos',
             href: '#torneos',
             icono: torneosMundiales,
+            onClick: onTorneos,
         },
         ...(sesionIniciada
             ? [{
@@ -116,13 +118,13 @@ function Navbar({
 
                 <div className="site-navbar-menu">
                     <button
-                        className={`site-navbar-link site-navbar-toggle${menuAbierto === 'torneos' ? ' activo' : ''}`}
+                        className={`site-navbar-link site-navbar-toggle${menuAbierto === 'torneos' || vistaActiva === 'listado-torneos' ? ' activo' : ''}`}
                         type="button"
                         aria-expanded={menuAbierto === 'torneos'}
                         onClick={() => alternarMenu('torneos')}
                     >
                         <img
-                            src={menuAbierto === 'torneos' || vistaActiva === 'torneos'
+                            src={menuAbierto === 'torneos' || vistaActiva === 'torneos' || vistaActiva === 'listado-torneos'
                                 ? torneosIconSeleccionado
                                 : torneosIcon}
                             alt=""
@@ -133,7 +135,13 @@ function Navbar({
                     {menuAbierto === 'torneos' && (
                         <div className="site-navbar-dropdown">
                             {menuTorneos.map((item) => (
-                                <a href={item.href} key={item.etiqueta} onClick={cerrarMenu}>
+                                <a href={item.href} key={item.etiqueta} onClick={(evento) => {
+                                    if (item.onClick) {
+                                        evento.preventDefault();
+                                        item.onClick();
+                                    }
+                                    cerrarMenu();
+                                }}>
                                     <img src={item.icono} alt="" />
                                     {item.etiqueta}
                                 </a>
