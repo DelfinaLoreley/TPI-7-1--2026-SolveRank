@@ -1,0 +1,70 @@
+.records-page {
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding: 0 20px 34px;
+    background: #020d22;
+    color: #f5f7fc;
+    font-family: 'Inclusive Sans', Arial, sans-serif;
+}
+.records-page * { box-sizing: border-box; }
+.records-contenedor { width: min(100%, 1600px); margin: 0 auto; }
+.records-hero {
+    min-height: 210px;
+    padding: 39px 5% 26px;
+    background-color: #020d22;
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+}
+.records-hero h1 { margin: 0 0 16px; font-size: clamp(28px, 3vw, 44px); font-weight: 700; }
+.records-hero p { max-width: 570px; margin: 0; font-size: clamp(15px, 1.3vw, 20px); line-height: 1.25; }
+.records-panel { min-height: 550px; padding: 20px 2.7% 28px; border: 2px solid #1c2c4c; border-radius: 20px; background: #081328; }
+.records-filtros { margin: 0 0 28px; }
+.records-buscar-pais { display: flex; align-items: center; gap: 10px; width: min(68%, 910px); min-height: 55px; margin: 0 0 18px 20px; padding: 0 15px; border: 2px solid #1d2e50; border-radius: 15px; background: #091328; }
+.records-buscar-pais > span { color: #9fbbe8; font-size: 34px; line-height: 1; transform: rotate(-25deg); }
+.records-buscar-pais input { width: 100%; border: 0; outline: 0; background: transparent; color: #f5f7fc; font: inherit; font-size: 18px; }
+.records-buscar-pais input::placeholder { color: #75829c; }
+.records-selectores { display: flex; flex-wrap: wrap; gap: 12px 28px; padding-left: 20px; }
+.records-selectores label { flex: 0 1 270px; }
+.records-selectores select { width: 100%; min-height: 54px; padding: 0 42px 0 16px; appearance: none; border: 1px solid #213352; border-radius: 13px; background-color: #111d35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='12' viewBox='0 0 18 12'%3E%3Cpath fill='%23f5f7fc' d='M1 1h16L9 11z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; color: #f5f7fc; font: inherit; font-size: 17px; cursor: pointer; }
+.records-selectores option { background: #111d35; color: #f5f7fc; }
+.records-select-categoria select { padding-left: 48px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23fff' d='M1 1h7v7H1zm10 0h8v7h-8zM1 12h7v7H1zm10 0h8v7h-8z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='12' viewBox='0 0 18 12'%3E%3Cpath fill='%23f5f7fc' d='M1 1h16L9 11z'/%3E%3C/svg%3E"); background-position: 15px center, right 15px center; background-size: 20px 20px, 18px 12px; background-repeat: no-repeat; }
+.records-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; align-items: start; gap: 20px; }
+.records-tabla-panel, .records-estadisticas, .records-actualizacion { border: 2px solid #1d2e50; border-radius: 20px; background: #091328; }
+.records-tabla-panel { min-width: 0; padding: 22px 24px 24px; }
+.records-tabla-panel > h2, .records-estadisticas > h2, .records-actualizacion > h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 24px; font-size: clamp(18px, 1.7vw, 29px); font-weight: 600; }
+.records-tabla-panel > h2 > span, .records-estadisticas > h2 > span, .records-actualizacion > h2 > span { color: #4389ff; font-size: 1.2em; }
+.records-categoria { margin: 0 0 26px; }
+.records-categoria:last-child { margin-bottom: 0; }
+.records-categoria > h3 { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 26px 0 20px; font-size: clamp(18px, 1.8vw, 27px); font-weight: 700; text-align: center; }
+.records-categoria > h3 img { width: 36px; height: 36px; object-fit: contain; }
+.records-decoracion { font-size: .85em; white-space: nowrap; }
+.records-tabla-scroll { overflow-x: auto; border: 1px solid #1b2d4c; border-radius: 13px; }
+.records-tabla { width: 100%; min-width: 650px; border-collapse: collapse; text-align: center; font-size: 16px; }
+.records-tabla thead { background: #10234a; }
+.records-tabla th, .records-tabla td { padding: 17px 12px; border-bottom: 1px solid #1e2e4b; }
+.records-tabla thead th { font-weight: 600; }
+.records-tabla tbody tr { background: #101d35; }
+.records-tabla tbody tr:nth-child(even) { background: #0d192f; }
+.records-tabla tbody tr:last-child th, .records-tabla tbody tr:last-child td { border-bottom: 0; }
+.records-tabla tbody th { font-weight: 700; }
+.records-nombre { color: #5d93e8; text-align: left; }
+.records-tiempo { font-weight: 700; white-space: nowrap; }
+.records-lateral { display: grid; gap: 20px; }
+.records-estadisticas, .records-actualizacion { padding: 18px; }
+.records-estadisticas > h2 { margin-bottom: 20px; font-size: 20px; }
+.records-estadistica { display: flex; align-items: center; gap: 15px; max-width: 300px; min-height: 78px; margin: 0 auto 14px; padding: 12px 18px; border: 1px solid #1b2b49; border-radius: 13px; background: #091328; }
+.records-estadistica:last-child { margin-bottom: 0; }
+.records-estadistica-icono { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 50%; background: #16244a; }
+.records-estadistica-icono.violeta { background: #241b50; }
+.records-estadistica-icono.dorado { background: #3c3521; }
+.records-estadistica-icono.verde { background: #132f28; }
+.records-estadistica-icono img { width: 28px; height: 28px; object-fit: contain; }
+.records-estadistica > div { display: grid; gap: 2px; }
+.records-estadistica strong { font-size: 23px; line-height: 1; }
+.records-estadistica > div > span { color: #c8d0df; font-size: 14px; }
+.records-actualizacion > h2 { margin-bottom: 8px; font-size: 22px; }
+.records-actualizacion p { margin: 0; color: #d0d7e5; font-size: 22px; font-style: italic; }
+.records-mensaje { padding: 20px 8px; color: #c8d0df; text-align: center; }
+.records-page .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 1050px) { .records-layout { grid-template-columns: minmax(0, 1fr) 310px; } .records-tabla-panel { padding: 20px 15px; } }
+@media (max-width: 760px) { .records-page { padding: 0 12px 24px; } .records-hero { min-height: 180px; padding: 30px 5% 20px; background-size: auto 75%; } .records-panel { padding: 14px 12px 20px; border-radius: 14px; } .records-buscar-pais, .records-selectores { width: 100%; margin-left: 0; padding-left: 0; } .records-selectores label { flex: 1 1 100%; } .records-layout { grid-template-columns: 1fr; } .records-tabla-panel { padding: 18px 12px; } .records-categoria > h3 { gap: 7px; } .records-decoracion { font-size: .66em; } .records-lateral { grid-row: 1; } }
