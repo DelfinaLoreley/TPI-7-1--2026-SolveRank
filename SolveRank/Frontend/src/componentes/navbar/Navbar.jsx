@@ -8,7 +8,6 @@ import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
 import torneosIconSeleccionado from '/src/assets/home/iconos/torneos-icon-seleccionado.png';
 import torneosMundiales from '/src/assets/home/iconos/todos-torneos-blanco-icon.png';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon.png';
-import resultadosIconSeleccionado from '/src/assets/home/iconos/resultados-icon-selected.png';
 import rankingIcon from '/src/assets/home/iconos/rankings-icon.png';
 import recordsIcon from '/src/assets/home/iconos/records-icon.png';
 import recordsIconSeleccionado from '/src/assets/home/iconos/records-icon-selected.png';
@@ -16,7 +15,6 @@ import liveIcon from '/src/assets/home/iconos/solverank-live-icon.png';
 import liveIconSeleccionado from '/src/assets/home/iconos/solverank-live-azul-icon.png';
 import searchIcon from '/src/assets/home/iconos/search-icon.png';
 import chevronIcon from '/src/assets/home/iconos/chevron-icon.svg';
-import chevronIconSelected from '/src/assets/home/iconos/chevron-icon-selected.svg';
 import userNotLogged from '/src/assets/home/iconos/icon-user.png';
 import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
@@ -27,6 +25,7 @@ function Navbar({
     usuario,
     onInicio,
     onTorneos,
+    onRankings,
     onPanelOrganizador,
     onIniciarSesion,
     onCerrarSesion,
@@ -62,26 +61,6 @@ function Navbar({
                 etiqueta: 'Mis torneos',
                 href: '#mis-torneos',
                 icono: torneosIcon,
-            }]
-            : []),
-    ];
-
-    const menuResultados = [
-        {
-            etiqueta: 'Rankings',
-            href: '#rankings',
-            icono: rankingIcon,
-        },
-        {
-            etiqueta: 'Récords',
-            href: '#records',
-            icono: recordsIcon,
-        },
-        ...(sesionIniciada
-            ? [{
-                etiqueta: 'Mis resultados',
-                href: '#mis-resultados',
-                icono: resultadosIcon,
             }]
             : []),
     ];
@@ -131,7 +110,7 @@ function Navbar({
                             alt=""
                         />
                         <span>Torneos</span>
-                        <img className="site-navbar-chevron" src={menuAbierto === 'torneos' || vistaActiva === 'torneos' ? chevronIconSelected : chevronIcon} alt="" />
+                        <img className="site-navbar-chevron" src={chevronIcon} alt="" />
                     </button>
                     {menuAbierto === 'torneos' && (
                         <div className="site-navbar-dropdown">
@@ -151,33 +130,18 @@ function Navbar({
                     )}
                 </div>
 
-                <div className="site-navbar-menu">
-                    <button
-                        className={`site-navbar-link site-navbar-toggle${menuAbierto === 'resultados' ? ' activo' : ''}`}
-                        type="button"
-                        aria-expanded={menuAbierto === 'resultados'}
-                        onClick={() => alternarMenu('resultados')}
-                    >
-                        <img
-                            src={menuAbierto === 'resultados' || vistaActiva === 'resultados'
-                                ? resultadosIconSeleccionado
-                                : resultadosIcon}
-                            alt=""
-                        />
-                        <span>Resultados</span>
-                        <img className="site-navbar-chevron" src={menuAbierto === 'resultados' || vistaActiva === 'resultados' ? chevronIconSelected : chevronIcon} alt="" />
-                    </button>
-                    {menuAbierto === 'resultados' && (
-                        <div className="site-navbar-dropdown">
-                            {menuResultados.map((item) => (
-                                <a href={item.href} key={item.etiqueta} onClick={cerrarMenu}>
-                                    <img src={item.icono} alt="" />
-                                    {item.etiqueta}
-                                </a>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <a
+                    className={`site-navbar-link${vistaActiva === 'rankings' ? ' activo' : ''}`}
+                    href="#rankings"
+                    onClick={(evento) => {
+                        evento.preventDefault();
+                        cerrarMenu();
+                        onRankings?.();
+                    }}
+                >
+                    <img src={rankingIcon} alt="" />
+                    <span>Rankings</span>
+                </a>
 
                 <a className="site-navbar-link" href="#records" onClick={cerrarMenu}>
                     <img src={vistaActiva === 'records' ? recordsIconSeleccionado : recordsIcon} alt="" />
