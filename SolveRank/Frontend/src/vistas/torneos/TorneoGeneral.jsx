@@ -246,7 +246,8 @@ function TorneoGeneral({ torneo }) {
                             )}
                         </>
                     ) : (
-                        <p className="torneo-general-vacio">Consultá con la organización si necesitás información sobre requisitos y reglamento.</p>
+                        <><p className="torneo-general-vacio">Consultá con la organización si necesitás información sobre requisitos y reglamento.</p>
+                        <a href="link a revisar" rel="noopener noreferrer" target='blank'>Leer mas ...</a></>
                     )}
                 </Tarjeta>
             </div>

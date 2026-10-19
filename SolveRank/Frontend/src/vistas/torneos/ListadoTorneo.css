@@ -348,6 +348,7 @@
 
 .listado-torneo-estado.abiertas { background: #218a4c; }
 .listado-torneo-estado.cerradas { background: #bf2427; }
+.listado-torneo-estado.finalizado { background: #596579; }
 
 .listado-torneo-guardar {
     position: absolute;

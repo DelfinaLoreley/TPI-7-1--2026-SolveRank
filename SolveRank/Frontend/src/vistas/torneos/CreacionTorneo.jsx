@@ -181,7 +181,8 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                         const match = String(value || '').match(/^(\d{1,2}):(\d{2})(?:\.\d+)?$/);
                         return match ? `00:${match[1].padStart(2, '0')}:${match[2]}` : fallback;
                     };
-                    return { nombre: `Ronda ${index + 1}`, cutoff: parseTime(detalle.cutoff, '00:00:00'), tiempoLimite: parseTime(detalle.limite, '00:10:00'), porcentajeAvance: Math.max(0, Math.min(100, parseInt(detalle.avance, 10) || 0)) };
+                    const avanceConfigurado = detalle.avance === undefined ? '20%' : detalle.avance;
+                    return { nombre: `Ronda ${index + 1}`, cutoff: parseTime(detalle.cutoff, '00:00:00'), tiempoLimite: parseTime(detalle.limite, '00:10:00'), porcentajeAvance: Math.max(0, Math.min(100, parseInt(avanceConfigurado, 10) || 0)) };
                 });
             });
             const toSqlTime = (value) => `${value.slice(0, 5)}:00`;

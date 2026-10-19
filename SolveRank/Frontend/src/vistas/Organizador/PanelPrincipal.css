@@ -350,6 +350,7 @@
 
 .home-estado.abiertas { background: #31a96c; }
 .home-estado.cerradas { background: #d83b40; }
+.home-estado.finalizado { background: #596579; }
 
 .home-torneo-btn-guardar {
     position: absolute;

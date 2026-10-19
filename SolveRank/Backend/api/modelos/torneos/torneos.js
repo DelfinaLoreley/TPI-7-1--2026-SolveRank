@@ -6,13 +6,15 @@ const crypto = require('crypto');
 const verificarToken = require('../../middleware/authMiddleware');
 const { ROLES, permitirRoles } = require('../../middleware/autorizacion');
 
+const CATEGORIAS_EXCLUIDAS_SQL = "LOWER(TRIM(categoria)) NOT IN ('3x3x3 fmc', '3x3x3 multi-blind', '3x3 fm', '3x3 mbld')";
+
 // Catálogos que necesita el formulario de creación.
 router.get('/catalogos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     try {
         const [paises] = await db.execute('SELECT idPais, pais FROM paises ORDER BY pais');
         const [provincias] = await db.execute('SELECT idProvincia, provincia, idPais FROM provincias ORDER BY provincia');
         const [ciudades] = await db.execute('SELECT idCiudad, ciudad, idProvincia FROM ciudades ORDER BY ciudad');
-        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        const [categorias] = await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`);
         const [formatos] = await db.execute('SELECT idFormato, formato FROM formatos ORDER BY idFormato');
         const [jueces] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.JUEZ]);
         const [delegados] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.DELEGADO]);
@@ -50,10 +52,399 @@ async function usuariosConRol(connection, ids, rol) {
     return usuarios.length === ids.length;
 }
 
+function idValido(valor) {
+    const id = Number(valor);
+    return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+async function verificarAccesoResultados(connection, usuario, idTorneo) {
+    const [torneos] = await connection.execute(
+        `SELECT idTorneo, idUsuario AS idOrganizador,
+                (CURDATE() BETWEEN DATE(fecha_Inicio) AND DATE(fecha_fin)) AS enCurso
+         FROM torneos WHERE idTorneo = ?`,
+        [idTorneo]
+    );
+    if (!torneos.length) return { estado: 'no-encontrado' };
+    const torneo = torneos[0];
+    if (!Boolean(torneo.enCurso)) return { estado: 'fuera-de-fecha' };
+
+    if (usuario.rol === ROLES.ORGANIZADOR && Number(torneo.idOrganizador) === Number(usuario.idUsuario)) {
+        return { estado: 'autorizado', torneo };
+    }
+    if (usuario.rol === ROLES.DELEGADO) {
+        const [designaciones] = await connection.execute(
+            'SELECT 1 FROM delegados_X_torneo WHERE idtorneo = ? AND idUsuario = ? LIMIT 1',
+            [idTorneo, usuario.idUsuario]
+        );
+        if (designaciones.length) return { estado: 'autorizado', torneo };
+    }
+    return { estado: 'sin-permiso' };
+}
+
+function normalizarIntento(valor) {
+    if (typeof valor !== 'string') return null;
+    const texto = valor.trim().toUpperCase();
+    if (!texto) return { tiempo: null, penalizacion: null };
+    if (texto === 'DNF' || texto === 'DNS') return { tiempo: null, penalizacion: texto };
+    const coincidencia = texto.match(/^(?:(\d{1,5}):)?([0-5]?\d)\.(\d{2})(\+2)?$/);
+    if (!coincidencia) return null;
+    const minutos = Number(coincidencia[1] || 0);
+    const segundos = Number(coincidencia[2]);
+    const centesimas = Number(coincidencia[3]);
+    const totalCentesimas = (minutos * 60 + segundos) * 100 + centesimas;
+    const maximoCentesimas = (838 * 3600 + 59 * 60 + 59) * 100 + 99;
+    if (totalCentesimas > maximoCentesimas) return null;
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+    const tiempo = `${String(horas).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}:${String(segundos).padStart(2, '0')}.${coincidencia[3]}`;
+    return { tiempo, penalizacion: coincidencia[4] ? '+2' : null };
+}
+
+function resultadosValidos(intentos, cantidadEsperada) {
+    if (!Number.isInteger(cantidadEsperada) || cantidadEsperada <= 0
+        || !Array.isArray(intentos) || intentos.length !== cantidadEsperada) return null;
+    const intentosNormalizados = intentos.map(normalizarIntento);
+    if (intentosNormalizados.some((intento) => intento === null || (!intento.tiempo && !intento.penalizacion))) return null;
+    return intentosNormalizados;
+}
+
+function tiempoLegible(tiempo) {
+    if (!tiempo) return '';
+    const [horas, minutos, segundos] = String(tiempo).split(':');
+    const [segundo, fraccion = '00'] = String(segundos).split('.');
+    const totalMinutos = Number(horas) * 60 + Number(minutos);
+    const centesimas = fraccion.padEnd(2, '0').slice(0, 2);
+    return `${String(totalMinutos).padStart(2, '0')}:${String(Number(segundo)).padStart(2, '0')}.${centesimas}`;
+}
+
+router.get('/:idTorneo/resultados/finales', async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        const [torneos] = await db.execute(
+            'SELECT idTorneo FROM torneos WHERE idTorneo = ? AND CURDATE() > DATE(fecha_fin)',
+            [idTorneo]
+        );
+        if (!torneos.length) {
+            return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+        }
+
+        const [categoriasTorneo] = await db.execute(
+            `SELECT cxt.idCategoria, c.categoria,
+                    COUNT(DISTINCT ci.idUsuario) AS totalCompetidores
+             FROM categorias_x_torneo cxt
+             INNER JOIN categorias c ON c.idCategoria = cxt.idCategoria
+             LEFT JOIN categorias_x_inscripcion ci
+                ON ci.idTorneo = cxt.idTorneo AND ci.idCategoria = cxt.idCategoria
+             WHERE cxt.idTorneo = ?
+             GROUP BY cxt.idCategoria, c.categoria
+             ORDER BY c.categoria`,
+            [idTorneo]
+        );
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.porcentajeAvance, f.formato, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ?
+             ORDER BY c.categoria, rct.idRonda`,
+            [idTorneo]
+        );
+
+        const idsCategorias = new Set(rondas.map((ronda) => Number(ronda.idCategoria)));
+        if (!categoriasTorneo.length || idsCategorias.size !== categoriasTorneo.length) {
+            return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+        }
+
+        const [intentos] = await db.execute(
+            `SELECT i.idRonda, u.idUsuario, u.wcaid,
+                    CONCAT_WS(' ', u.Nombre, u.apellido) AS nombre,
+                    p.pais, i.tiempo, i.penalizacion
+             FROM intentos_x_competidor i
+             INNER JOIN rondas_x_categoria_x_torneo rct
+                ON rct.idTorneo = i.idTorneo AND rct.idRonda = i.idRonda
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idTorneo = i.idTorneo
+                AND ci.idCategoria = rct.idCategoria
+                AND ci.idUsuario = i.idUsuario
+             INNER JOIN usuarios u ON u.idUsuario = i.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             WHERE i.idTorneo = ?
+             ORDER BY i.idRonda, u.idUsuario, i.id`,
+            [idTorneo]
+        );
+        const intentosPorRonda = new Map();
+        for (const intento of intentos) {
+            const idRonda = Number(intento.idRonda);
+            if (!intentosPorRonda.has(idRonda)) intentosPorRonda.set(idRonda, new Map());
+            const competidores = intentosPorRonda.get(idRonda);
+            const idUsuario = Number(intento.idUsuario);
+            if (!competidores.has(idUsuario)) {
+                competidores.set(idUsuario, {
+                    idUsuario,
+                    wcaid: intento.wcaid,
+                    nombre: intento.nombre,
+                    pais: intento.pais,
+                    intentos: [],
+                });
+            }
+            competidores.get(idUsuario).intentos.push(
+                ['DNF', 'DNS'].includes(String(intento.penalizacion).toUpperCase())
+                    ? String(intento.penalizacion).toUpperCase()
+                    : `${tiempoLegible(intento.tiempo)}${intento.penalizacion === '+2' ? '+2' : ''}`
+            );
+        }
+
+        const categoriasPublicadas = [];
+        for (const categoria of categoriasTorneo) {
+            const rondasCategoria = rondas
+                .filter((ronda) => Number(ronda.idCategoria) === Number(categoria.idCategoria))
+                .sort((a, b) => Number(a.idRonda) - Number(b.idRonda));
+            let participantesEsperados = Number(categoria.totalCompetidores);
+            if (!participantesEsperados || !rondasCategoria.length) {
+                return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+            }
+
+            const rondasPublicadas = [];
+            for (const ronda of rondasCategoria) {
+                const cantidadIntentos = Number(ronda.cantidadIntentos);
+                const porcentajeAvance = Number(ronda.porcentajeAvance);
+                const competidoresMap = intentosPorRonda.get(Number(ronda.idRonda)) ?? new Map();
+                const competidores = [...competidoresMap.values()];
+                const rondaCompleta = Number.isInteger(cantidadIntentos)
+                    && cantidadIntentos > 0
+                    && competidores.length === participantesEsperados
+                    && competidores.every((competidor) => competidor.intentos.length === cantidadIntentos);
+                if (!rondaCompleta) {
+                    return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+                }
+
+                rondasPublicadas.push({
+                    ...ronda,
+                    cantidadIntentos,
+                    competidores,
+                });
+                if (!/final/i.test(String(ronda.ronda || ''))) {
+                    if (!Number.isInteger(porcentajeAvance) || porcentajeAvance < 0 || porcentajeAvance > 100) {
+                        return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+                    }
+                    participantesEsperados = Math.ceil(participantesEsperados * porcentajeAvance / 100);
+                }
+            }
+            categoriasPublicadas.push({
+                idCategoria: categoria.idCategoria,
+                categoria: categoria.categoria,
+                rondas: rondasPublicadas,
+            });
+        }
+
+        return res.json({ categorias: categoriasPublicadas });
+    } catch (error) {
+        console.error('Error al consultar resultados finales del torneo:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron consultar los resultados finales' });
+    }
+});
+
+router.get('/:idTorneo/resultados/acceso', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        const acceso = await verificarAccesoResultados(db, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        if (acceso.estado === 'fuera-de-fecha') return res.status(403).json({ mensaje: 'La carga de resultados solo está disponible durante las fechas del torneo' });
+        if (acceso.estado !== 'autorizado') return res.status(403).json({ mensaje: 'No tenés permisos para cargar resultados en este torneo' });
+
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.tiempoLimite, r.porcentajeAvance, f.formato, f.cantidad_Solves AS cantidadIntentos,
+                    (SELECT COUNT(DISTINCT ci.idUsuario)
+                     FROM categorias_x_inscripcion ci
+                     WHERE ci.idTorneo = rct.idTorneo AND ci.idCategoria = rct.idCategoria) AS totalCompetidores,
+                    (SELECT COUNT(DISTINCT i.idUsuario)
+                     FROM intentos_x_competidor i
+                     WHERE i.idTorneo = rct.idTorneo AND i.idRonda = rct.idRonda) AS competidoresConResultados,
+                    (SELECT cx.hora_inicio
+                     FROM cronograma_x_torneo cx
+                     WHERE cx.idtorneo = rct.idTorneo AND cx.idronda = rct.idRonda
+                     ORDER BY cx.hora_inicio LIMIT 1) AS horaInicio,
+                    (SELECT cx.hora_fin
+                     FROM cronograma_x_torneo cx
+                     WHERE cx.idtorneo = rct.idTorneo AND cx.idronda = rct.idRonda
+                     ORDER BY cx.hora_inicio LIMIT 1) AS horaFin
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ?
+             ORDER BY c.categoria, rct.idRonda`,
+            [idTorneo]
+        );
+        return res.json({ torneo: acceso.torneo, rondas });
+    } catch (error) {
+        console.error('Error al consultar acceso a carga de resultados:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo consultar el acceso a resultados' });
+    }
+});
+
+router.get('/:idTorneo/resultados/rondas/:idRonda', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    const idRonda = idValido(req.params.idRonda);
+    if (!idTorneo || !idRonda) return res.status(400).json({ mensaje: 'El torneo o la ronda indicados no son válidos' });
+    try {
+        const acceso = await verificarAccesoResultados(db, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        if (acceso.estado === 'fuera-de-fecha') return res.status(403).json({ mensaje: 'La consulta de resultados solo está disponible durante las fechas del torneo' });
+        if (acceso.estado !== 'autorizado') return res.status(403).json({ mensaje: 'No tenés permisos para consultar resultados de este torneo' });
+
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.tiempoLimite, f.formato, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ? AND rct.idRonda = ?`,
+            [idTorneo, idRonda]
+        );
+        if (!rondas.length) return res.status(404).json({ mensaje: 'La ronda no pertenece a este torneo' });
+
+        const [competidores] = await db.execute(
+            `SELECT u.idUsuario, u.wcaid, CONCAT_WS(' ', u.Nombre, u.apellido) AS nombre,
+                    p.pais, COUNT(DISTINCT ci.idCategoria) AS categorias
+             FROM usuarios_x_torneo ux
+             INNER JOIN usuarios u ON u.idUsuario = ux.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idUsuario = ux.idUsuario AND ci.idTorneo = ux.idTorneo
+             WHERE ux.idTorneo = ? AND ci.idCategoria = ?
+             GROUP BY u.idUsuario, u.wcaid, u.Nombre, u.apellido, p.pais
+             ORDER BY nombre`,
+            [idTorneo, rondas[0].idCategoria]
+        );
+        const [intentos] = await db.execute(
+            `SELECT id, idUsuario, tiempo, penalizacion
+             FROM intentos_x_competidor
+             WHERE idTorneo = ? AND idRonda = ?
+             ORDER BY idUsuario, id`,
+            [idTorneo, idRonda]
+        );
+        const resultadosPorUsuario = new Map();
+        for (const competidor of competidores) resultadosPorUsuario.set(Number(competidor.idUsuario), { intentos: [] });
+        for (const intento of intentos) {
+            const resultado = resultadosPorUsuario.get(Number(intento.idUsuario));
+            if (!resultado) continue;
+            resultado.intentos.push(['DNF', 'DNS'].includes(String(intento.penalizacion).toUpperCase())
+                ? String(intento.penalizacion).toUpperCase()
+                : `${tiempoLegible(intento.tiempo)}${intento.penalizacion === '+2' ? '+2' : ''}`);
+        }
+        const competidoresConResultados = competidores.map((competidor) => ({
+            ...competidor,
+            ...(resultadosPorUsuario.get(Number(competidor.idUsuario)) || { intentos: [] }),
+        }));
+        return res.json({ ronda: rondas[0], competidores: competidoresConResultados });
+    } catch (error) {
+        console.error('Error al obtener resultados de la ronda:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener los resultados de la ronda' });
+    }
+});
+
+router.post('/:idTorneo/resultados/rondas/:idRonda', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    const idRonda = idValido(req.params.idRonda);
+    const idUsuario = idValido(req.body?.idUsuario);
+    if (!idTorneo || !idRonda || !idUsuario) return res.status(400).json({ mensaje: 'El torneo, la ronda o el competidor no son válidos' });
+    if (!Array.isArray(req.body?.intentos)) return res.status(400).json({ mensaje: 'Ingresá los intentos según el formato configurado para la ronda' });
+
+    let connection;
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
+        const acceso = await verificarAccesoResultados(connection, req.usuario, idTorneo);
+        if (acceso.estado === 'no-encontrado') {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        }
+        if (acceso.estado === 'fuera-de-fecha') {
+            await connection.rollback();
+            return res.status(403).json({ mensaje: 'La carga de resultados solo está disponible durante las fechas del torneo' });
+        }
+        if (acceso.estado !== 'autorizado') {
+            await connection.rollback();
+            return res.status(403).json({ mensaje: 'No tenés permisos para cargar resultados en este torneo' });
+        }
+
+        const [rondas] = await connection.execute(
+            `SELECT rct.idCategoria, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ? AND rct.idRonda = ?`,
+            [idTorneo, idRonda]
+        );
+        if (!rondas.length) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'La ronda no pertenece a este torneo' });
+        }
+        const cantidadIntentos = Number(rondas[0].cantidadIntentos);
+        if (!Number.isInteger(cantidadIntentos) || cantidadIntentos <= 0) {
+            await connection.rollback();
+            return res.status(409).json({ mensaje: 'La categoría de esta ronda no tiene un formato configurado' });
+        }
+        const resultados = resultadosValidos(req.body.intentos, cantidadIntentos);
+        if (!resultados) {
+            await connection.rollback();
+            return res.status(400).json({ mensaje: 'Completá todos los intentos del formato configurado con MM:SS.CC, +2, DNF o DNS' });
+        }
+        const [inscripciones] = await connection.execute(
+            `SELECT 1 FROM usuarios_x_torneo ux
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idUsuario = ux.idUsuario AND ci.idTorneo = ux.idTorneo
+             WHERE ux.idTorneo = ? AND ux.idUsuario = ? AND ci.idCategoria = ?
+             LIMIT 1`,
+            [idTorneo, idUsuario, rondas[0].idCategoria]
+        );
+        if (!inscripciones.length) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'El competidor no está inscripto en esta categoría' });
+        }
+
+        await connection.execute(
+            'DELETE FROM intentos_x_competidor WHERE idTorneo = ? AND idRonda = ? AND idUsuario = ?',
+            [idTorneo, idRonda, idUsuario]
+        );
+        const insertarIntento = async (intento) => {
+            await connection.execute(
+                `INSERT INTO intentos_x_competidor
+                    (idTorneo, idRonda, idUsuario, tiempo, penalizacion)
+                 VALUES (?, ?, ?, ?, ?)`,
+                [idTorneo, idRonda, idUsuario, intento.tiempo || '00:00:00.00', intento.penalizacion]
+            );
+        };
+        for (const intento of resultados) await insertarIntento(intento);
+        await connection.commit();
+        return res.json({ mensaje: 'Se guardaron los resultados del competidor' });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        console.error('Error al guardar resultados de competidor:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron guardar los resultados' });
+    } finally {
+        connection?.release();
+    }
+});
+
 // Listado público de torneos.
 router.get('/categorias', async (req, res) => {
     try {
-        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        const [categorias] = await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`);
         return res.json({ categorias });
     } catch (error) {
         console.error('Error al obtener categorías para el ranking:', error.message);
@@ -72,9 +463,10 @@ router.get('/ranking/:idCategoria', async (req, res) => {
             `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.avatar_url,
                     p.pais,
                     MIN(CASE
-                        WHEN UPPER(COALESCE(i.penalizacion, '')) LIKE '%DNF%' THEN NULL
-                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2') THEN TIME_TO_SEC(i.tiempo) + 2
-                        ELSE TIME_TO_SEC(i.tiempo)
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('DNF', 'DNS') THEN NULL
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2')
+                            THEN TIME_TO_SEC(i.tiempo) + MICROSECOND(i.tiempo) / 1000000 + 2
+                        ELSE TIME_TO_SEC(i.tiempo) + MICROSECOND(i.tiempo) / 1000000
                     END) AS mejorTiempo
              FROM intentos_x_competidor i
              INNER JOIN rondas_x_categoria_x_torneo rct
@@ -103,8 +495,11 @@ router.get('/detalle/:idTorneo', async (req, res) => {
     }
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.descripcion, t.fecha_Inicio, t.fecha_fin,
-                    t.Fecha_Inicio_Inscripcion, t.Fecha_fin_Inscripcion,
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
                     t.limite_participantes, t.pathImagen, t.Lugar_Venue,
                     t.direccion, t.Contacto_Organizador, t.observacion,
                     p.pais, pr.provincia, c.ciudad,
@@ -250,8 +645,10 @@ router.post('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMPET
 
         const placeholdersCategorias = idsCategorias.map(() => '?').join(',');
         const [categoriasValidas] = await connection.execute(
-            `SELECT idCategoria FROM categorias_x_torneo
-             WHERE idTorneo = ? AND idCategoria IN (${placeholdersCategorias})`,
+            `SELECT ct.idCategoria FROM categorias_x_torneo ct
+             INNER JOIN categorias c ON c.idCategoria = ct.idCategoria
+             WHERE ct.idTorneo = ? AND ct.idCategoria IN (${placeholdersCategorias})
+               AND ${CATEGORIAS_EXCLUIDAS_SQL}`,
             [idTorneo, ...idsCategorias]
         );
         if (categoriasValidas.length !== idsCategorias.length) {
@@ -344,9 +741,12 @@ router.delete('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMP
 router.get('/', async (req, res) => {
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.descripcion, t.fecha_Inicio,
-                    t.fecha_fin, t.Fecha_Inicio_Inscripcion,
-                    t.Fecha_fin_Inscripcion, t.limite_participantes,
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
+                    t.limite_participantes,
                     t.pathImagen, t.Lugar_Venue, t.direccion,
                     p.pais, pr.provincia, c.ciudad,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos,
@@ -400,8 +800,11 @@ router.get('/', async (req, res) => {
 router.get('/mis-torneos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.fecha_Inicio, t.fecha_fin,
-                    t.Fecha_Inicio_Inscripcion, t.Fecha_fin_Inscripcion,
+            `SELECT t.idTorneo, t.nombre,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
                     t.limite_participantes, t.pathImagen, t.Lugar_Venue,
                     p.pais, pr.provincia, c.ciudad,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos,
@@ -534,7 +937,8 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
 
         const placeholdersCategorias = categorias.map(() => '?').join(',');
         const [categoriasValidas] = await connection.execute(
-            `SELECT idCategoria FROM categorias WHERE idCategoria IN (${placeholdersCategorias})`, categorias
+            `SELECT idCategoria, categoria FROM categorias WHERE idCategoria IN (${placeholdersCategorias})
+               AND ${CATEGORIAS_EXCLUIDAS_SQL}`, categorias
         );
         const [formatosValidos] = await connection.execute('SELECT idFormato FROM formatos');
         const idsFormatosValidos = new Set(formatosValidos.map((item) => Number(item.idFormato)));

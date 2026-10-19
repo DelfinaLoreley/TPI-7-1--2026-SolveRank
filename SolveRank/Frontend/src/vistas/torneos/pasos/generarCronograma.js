@@ -1,8 +1,6 @@
 import icon2x2 from '/src/assets/categorias/2x2-icon.svg';
 import icon3x3 from '/src/assets/categorias/3x3-icon.svg';
 import icon3x3Blind from '/src/assets/categorias/3x3-blind-icon.svg';
-import icon3x3Fm from '/src/assets/categorias/3x3-fm-icon.svg';
-import icon3x3MultiBlind from '/src/assets/categorias/3x3-multi-blind-icon.svg';
 import icon4x4 from '/src/assets/categorias/4x4-icon.svg';
 import icon4x4Blind from '/src/assets/categorias/4x4-blind-icon.svg';
 import icon5x5 from '/src/assets/categorias/5x5-icon.svg';
@@ -24,7 +22,6 @@ const iconosCategoria = {
     '6x6x6': icon6x6,
     '7x7x7': icon7x7,
     '3x3x3 a ciegas': icon3x3Blind,
-    '3x3x3 FMC': icon3x3Fm,
     '3x3x3 Una mano': icon3x3,
     Clock: iconClock,
     Megaminx: iconMegaminx,
@@ -33,7 +30,6 @@ const iconosCategoria = {
     'Square-1': iconSquare1,
     '4x4x4 a ciegas': icon4x4Blind,
     '5x5x5 a ciegas': icon5x5,
-    '3x3x3 Multi-Blind': icon3x3MultiBlind,
     FTO: iconMegaminx
 };
 

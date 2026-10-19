@@ -2,8 +2,6 @@ import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import icon2x2 from '/src/assets/categorias/2x2-icon.svg';
 import icon3x3 from '/src/assets/categorias/3x3-icon.svg';
 import icon3x3Blind from '/src/assets/categorias/3x3-blind-icon.svg';
-import icon3x3Fm from '/src/assets/categorias/3x3-fm-icon.svg';
-import icon3x3MultiBlind from '/src/assets/categorias/3x3-multi-blind-icon.svg';
 import icon4x4 from '/src/assets/categorias/4x4-icon.svg';
 import icon4x4Blind from '/src/assets/categorias/4x4-blind-icon.svg';
 import icon5x5 from '/src/assets/categorias/5x5-icon.svg';
@@ -24,7 +22,6 @@ export const categorias = [
     { id: '6x6x6', etiqueta: '6x6x6', icono: icon6x6 },
     { id: '7x7x7', etiqueta: '7x7x7', icono: icon7x7 },
     { id: '3x3x3 a ciegas', etiqueta: '3x3 BLD', icono: icon3x3Blind },
-    { id: '3x3x3 FMC', etiqueta: '3x3 FM', icono: icon3x3Fm },
     { id: '3x3x3 Una mano', etiqueta: '3x3 OH', icono: icon3x3 },
     { id: 'Clock', etiqueta: 'Clock', icono: iconClock },
     { id: 'Megaminx', etiqueta: 'Megaminx', icono: iconMegaminx },
@@ -33,7 +30,6 @@ export const categorias = [
     { id: 'Square-1', etiqueta: 'Square-1', icono: iconSquare1 },
     { id: '4x4x4 a ciegas', etiqueta: '4x4 BLD', icono: icon4x4Blind },
     { id: '5x5x5 a ciegas', etiqueta: '5x5 BLD', icono: icon5x5 },
-    { id: '3x3x3 Multi-Blind', etiqueta: '3x3 MBLD', icono: icon3x3MultiBlind },
     { id: 'FTO', etiqueta: 'FTO', icono: iconFTO }
 ];
 
