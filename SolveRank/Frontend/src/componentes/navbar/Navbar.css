@@ -13,7 +13,7 @@
     border-bottom: 1px solid #17243b;
     background: #030d20;
     color: #f5f7fc;
-    font-family: 'Inclusive Sans', Arial, sans-serif;
+    font-family: 'Inclusive Sans' !important;
 }
 
 .site-navbar *,
@@ -43,6 +43,10 @@
     align-self: stretch;
     align-items: center;
     gap: 19px;
+}
+
+.site-navbar span{
+    font-family: 'Inclusive Sans' !important;
 }
 
 .site-navbar-link {

@@ -9,6 +9,7 @@ import torneosIconSeleccionado from '/src/assets/home/iconos/torneos-icon-selecc
 import torneosMundiales from '/src/assets/home/iconos/todos-torneos-blanco-icon.png';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon.png';
 import rankingIcon from '/src/assets/home/iconos/rankings-icon.png';
+import rankingIconSelected from '/src/assets/home/iconos/ranking-icon-selected.svg';
 import recordsIcon from '/src/assets/home/iconos/records-icon.png';
 import recordsIconSeleccionado from '/src/assets/home/iconos/records-icon-selected.png';
 import liveIcon from '/src/assets/home/iconos/solverank-live-icon.png';
@@ -143,7 +144,7 @@ function Navbar({
                         onRankings?.();
                     }}
                 >
-                    <img src={rankingIcon} alt="" />
+                    <img src={vistaActiva === 'rankings' ? rankingIconSelected : rankingIcon} alt="" />
                     <span>Rankings</span>
                 </a>
 

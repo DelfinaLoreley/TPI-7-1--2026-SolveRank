@@ -6,9 +6,14 @@ import './Rankings.css';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import paisesIcon from '/src/assets/home/iconos/paises-cuberos-azul-icon.png';
-import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
+import categoriasIcon from '/src/assets/icons/categorias-amarillo-icon.svg';
 import resultadosIcon from '/src/assets/home/iconos/resultados-verde-icon.png';
-import usuarioIcon from '/src/assets/home/iconos/icon-user.png';
+import usuarioIcon from '/src/assets/home/iconos/user-pfp-icon.png';
+import rankingIco from '/src/assets/icons/rankings-icon-azul.svg';
+import estadisticasIcon from '/src/assets/icons/estadisticas-icon.svg';
+import actualizacionIcon from '/src/assets/icons/ult-actualizacion-icon.svg';
+import paginaAnteriorIcon from '/src/assets/icons/triflecha-izq-icon.png';
+import paginaSiguienteIcon from '/src/assets/icons/triflecha-der-icon.png';
 
 function formatearTiempo(segundos) {
     if (segundos === null || segundos === undefined || !Number.isFinite(Number(segundos))) return 'DNF';
@@ -98,6 +103,7 @@ function Rankings({ usuario }) {
 
     const categoriaSeleccionada = categorias.find(({ idCategoria: id }) => String(id) === idCategoria);
     const nombreCategoria = categoriaSeleccionada?.categoria || 'Categoría';
+    const iconoCategoria = obtenerIconoCategoria(nombreCategoria);
     const nombreTipo = tipo === 'single' ? 'Single' : 'Media';
     const tituloRanking = `${idPais ? 'Ranking nacional' : 'Ranking mundial'}: ${nombreTipo} - ${nombreCategoria}`;
     const estadisticas = datos?.estadisticas || {};
@@ -138,7 +144,7 @@ function Rankings({ usuario }) {
                                     {paisesFiltrados.map((pais) => <option key={pais.idPais} value={pais.idPais}>{pais.pais}</option>)}
                                 </select>
                             </label>
-                            <label className="rankings-select-categoria">
+                            <label className="rankings-select-categoria" style={{ '--rankings-icono-categoria': iconoCategoria ? `url("${iconoCategoria}")` : 'none' }}>
                                 <span className="sr-only">Categoría</span>
                                 <select value={idCategoria} onChange={(evento) => cambiarFiltro(setIdCategoria, evento.target.value)}>
                                     {categorias.map((categoria) => <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.categoria}</option>)}
@@ -165,7 +171,7 @@ function Rankings({ usuario }) {
                         : cargandoCatalogos ? <p className="rankings-mensaje" role="status">Cargando filtros…</p>
                             : <div className="rankings-layout">
                                 <section className="rankings-tabla-panel">
-                                    <h2><span aria-hidden="true">◎</span>{tituloRanking}</h2>
+                                    <h2><span aria-hidden="true"><img src={rankingIco} alt="" /></span>{tituloRanking}</h2> 
                                     {error ? <p className="rankings-mensaje" role="alert">{error}</p> : (
                                         <>
                                             <div className="rankings-tabla-scroll">
@@ -187,9 +193,9 @@ function Rankings({ usuario }) {
                                             <footer className="rankings-paginacion">
                                                 <span>Mostrando {resultados.length} de {datos?.total || 0} competidores</span>
                                                 <div>
-                                                    <button type="button" aria-label="Página anterior" disabled={paginaActual <= 1 || cargando} onClick={() => setPagina(paginaActual - 1)}>‹</button>
+                                                    <button type="button" aria-label="Página anterior" disabled={paginaActual <= 1 || cargando} onClick={() => setPagina(paginaActual - 1)}><img src={paginaAnteriorIcon} alt="" /></button>
                                                     <span>{paginaActual}</span>
-                                                    <button type="button" aria-label="Página siguiente" disabled={paginaActual >= paginas || cargando} onClick={() => setPagina(paginaActual + 1)}>›</button>
+                                                    <button type="button" aria-label="Página siguiente" disabled={paginaActual >= paginas || cargando} onClick={() => setPagina(paginaActual + 1)}><img src={paginaSiguienteIcon} alt="" /></button>
                                                 </div>
                                             </footer>
                                         </>
@@ -198,7 +204,7 @@ function Rankings({ usuario }) {
 
                                 <aside className="rankings-lateral">
                                     <section className="rankings-estadisticas">
-                                        <h2><span aria-hidden="true">▥</span>Estadísticas globales</h2>
+                                        <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
                                         {iconosEstadisticas.map((item) => (
                                             <article className="rankings-estadistica" key={item.key}>
                                                 <span className={`rankings-estadistica-icono ${item.className}`}><img src={item.icon} alt="" /></span>
@@ -209,7 +215,7 @@ function Rankings({ usuario }) {
 
                                     {usuario && <section className="rankings-tu-posicion">
                                         <h2><img src={usuarioIcon} alt="" />Tu posición</h2>
-                                        <h3>{obtenerIconoCategoria(nombreCategoria) && <img src={obtenerIconoCategoria(nombreCategoria)} alt="" />}Categoría: {nombreCategoria}</h3>
+                                        <h3>{iconoCategoria && <img src={iconoCategoria} alt="" />}Categoría: {nombreCategoria}</h3>
                                         <div className="rankings-mi-resumen">
                                             {datos?.posicionUsuario
                                                 ? <><strong>#{datos.posicionUsuario}</strong><span>{nombreTipo} · {idPais ? paises.find((pais) => String(pais.idPais) === idPais)?.pais : 'Mundial'}</span></>
@@ -218,7 +224,7 @@ function Rankings({ usuario }) {
                                     </section>}
 
                                     <section className="rankings-actualizacion">
-                                        <h2><span aria-hidden="true">⟳</span>Última actualización:</h2>
+                                        <h2><span aria-hidden="true"><img src={actualizacionIcon} alt="" /></span>Última actualización:</h2>
                                         <p>{actualizado ? actualizado.toLocaleString('es-AR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                                     </section>
                                 </aside>
