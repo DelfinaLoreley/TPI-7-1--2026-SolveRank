@@ -34,7 +34,7 @@ function obtenerEstadoInscripcion(torneo) {
     return 'Inscripciones cerradas';
 }
 
-function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onVerTorneo }) {
+function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onSolicitarLogin, favoritoActualizando = false, onVerTorneo }) {
     const fecha = fechaLocal(torneo.fecha_Inicio);
     const estado = obtenerEstadoInscripcion(torneo);
     const ubicacion = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')
@@ -57,7 +57,9 @@ function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onVer
                     className={`listado-torneo-guardar${guardado ? ' guardado' : ''}`}
                     aria-label={guardado ? `Quitar ${torneo.nombre} de guardados` : `Guardar ${torneo.nombre}`}
                     aria-pressed={guardado}
-                    onClick={onAlternarGuardado}
+                    disabled={favoritoActualizando}
+                    title={guardado ? 'Quitar de torneos guardados' : 'Guardar en mis torneos'}
+                    onClick={onAlternarGuardado || onSolicitarLogin}
                 >
                     <img src={guardarIcon} alt="" />
                 </button>

@@ -318,6 +318,30 @@
     background-color: #27374a;
 }
 
+.panel-torneo-btn-guardar {
+    position: absolute;
+    z-index: 2;
+    top: 14px;
+    right: 7px;
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 0;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, .35);
+    cursor: pointer;
+}
+
+.panel-torneo-btn-guardar img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.panel-torneo-btn-guardar.guardado { background: #235ecc; }
+.panel-torneo-btn-guardar:disabled { opacity: .65; cursor: wait; }
+
 .home-torneo-imagen::after {
     position: absolute;
     inset: 0;

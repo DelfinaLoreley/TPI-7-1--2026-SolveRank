@@ -25,6 +25,7 @@ function Navbar({
     usuario,
     onInicio,
     onTorneos,
+    onMisTorneos,
     onRankings,
     onPanelOrganizador,
     onIniciarSesion,
@@ -33,6 +34,7 @@ function Navbar({
     const [menuAbierto, setMenuAbierto] = useState(null);
     const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
     const sesionIniciada = Boolean(usuario);
+    const puedeVerMisTorneos = ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol);
 
     function alternarMenu(menu) {
         setMenuAbierto(menuAbierto === menu ? null : menu);
@@ -56,11 +58,12 @@ function Navbar({
             icono: torneosMundiales,
             onClick: onTorneos,
         },
-        ...(sesionIniciada
+        ...(sesionIniciada && puedeVerMisTorneos
             ? [{
                 etiqueta: 'Mis torneos',
                 href: '#mis-torneos',
                 icono: torneosIcon,
+                onClick: onMisTorneos,
             }]
             : []),
     ];
@@ -98,13 +101,13 @@ function Navbar({
 
                 <div className="site-navbar-menu">
                     <button
-                        className={`site-navbar-link site-navbar-toggle${menuAbierto === 'torneos' || vistaActiva === 'listado-torneos' ? ' activo' : ''}`}
+                        className={`site-navbar-link site-navbar-toggle${menuAbierto === 'torneos' || vistaActiva === 'listado-torneos' || vistaActiva === 'mis-torneos' ? ' activo' : ''}`}
                         type="button"
                         aria-expanded={menuAbierto === 'torneos'}
                         onClick={() => alternarMenu('torneos')}
                     >
                         <img
-                            src={menuAbierto === 'torneos' || vistaActiva === 'torneos' || vistaActiva === 'listado-torneos'
+                            src={menuAbierto === 'torneos' || vistaActiva === 'torneos' || vistaActiva === 'listado-torneos' || vistaActiva === 'mis-torneos'
                                 ? torneosIconSeleccionado
                                 : torneosIcon}
                             alt=""
@@ -184,10 +187,14 @@ function Navbar({
                                     <img src={resultadosIcon} alt="" />
                                     Mis Resultados
                                 </a>
-                                <a href="#mis-torneos" onClick={cerrarMenu}>
+                                {puedeVerMisTorneos && <a href="#mis-torneos" onClick={(evento) => {
+                                    evento.preventDefault();
+                                    cerrarMenu();
+                                    onMisTorneos?.();
+                                }}>
                                     <img src={torneosIcon} alt="" />
                                     Mis Torneos
-                                </a>
+                                </a>}
                                 {usuario.rol === 'Organizador' && (
                                     <a
                                         href="#panel-organizador"

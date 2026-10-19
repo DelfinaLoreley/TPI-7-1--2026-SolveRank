@@ -605,6 +605,132 @@ router.get('/ranking/:idCategoria', async (req, res) => {
     }
 });
 
+// Torneos vinculados al usuario según su rol y torneos favoritos guardados.
+router.get('/mi-actividad', verificarToken, permitirRoles(ROLES.COMPETIDOR, ROLES.JUEZ, ROLES.DELEGADO, ROLES.ORGANIZADOR), async (req, res) => {
+    const idUsuario = req.usuario.idUsuario;
+    const esOrganizador = req.usuario.rol === ROLES.ORGANIZADOR;
+    const condicion = esOrganizador
+        ? 't.idUsuario = ?'
+        : '(ux.idUsuario = ? OR j.idUsuario = ? OR d.idUsuario = ?)';
+    const parametros = esOrganizador ? [idUsuario] : [idUsuario, idUsuario, idUsuario];
+
+    try {
+        const [torneos] = await db.execute(
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
+                    t.limite_participantes, t.pathImagen, t.Lugar_Venue, t.direccion,
+                    p.pais, pr.provincia, c.ciudad,
+                    COUNT(DISTINCT ux2.idUsuario) AS inscriptos,
+                    COUNT(DISTINCT cxt.idCategoria) AS categorias,
+                    GROUP_CONCAT(DISTINCT cat.categoria ORDER BY cat.idCategoria SEPARATOR '|') AS categoriasLista
+             FROM torneos t
+             LEFT JOIN paises p ON p.idPais = t.idPais
+             LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
+             LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
+             LEFT JOIN usuarios_x_torneo ux ON ux.idTorneo = t.idTorneo
+             LEFT JOIN jueces_x_torneo j ON j.idTorneo = t.idTorneo
+             LEFT JOIN delegados_X_torneo d ON d.idtorneo = t.idTorneo
+             LEFT JOIN usuarios_x_torneo ux2 ON ux2.idTorneo = t.idTorneo
+             LEFT JOIN categorias_x_torneo cxt ON cxt.idTorneo = t.idTorneo
+             LEFT JOIN categorias cat ON cat.idCategoria = cxt.idCategoria AND ${CATEGORIAS_EXCLUIDAS_SQL}
+             WHERE ${condicion}
+             GROUP BY t.idTorneo
+             ORDER BY t.fecha_Inicio`,
+            parametros
+        );
+
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const fechaLocal = (valor) => {
+            if (!valor) return null;
+            const [anio, mes, dia] = String(valor).slice(0, 10).split('-').map(Number);
+            if (!anio || !mes || !dia) return null;
+            return new Date(anio, mes - 1, dia);
+        };
+        const proximos = torneos.filter((torneo) => {
+            const inicio = fechaLocal(torneo.fecha_Inicio);
+            return inicio && inicio > hoy;
+        });
+        const anteriores = torneos.filter((torneo) => {
+            const fin = fechaLocal(torneo.fecha_fin);
+            return fin && fin < hoy;
+        });
+
+        return res.json({ torneosProximos: proximos, torneosAnteriores: anteriores });
+    } catch (error) {
+        console.error('Error al obtener la actividad de torneos del usuario:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener tus torneos' });
+    }
+});
+
+router.get('/favoritos', verificarToken, async (req, res) => {
+    try {
+        const [favoritos] = await db.execute(
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
+                    t.limite_participantes, t.pathImagen, t.Lugar_Venue,
+                    p.pais, pr.provincia, c.ciudad,
+                    COUNT(DISTINCT ux.idUsuario) AS inscriptos,
+                    COUNT(DISTINCT cxt.idCategoria) AS categorias,
+                    GROUP_CONCAT(DISTINCT cat.categoria ORDER BY cat.idCategoria SEPARATOR '|') AS categoriasLista
+             FROM torneos_favoritos tf
+             INNER JOIN torneos t ON t.idTorneo = tf.idTorneo
+             LEFT JOIN paises p ON p.idPais = t.idPais
+             LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
+             LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
+             LEFT JOIN usuarios_x_torneo ux ON ux.idTorneo = t.idTorneo
+             LEFT JOIN categorias_x_torneo cxt ON cxt.idTorneo = t.idTorneo
+             LEFT JOIN categorias cat ON cat.idCategoria = cxt.idCategoria AND ${CATEGORIAS_EXCLUIDAS_SQL}
+             WHERE tf.idUsuario = ?
+             GROUP BY t.idTorneo
+             ORDER BY t.fecha_Inicio`,
+            [req.usuario.idUsuario]
+        );
+        return res.json({ favoritos });
+    } catch (error) {
+        console.error('Error al obtener los torneos favoritos:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener los torneos guardados' });
+    }
+});
+
+router.post('/favoritos/:idTorneo', verificarToken, async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        const [torneos] = await db.execute('SELECT idTorneo FROM torneos WHERE idTorneo = ?', [idTorneo]);
+        if (!torneos.length) return res.status(404).json({ mensaje: 'No se encontró el torneo' });
+        await db.execute(
+            'INSERT IGNORE INTO torneos_favoritos (idUsuario, idTorneo) VALUES (?, ?)',
+            [req.usuario.idUsuario, idTorneo]
+        );
+        return res.json({ guardado: true, idTorneo });
+    } catch (error) {
+        console.error('Error al guardar el torneo favorito:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo guardar el torneo' });
+    }
+});
+
+router.delete('/favoritos/:idTorneo', verificarToken, async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        await db.execute(
+            'DELETE FROM torneos_favoritos WHERE idUsuario = ? AND idTorneo = ?',
+            [req.usuario.idUsuario, idTorneo]
+        );
+        return res.json({ guardado: false, idTorneo });
+    } catch (error) {
+        console.error('Error al quitar el torneo favorito:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudo quitar el torneo de guardados' });
+    }
+});
+
 // Detalle público de un torneo para la vista de información.
 router.get('/detalle/:idTorneo', async (req, res) => {
     const idTorneo = Number(req.params.idTorneo);

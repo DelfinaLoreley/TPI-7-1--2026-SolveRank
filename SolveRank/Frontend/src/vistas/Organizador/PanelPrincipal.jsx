@@ -11,6 +11,8 @@ import proxtorneosIcon from '/src/assets/Organizador/proximostorneos-icono.png';
 import calendarIcon from '/src/assets/home/iconos/Calendar.png';
 import lugarIcon from '/src/assets/home/iconos/ubicacion-icon.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
+import guardarIcon from '/src/assets/home/iconos/guardado.png';
+import useTorneosFavoritos from '../../hooks/useTorneosFavoritos.js';
 
 import GraficoDona from './GraficoDona';
 import GraficoBarras from './GraficoBarras';
@@ -56,6 +58,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
     const [generandoTorneoId, setGenerandoTorneoId] = useState(null);
     const [mensajesMezclas, setMensajesMezclas] = useState({});
     const [ahora, setAhora] = useState(() => new Date());
+    const { favoritos, actualizando, errorFavoritos, alternarFavorito } = useTorneosFavoritos(usuario);
 
     useEffect(() => {
         let activo = true;
@@ -202,6 +205,14 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                     <div className="home-torneo-imagen">
                                         <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
                                         <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
+                                        <button
+                                            className={`panel-torneo-btn-guardar${favoritos.has(String(torneo.idTorneo)) ? ' guardado' : ''}`}
+                                            type="button"
+                                            aria-label={favoritos.has(String(torneo.idTorneo)) ? `Quitar ${torneo.nombre} de guardados` : `Guardar ${torneo.nombre}`}
+                                            aria-pressed={favoritos.has(String(torneo.idTorneo))}
+                                            disabled={actualizando.has(String(torneo.idTorneo))}
+                                            onClick={() => alternarFavorito(torneo.idTorneo)}
+                                        ><img src={guardarIcon} alt="" /></button>
                                     </div>
                                     <div className="home-torneo-info">
                                         <div className="home-fecha"><strong>{fecha ? fecha.toLocaleDateString('es-AR', { day: '2-digit' }) : '—'}</strong><span>{fecha ? fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase() : '—'}</span></div>
@@ -236,6 +247,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                 </article>;
                             })}
                     </div>
+                    {errorFavoritos && <p className="panel-torneos-mensaje" role="alert">{errorFavoritos}</p>}
                 </section>
 
                 <section className="panel-estadisticas">
