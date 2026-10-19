@@ -128,7 +128,7 @@ router.get('/:idTorneo/resultados/acceso', verificarToken, permitirRoles(ROLES.O
 
         const [rondas] = await db.execute(
             `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
-                    r.tiempoLimite, f.formato, f.cantidad_Solves AS cantidadIntentos,
+                    r.tiempoLimite, r.porcentajeAvance, f.formato, f.cantidad_Solves AS cantidadIntentos,
                     (SELECT COUNT(DISTINCT ci.idUsuario)
                      FROM categorias_x_inscripcion ci
                      WHERE ci.idTorneo = rct.idTorneo AND ci.idCategoria = rct.idCategoria) AS totalCompetidores,
@@ -332,8 +332,9 @@ router.get('/ranking/:idCategoria', async (req, res) => {
                     p.pais,
                     MIN(CASE
                         WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('DNF', 'DNS') THEN NULL
-                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2') THEN TIME_TO_SEC(i.tiempo) + 2
-                        ELSE TIME_TO_SEC(i.tiempo)
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2')
+                            THEN TIME_TO_SEC(i.tiempo) + MICROSECOND(i.tiempo) / 1000000 + 2
+                        ELSE TIME_TO_SEC(i.tiempo) + MICROSECOND(i.tiempo) / 1000000
                     END) AS mejorTiempo
              FROM intentos_x_competidor i
              INNER JOIN rondas_x_categoria_x_torneo rct
@@ -362,8 +363,11 @@ router.get('/detalle/:idTorneo', async (req, res) => {
     }
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.descripcion, t.fecha_Inicio, t.fecha_fin,
-                    t.Fecha_Inicio_Inscripcion, t.Fecha_fin_Inscripcion,
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
                     t.limite_participantes, t.pathImagen, t.Lugar_Venue,
                     t.direccion, t.Contacto_Organizador, t.observacion,
                     p.pais, pr.provincia, c.ciudad,
@@ -605,9 +609,12 @@ router.delete('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMP
 router.get('/', async (req, res) => {
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.descripcion, t.fecha_Inicio,
-                    t.fecha_fin, t.Fecha_Inicio_Inscripcion,
-                    t.Fecha_fin_Inscripcion, t.limite_participantes,
+            `SELECT t.idTorneo, t.nombre, t.descripcion,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
+                    t.limite_participantes,
                     t.pathImagen, t.Lugar_Venue, t.direccion,
                     p.pais, pr.provincia, c.ciudad,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos,
@@ -661,8 +668,11 @@ router.get('/', async (req, res) => {
 router.get('/mis-torneos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     try {
         const [torneos] = await db.execute(
-            `SELECT t.idTorneo, t.nombre, t.fecha_Inicio, t.fecha_fin,
-                    t.Fecha_Inicio_Inscripcion, t.Fecha_fin_Inscripcion,
+            `SELECT t.idTorneo, t.nombre,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d %H:%i:%s') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d %H:%i:%s') AS fecha_fin,
+                    DATE_FORMAT(t.Fecha_Inicio_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_Inicio_Inscripcion,
+                    DATE_FORMAT(t.Fecha_fin_Inscripcion, '%Y-%m-%d %H:%i:%s') AS Fecha_fin_Inscripcion,
                     t.limite_participantes, t.pathImagen, t.Lugar_Venue,
                     p.pais, pr.provincia, c.ciudad,
                     COUNT(DISTINCT ux.idUsuario) AS inscriptos,

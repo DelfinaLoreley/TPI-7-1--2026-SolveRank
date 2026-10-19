@@ -29,6 +29,11 @@ function fechaDeTorneo(fecha) {
 function estadoInscripcion(torneo) {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
+    const finTorneo = fechaDeTorneo(torneo.fecha_fin);
+    if (finTorneo) {
+        finTorneo.setHours(23, 59, 59, 999);
+        if (hoy > finTorneo) return 'Torneo finalizado';
+    }
     const apertura = fechaDeTorneo(torneo.Fecha_Inicio_Inscripcion);
     const cierre = fechaDeTorneo(torneo.Fecha_fin_Inscripcion);
     if (!apertura || !cierre) return 'Inscripción sin fechas';
@@ -40,11 +45,16 @@ function estadoInscripcion(torneo) {
 }
 
 function formatearTiempoRanking(segundos) {
+    if (segundos === null || segundos === undefined || segundos === '') return '—';
     const valor = Number(segundos);
-    if (!Number.isFinite(valor)) return '—';
-    const minutos = Math.floor(valor / 60);
-    const restantes = Math.floor(valor % 60);
-    return minutos ? `${minutos}:${String(restantes).padStart(2, '0')}` : String(restantes);
+    if (!Number.isFinite(valor) || valor < 0) return '—';
+    const totalCentesimas = Math.round(valor * 100);
+    const minutos = Math.floor(totalCentesimas / 6000);
+    const restantes = totalCentesimas % 6000;
+    const segundosEnteros = Math.floor(restantes / 100);
+    const centesimas = restantes % 100;
+    const tiempo = `${String(segundosEnteros).padStart(2, '0')}.${String(centesimas).padStart(2, '0')}`;
+    return minutos > 0 ? `${String(minutos).padStart(2, '0')}:${tiempo}` : tiempo;
 }
 
 const indicadoresEstadisticas = [
@@ -171,7 +181,7 @@ function Home({ onVerTorneo, onVerTodosTorneos }) {
                                 return <article className="home-torneo-card" key={torneo.idTorneo}>
                                 <div className="home-torneo-imagen">
                                     <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
-                                    <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{estado}</span>
+                                    <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
                                     <button className="home-torneo-btn-guardar"><img src={guardarIcon} alt="Guardar torneo"/></button>
                                 </div>
                                 <div className="home-torneo-info">

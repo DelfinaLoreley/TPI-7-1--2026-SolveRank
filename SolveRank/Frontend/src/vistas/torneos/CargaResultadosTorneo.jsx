@@ -161,6 +161,23 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
 
     const rondaActiva = rondas.find((ronda) => String(ronda.idRonda) === idRondaActiva);
     const cantidadIntentos = Number(rondaActiva?.cantidadIntentos) || 0;
+    const rondasCategoria = rondas
+        .filter((ronda) => String(ronda.idCategoria) === String(rondaActiva?.idCategoria))
+        .sort((a, b) => Number(a.idRonda) - Number(b.idRonda));
+    const indiceRondaCategoria = rondasCategoria.findIndex((ronda) => String(ronda.idRonda) === idRondaActiva);
+    const esRondaFinal = /final/i.test(String(rondaActiva?.ronda || ''));
+    const porcentajeAvance = Math.max(0, Math.min(100, Number(rondaActiva?.porcentajeAvance) || 0));
+    const totalCompetidores = Number(rondasCategoria[0]?.totalCompetidores) || competidores.length;
+    const participantesRonda = rondasCategoria
+        .slice(0, Math.max(0, indiceRondaCategoria))
+        .reduce((cantidad, ronda) => {
+            if (/final/i.test(String(ronda.ronda || ''))) return 0;
+            const porcentajeAnterior = Math.max(0, Math.min(100, Number(ronda.porcentajeAvance) || 0));
+            return Math.ceil(cantidad * porcentajeAnterior / 100);
+        }, totalCompetidores);
+    const cantidadAvanzan = !esRondaFinal
+        ? Math.ceil(participantesRonda * porcentajeAvance / 100)
+        : 0;
     const clasificacion = useMemo(() => competidores
         .map((competidor) => ({
             ...competidor,
@@ -371,7 +388,12 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                     <tr><td colSpan={5 + cantidadIntentos}>Cargando resultados…</td></tr>
                                 ) : clasificacion.length ? clasificacion.map((competidor, indice) => (
                                     <tr key={competidor.idUsuario} className={competidor.idUsuario === Number(idCompetidor) ? 'seleccionado' : ''}>
-                                        <td>{competidor.resultado !== null ? indice + 1 : '—'}</td>
+                                        <td
+                                            className={competidor.resultado !== null && indice < cantidadAvanzan ? 'carga-resultados-posicion-avanza' : ''}
+                                            title={competidor.resultado !== null && indice < cantidadAvanzan ? 'Clasifica a la siguiente ronda' : undefined}
+                                        >
+                                            {competidor.resultado !== null ? indice + 1 : '—'}
+                                        </td>
                                         <td>{competidor.nombre}</td>
                                         <td>{competidor.pais || '—'}</td>
                                         <td>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</td>

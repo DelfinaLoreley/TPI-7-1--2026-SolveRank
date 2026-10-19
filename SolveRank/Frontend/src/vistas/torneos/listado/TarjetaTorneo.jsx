@@ -21,8 +21,13 @@ function fechaLocal(fecha) {
 function obtenerEstadoInscripcion(torneo) {
     const apertura = fechaLocal(torneo.Fecha_Inicio_Inscripcion);
     const cierre = fechaLocal(torneo.Fecha_fin_Inscripcion);
+    const finTorneo = fechaLocal(torneo.fecha_fin);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
+    if (finTorneo) {
+        finTorneo.setHours(23, 59, 59, 999);
+        if (hoy > finTorneo) return 'Torneo finalizado';
+    }
     if (!apertura || !cierre) return 'Inscripciones próximamente';
     if (hoy < apertura) return 'Inscripciones próximamente';
     if (hoy <= cierre) return 'Inscripciones abiertas';
@@ -44,7 +49,7 @@ function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onVer
         <article className="listado-torneo-card">
             <div className="listado-torneo-imagen">
                 <img src={imagen} alt={`Sede del torneo ${torneo.nombre}`} />
-                <span className={`listado-torneo-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>
+                <span className={`listado-torneo-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>
                     {estado}
                 </span>
                 <button

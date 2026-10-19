@@ -359,6 +359,12 @@
     text-align: center;
 }
 
+.carga-resultados-tabla-contenedor tbody td:first-child.carga-resultados-posicion-avanza {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    font-weight: 700;
+}
+
 .carga-resultados-vacia {
     padding: 18px;
     border: 1px solid var(--resultados-borde, #1c3155);

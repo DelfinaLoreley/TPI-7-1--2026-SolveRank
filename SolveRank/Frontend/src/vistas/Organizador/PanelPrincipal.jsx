@@ -27,6 +27,11 @@ function convertirFecha(fecha) {
 }
 
 function estadoInscripcion(torneo, ahora = new Date()) {
+    const finTorneo = convertirFecha(torneo.fecha_fin);
+    if (finTorneo) {
+        finTorneo.setHours(23, 59, 59, 999);
+        if (ahora > finTorneo) return 'Torneo finalizado';
+    }
     const apertura = convertirFecha(torneo.Fecha_Inicio_Inscripcion);
     const cierre = convertirFecha(torneo.Fecha_fin_Inscripcion);
     if (!apertura || !cierre) return 'Sin fechas de inscripción';
@@ -196,7 +201,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                 return <article className="home-torneo-card" key={torneo.idTorneo}>
                                     <div className="home-torneo-imagen">
                                         <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
-                                        <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : ''}`}>{estado}</span>
+                                        <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
                                     </div>
                                     <div className="home-torneo-info">
                                         <div className="home-fecha"><strong>{fecha ? fecha.toLocaleDateString('es-AR', { day: '2-digit' }) : '—'}</strong><span>{fecha ? fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase() : '—'}</span></div>
