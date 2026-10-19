@@ -6,8 +6,13 @@ import './Records.css';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import paisesIcon from '/src/assets/home/iconos/paises-cuberos-azul-icon.png';
-import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
+import categoriasIcon from '/src/assets/icons/categorias-amarillo-icon.svg';
 import resultadosIcon from '/src/assets/home/iconos/resultados-verde-icon.png';
+import lupaIcon from '/src/assets/icons/search-icon.png';
+import lineaDecorativaIzq from '/src/assets/icons/linea-izq-decorativa.svg';
+import lineaDecorativaDer from '/src/assets/icons/linea-der-decorativa.svg';
+import rankingIco from '/src/assets/icons/rankings-icon-azul.svg';
+import estadisticasIcon from '/src/assets/icons/estadisticas-icon.svg';
 
 const iconosEstadisticas = [
     { key: 'competidores', label: 'Competidores', icon: competidoresIcon, color: 'violeta' },
@@ -91,6 +96,8 @@ function Records() {
         const texto = busquedaPais.trim().toLocaleLowerCase('es');
         return texto ? paises.filter(({ pais }) => String(pais).toLocaleLowerCase('es').includes(texto)) : paises;
     }, [paises, busquedaPais]);
+    const categoriaSeleccionada = categorias.find(({ idCategoria: id }) => String(id) === idCategoria);
+    const iconoCategoria = obtenerIconoCategoria(categoriaSeleccionada?.categoria);
     const records = datos?.records ?? [];
     const estadisticas = datos?.estadisticas ?? {};
 
@@ -105,7 +112,7 @@ function Records() {
                 <section className="records-panel" aria-label="Récords de speedcubing">
                     <div className="records-filtros">
                         <label className="records-buscar-pais">
-                            <span aria-hidden="true">⌕</span>
+                            <span aria-hidden="true"><img src={lupaIcon} alt="" /></span>
                             <input type="search" value={busquedaPais} onChange={(evento) => setBusquedaPais(evento.target.value)} placeholder="Buscar el país..." aria-label="Buscar país" />
                         </label>
                         <div className="records-selectores">
@@ -115,7 +122,7 @@ function Records() {
                                     {paisesFiltrados.map((pais) => <option key={pais.idPais} value={pais.idPais}>{pais.pais}</option>)}
                                 </select>
                             </label>
-                            <label className="records-select-categoria"><span className="sr-only">Categoría</span>
+                            <label className="records-select-categoria" style={{ '--records-icono-categoria': iconoCategoria ? `url("${iconoCategoria}")` : 'none' }}><span className="sr-only">Categoría</span>
                                 <select value={idCategoria} onChange={(evento) => setIdCategoria(evento.target.value)}>
                                     <option value="">Todas</option>
                                     {categorias.map((categoria) => <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.categoria}</option>)}
@@ -133,14 +140,14 @@ function Records() {
                     {cargandoCatalogos ? <p className="records-mensaje">Cargando filtros…</p> : (
                         <div className="records-layout">
                             <section className="records-tabla-panel">
-                                <h2><span aria-hidden="true">◎</span>Tabla de récords actuales</h2>
+                                <h2><span aria-hidden="true"><img src={rankingIco} alt="" /></span>Tabla de récords actuales</h2>
                                 {error && <p className="records-mensaje" role="alert">{error}</p>}
                                 {!error && cargando && <p className="records-mensaje" role="status">Cargando récords…</p>}
                                 {!error && !cargando && records.map((categoria) => {
                                     const icono = obtenerIconoCategoria(categoria.categoria);
                                     return (
                                         <section className="records-categoria" key={categoria.idCategoria}>
-                                            <h3><span className="records-decoracion" aria-hidden="true">⟵◆</span>{icono && <img src={icono} alt="" />}{categoria.categoria}<span className="records-decoracion" aria-hidden="true">◆⟶</span></h3>
+                                            <h3><span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaIzq}/></span>{icono && <img src={icono} alt="" />}{categoria.categoria}<span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaDer}/></span></h3>
                                             <div className="records-tabla-scroll">
                                                 <table className="records-tabla">
                                                     <thead><tr><th>Tipo</th><th>Nombre</th><th>Fecha</th><th>País representando</th><th>Resultado</th></tr></thead>
@@ -166,7 +173,7 @@ function Records() {
 
                             <aside className="records-lateral">
                                 <section className="records-estadisticas">
-                                    <h2><span aria-hidden="true">▥</span>Estadísticas globales</h2>
+                                    <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
                                     {iconosEstadisticas.map((item) => <article className="records-estadistica" key={item.key}>
                                         <span className={`records-estadistica-icono ${item.color}`}><img src={item.icon} alt="" /></span>
                                         <div><strong>{Number(estadisticas[item.key] || 0).toLocaleString('es-AR')}</strong><span>{item.label}</span></div>

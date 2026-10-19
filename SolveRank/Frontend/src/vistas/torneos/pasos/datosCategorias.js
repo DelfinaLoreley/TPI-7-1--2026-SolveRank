@@ -2,17 +2,17 @@ import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import icon2x2 from '/src/assets/categorias/2x2-icon.svg';
 import icon3x3 from '/src/assets/categorias/3x3-icon.svg';
 import icon3x3Blind from '/src/assets/categorias/3x3-blind-icon.svg';
+import icon3x3OneHanded from '/src/assets/categorias/3x3-OH-icon.svg';
 import icon4x4 from '/src/assets/categorias/4x4-icon.svg';
 import icon4x4Blind from '/src/assets/categorias/4x4-blind-icon.svg';
 import icon5x5 from '/src/assets/categorias/5x5-icon.svg';
+import icon5x5Blind from '/src/assets/categorias/5x5-blind-icon.svg';
 import icon6x6 from '/src/assets/categorias/6x6-icon.svg';
 import icon7x7 from '/src/assets/categorias/7x7-icon.svg';
 import iconClock from '/src/assets/categorias/clock-icon.svg';
 import iconMegaminx from '/src/assets/categorias/megaminx-icon.svg';
 import iconPyraminx from '/src/assets/categorias/pyraminx icon.svg';
 import iconSkewb from '/src/assets/categorias/skewb-icon.svg';
-import iconSquare1 from '/src/assets/categorias/square-1-icon.svg';
-import iconFTO from '/src/assets/categorias/fto-icon.svg';
 
 export const categorias = [
     { id: '3x3x3', etiqueta: '3x3x3', icono: icon3x3 },
@@ -22,15 +22,13 @@ export const categorias = [
     { id: '6x6x6', etiqueta: '6x6x6', icono: icon6x6 },
     { id: '7x7x7', etiqueta: '7x7x7', icono: icon7x7 },
     { id: '3x3x3 a ciegas', etiqueta: '3x3 BLD', icono: icon3x3Blind },
-    { id: '3x3x3 Una mano', etiqueta: '3x3 OH', icono: icon3x3 },
+    { id: '3x3x3 Una mano', etiqueta: '3x3 OH', icono: icon3x3OneHanded },
     { id: 'Clock', etiqueta: 'Clock', icono: iconClock },
     { id: 'Megaminx', etiqueta: 'Megaminx', icono: iconMegaminx },
     { id: 'Pyraminx', etiqueta: 'Pyraminx', icono: iconPyraminx },
     { id: 'Skewb', etiqueta: 'Skewb', icono: iconSkewb },
-    { id: 'Square-1', etiqueta: 'Square-1', icono: iconSquare1 },
     { id: '4x4x4 a ciegas', etiqueta: '4x4 BLD', icono: icon4x4Blind },
-    { id: '5x5x5 a ciegas', etiqueta: '5x5 BLD', icono: icon5x5 },
-    { id: 'FTO', etiqueta: 'FTO', icono: iconFTO }
+    { id: '5x5x5 a ciegas', etiqueta: '5x5 BLD', icono: icon5x5Blind }
 ];
 
 export const categoriasDisponibles = categorias.map(({ id }) => id);
