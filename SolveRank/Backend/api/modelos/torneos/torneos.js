@@ -389,6 +389,116 @@ router.get('/categorias', async (req, res) => {
     }
 });
 
+// Récords públicos: mejor single y mejor promedio por categoría en torneos finalizados.
+router.get('/records', async (req, res) => {
+    const idPais = req.query.idPais ? Number(req.query.idPais) : null;
+    const idGenero = req.query.idGenero ? Number(req.query.idGenero) : null;
+    const idCategoria = req.query.idCategoria ? Number(req.query.idCategoria) : null;
+    if ([idPais, idGenero, idCategoria].some((id) => id !== null && (!Number.isSafeInteger(id) || id <= 0))) {
+        return res.status(400).json({ mensaje: 'Los filtros de récords no son válidos' });
+    }
+
+    try {
+        const filtros = ['t.fecha_fin < CURDATE()', CATEGORIAS_EXCLUIDAS_SQL];
+        const parametros = [];
+        if (idPais !== null) { filtros.push('u.idPais = ?'); parametros.push(idPais); }
+        if (idGenero !== null) { filtros.push('u.idGenero = ?'); parametros.push(idGenero); }
+        if (idCategoria !== null) { filtros.push('c.idCategoria = ?'); parametros.push(idCategoria); }
+
+        const [filas] = await db.execute(
+            `SELECT i.idTorneo, i.idRonda, i.idUsuario, i.id AS idIntento,
+                    i.penalizacion, f.formato, f.cantidad_Solves AS cantidadIntentos,
+                    c.idCategoria, c.categoria,
+                    u.Nombre AS nombre, u.apellido, u.idPais, p.pais,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d') AS fechaTorneo,
+                    CASE
+                        WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('DNF', 'DNS') OR i.tiempo IS NULL THEN NULL
+                        ELSE ROUND((TIME_TO_SEC(i.tiempo) + MICROSECOND(i.tiempo) / 1000000
+                            + CASE WHEN UPPER(COALESCE(i.penalizacion, '')) IN ('+2', '2') THEN 2 ELSE 0 END) * 100)
+                    END AS tiempoCentesimas
+             FROM intentos_x_competidor i
+             INNER JOIN rondas_x_categoria_x_torneo rct
+                ON rct.idRonda = i.idRonda AND rct.idTorneo = i.idTorneo
+             INNER JOIN torneos t ON t.idTorneo = i.idTorneo
+             INNER JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             INNER JOIN formatos f ON f.idFormato = fct.idFormato
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN usuarios u ON u.idUsuario = i.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             WHERE ${filtros.join(' AND ')}
+             ORDER BY c.idCategoria, i.idTorneo, i.idRonda, u.idUsuario, i.id`,
+            parametros
+        );
+
+        const rondas = new Map();
+        for (const fila of filas) {
+            const llave = `${fila.idCategoria}:${fila.idUsuario}:${fila.idTorneo}:${fila.idRonda}`;
+            if (!rondas.has(llave)) {
+                rondas.set(llave, {
+                    idCategoria: Number(fila.idCategoria), categoria: fila.categoria,
+                    idUsuario: Number(fila.idUsuario), nombre: `${fila.nombre || ''} ${fila.apellido || ''}`.trim(),
+                    pais: fila.pais, idTorneo: Number(fila.idTorneo), fechaTorneo: fila.fechaTorneo,
+                    formato: String(fila.formato || '').toUpperCase(), cantidad: Number(fila.cantidadIntentos), intentos: []
+                });
+            }
+            rondas.get(llave).intentos.push(fila.tiempoCentesimas === null ? null : Number(fila.tiempoCentesimas));
+        }
+
+        const porCategoria = new Map();
+        const comparar = (a, b) => a.valor - b.valor
+            || String(a.fechaTorneo).localeCompare(String(b.fechaTorneo))
+            || a.nombre.localeCompare(b.nombre, 'es');
+        for (const ronda of rondas.values()) {
+            if (!Number.isInteger(ronda.cantidad) || ronda.cantidad <= 0 || ronda.intentos.length !== ronda.cantidad) continue;
+            if (!porCategoria.has(ronda.idCategoria)) {
+                porCategoria.set(ronda.idCategoria, { idCategoria: ronda.idCategoria, categoria: ronda.categoria, single: null, media: null });
+            }
+            const registroCategoria = porCategoria.get(ronda.idCategoria);
+            const titular = { idUsuario: ronda.idUsuario, nombre: ronda.nombre, pais: ronda.pais, fechaTorneo: ronda.fechaTorneo };
+            const validos = ronda.intentos.filter((tiempo) => tiempo !== null);
+            if (validos.length) {
+                const single = { ...titular, valor: Math.min(...validos) };
+                if (!registroCategoria.single || comparar(single, registroCategoria.single) < 0) registroCategoria.single = single;
+            }
+
+            let promedio = null;
+            if (ronda.formato === 'AO5' && ronda.intentos.length === 5) {
+                const ordenados = ronda.intentos.map((valor) => valor === null ? Infinity : valor).sort((a, b) => a - b);
+                const centrales = ordenados.slice(1, -1);
+                if (centrales.every(Number.isFinite)) promedio = centrales.reduce((suma, valor) => suma + valor, 0) / centrales.length;
+            } else if (ronda.formato === 'MO3' && ronda.intentos.length === 3 && ronda.intentos.every(Number.isFinite)) {
+                promedio = ronda.intentos.reduce((suma, valor) => suma + valor, 0) / ronda.intentos.length;
+            }
+            if (promedio !== null) {
+                const media = { ...titular, valor: promedio };
+                if (!registroCategoria.media || comparar(media, registroCategoria.media) < 0) registroCategoria.media = media;
+            }
+        }
+
+        const [categorias] = idCategoria === null
+            ? await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`)
+            : await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE idCategoria = ? AND ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`, [idCategoria]);
+        const records = categorias.map((categoria) => porCategoria.get(Number(categoria.idCategoria)) || {
+            idCategoria: Number(categoria.idCategoria), categoria: categoria.categoria, single: null, media: null
+        });
+        const [[estadisticas]] = await db.execute(
+            `SELECT
+                (SELECT COUNT(DISTINCT u.idUsuario) FROM usuarios u INNER JOIN tipos_usuarios tu ON tu.idTipoUsuario = u.idTipoUsuario WHERE LOWER(tu.Nombre) IN ('competidor', 'juez')) AS competidores,
+                (SELECT COUNT(DISTINCT u.idPais) FROM usuarios u INNER JOIN tipos_usuarios tu ON tu.idTipoUsuario = u.idTipoUsuario WHERE LOWER(tu.Nombre) IN ('competidor', 'juez') AND u.idPais IS NOT NULL) AS paises,
+                (SELECT COUNT(*) FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL}) AS categorias,
+                (SELECT COUNT(*) FROM intentos_x_competidor i INNER JOIN torneos t ON t.idTorneo = i.idTorneo WHERE t.fecha_fin < CURDATE()) AS resultadosRegistrados`
+        );
+        return res.json({ records, estadisticas: {
+            competidores: Number(estadisticas.competidores), paises: Number(estadisticas.paises),
+            categorias: Number(estadisticas.categorias), resultadosRegistrados: Number(estadisticas.resultadosRegistrados)
+        } });
+    } catch (error) {
+        console.error('Error al generar los récords:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener los récords' });
+    }
+});
+
 // Ranking público por categoría, país, género y tipo de resultado.
 router.get('/rankings', async (req, res) => {
     const idCategoria = Number(req.query.idCategoria);

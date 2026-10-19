@@ -27,6 +27,7 @@ function Navbar({
     onTorneos,
     onMisTorneos,
     onRankings,
+    onRecords,
     onPanelOrganizador,
     onIniciarSesion,
     onCerrarSesion,
@@ -146,7 +147,11 @@ function Navbar({
                     <span>Rankings</span>
                 </a>
 
-                <a className="site-navbar-link" href="#records" onClick={cerrarMenu}>
+                <a className={`site-navbar-link${vistaActiva === 'records' ? ' activo' : ''}`} href="#records" onClick={(evento) => {
+                    evento.preventDefault();
+                    cerrarMenu();
+                    onRecords?.();
+                }}>
                     <img src={vistaActiva === 'records' ? recordsIconSeleccionado : recordsIcon} alt="" />
                     <span>Récords</span>
                 </a>
