@@ -64,7 +64,7 @@ const indicadoresEstadisticas = [
     { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
-function Home({ onVerTorneo, onVerTodosTorneos }) {
+function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings }) {
     const [torneos, setTorneos] = useState([]);
     const [estadisticasReales, setEstadisticasReales] = useState(null);
     const [categoriasRanking, setCategoriasRanking] = useState([]);
@@ -146,7 +146,7 @@ function Home({ onVerTorneo, onVerTodosTorneos }) {
                         </p>
                         <div className="home-hero-botones">
                             <a href="#torneos" className="home-button primario"><img src={torneosIcon} alt="Torneos" /> Ver Torneos</a>
-                            <a href="#rankings" className="home-button secundario"><img src={rankingsIcon} alt="Rankings" /> Ver Rankings</a>
+                            <a href="#rankings" className="home-button secundario" onClick={(evento) => { evento.preventDefault(); onVerRankings?.(); }}><img src={rankingsIcon} alt="Rankings" /> Ver Rankings</a>
                         </div>
                         <div className="home-resumen">
                             <div><span className="resumen-icono azul"><img src={competidoresIcon} alt="Competidores" /></span><strong>{estadisticasReales ? Number(estadisticasReales.competidores).toLocaleString('es-AR') : '—'}</strong><small>Competidores</small></div>
@@ -202,7 +202,7 @@ function Home({ onVerTorneo, onVerTodosTorneos }) {
                     <section className="home-panel home-ranking" id="rankings">
                         <div className="home-section-heading">
                             <h2><span className="home-ranking-icon"><img src={torneosIcon2}/></span> Rankings</h2>
-                            <a href="#rankings">Ver rankings completos ⟶</a>
+                            <a href="#rankings" onClick={(evento) => { evento.preventDefault(); onVerRankings?.(); }}>Ver rankings completos ⟶</a>
                         </div>
                         <div className="home-categorias" aria-label="Categorías de ranking">
                             {categoriasRanking.map((categoria) => (
@@ -232,7 +232,7 @@ function Home({ onVerTorneo, onVerTodosTorneos }) {
                                     </li>
                                 ))}
                         </ol>
-                        <a className="home-ranking-link" href="#rankings">Ver ranking de {categoriasRanking.find(({ idCategoria }) => String(idCategoria) === categoriaRanking)?.categoria || 'categoría'} ⟶</a>
+                        <a className="home-ranking-link" href="#rankings" onClick={(evento) => { evento.preventDefault(); onVerRankings?.(); }}>Ver ranking de {categoriasRanking.find(({ idCategoria }) => String(idCategoria) === categoriaRanking)?.categoria || 'categoría'} ⟶</a>
                     </section>
 
                     <section className="home-panel home-estadisticas" id="estadisticas">
