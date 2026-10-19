@@ -4,6 +4,7 @@ import cuboBanner from '/src/assets/img-cubo-banner.png';
 import './ListadoTorneo.css';
 import FiltrosTorneo from './listado/FiltrosTorneo.jsx';
 import TarjetaTorneo from './listado/TarjetaTorneo.jsx';
+import useTorneosFavoritos from '../../hooks/useTorneosFavoritos.js';
 
 const pestanas = ['Próximos', 'Recientes', 'Anteriores', 'En curso'];
 const diasRecientes = 90;
@@ -40,7 +41,7 @@ function inscripcionAbierta(torneo, hoy) {
     return apertura <= hoy && hoy <= cierre;
 }
 
-function ListadoTorneo({ onVerTorneo }) {
+function ListadoTorneo({ onVerTorneo, usuario, onIniciarSesion }) {
     const [torneos, setTorneos] = useState([]);
     const [paises, setPaises] = useState([]);
     const [cargando, setCargando] = useState(true);
@@ -58,7 +59,7 @@ function ListadoTorneo({ onVerTorneo }) {
     const [torneosPorPagina, setTorneosPorPagina] = useState(
         () => window.matchMedia('(max-width: 700px)').matches ? 10 : 12
     );
-    const [guardados, setGuardados] = useState(() => new Set());
+    const { favoritos, actualizando, errorFavoritos, alternarFavorito } = useTorneosFavoritos(usuario);
 
     function actualizarFiltro(actualizar, valor) {
         actualizar(valor);
@@ -154,15 +155,6 @@ function ListadoTorneo({ onVerTorneo }) {
     const desde = torneosFiltrados.length ? (paginaActual - 1) * torneosPorPagina + 1 : 0;
     const hasta = Math.min(paginaActual * torneosPorPagina, torneosFiltrados.length);
 
-    function alternarGuardado(idTorneo) {
-        setGuardados((actuales) => {
-            const siguientes = new Set(actuales);
-            if (siguientes.has(idTorneo)) siguientes.delete(idTorneo);
-            else siguientes.add(idTorneo);
-            return siguientes;
-        });
-    }
-
     return (
         <main className="listado-torneos">
             <div className="listado-torneos-contenido">
@@ -241,8 +233,10 @@ function ListadoTorneo({ onVerTorneo }) {
                                     key={torneo.idTorneo}
                                     torneo={torneo}
                                     urlBackend={axios.defaults.baseURL.replace(/\/api\/?$/, '')}
-                                    guardado={guardados.has(torneo.idTorneo)}
-                                    onAlternarGuardado={() => alternarGuardado(torneo.idTorneo)}
+                                    guardado={favoritos.has(String(torneo.idTorneo))}
+                                    favoritoActualizando={actualizando.has(String(torneo.idTorneo))}
+                                    onAlternarGuardado={usuario ? () => alternarFavorito(torneo.idTorneo) : undefined}
+                                    onSolicitarLogin={onIniciarSesion}
                                     onVerTorneo={() => onVerTorneo?.(torneo)}
                                 />
                             ))}
@@ -250,6 +244,8 @@ function ListadoTorneo({ onVerTorneo }) {
                     ) : (
                         <p className="listado-torneos-mensaje">No encontramos torneos que coincidan con estos filtros.</p>
                     )}
+
+                    {errorFavoritos && <p className="listado-torneos-mensaje" role="alert">{errorFavoritos}</p>}
 
                     {!cargando && !error && (
                         <nav className="listado-torneos-paginacion" aria-label="Paginación de torneos">

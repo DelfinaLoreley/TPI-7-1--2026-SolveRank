@@ -15,6 +15,7 @@ import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
 import estadisticasIcon from '/src/assets/home/iconos/estadisticas.png';
 import cuboImg from '/src/assets/home/cubo-img-stat.png';
 import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
+import useTorneosFavoritos from '../../hooks/useTorneosFavoritos.js';
 
 function fechaDeTorneo(fecha) {
     if (!fecha) return null;
@@ -64,7 +65,7 @@ const indicadoresEstadisticas = [
     { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
-function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings }) {
+function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onIniciarSesion }) {
     const [torneos, setTorneos] = useState([]);
     const [estadisticasReales, setEstadisticasReales] = useState(null);
     const [categoriasRanking, setCategoriasRanking] = useState([]);
@@ -74,6 +75,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings }) {
     const [errorRanking, setErrorRanking] = useState('');
     const [cargandoTorneos, setCargandoTorneos] = useState(true);
     const [errorTorneos, setErrorTorneos] = useState('');
+    const { favoritos, actualizando, errorFavoritos, alternarFavorito } = useTorneosFavoritos(usuario);
 
     useEffect(() => {
         let activo = true;
@@ -182,7 +184,14 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings }) {
                                 <div className="home-torneo-imagen">
                                     <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
                                     <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
-                                    <button className="home-torneo-btn-guardar"><img src={guardarIcon} alt="Guardar torneo"/></button>
+                                    <button
+                                        className={`home-torneo-btn-guardar${favoritos.has(String(torneo.idTorneo)) ? ' guardado' : ''}`}
+                                        type="button"
+                                        aria-label={favoritos.has(String(torneo.idTorneo)) ? `Quitar ${torneo.nombre} de guardados` : `Guardar ${torneo.nombre}`}
+                                        aria-pressed={favoritos.has(String(torneo.idTorneo))}
+                                        disabled={actualizando.has(String(torneo.idTorneo))}
+                                        onClick={() => usuario ? alternarFavorito(torneo.idTorneo) : onIniciarSesion?.()}
+                                    ><img src={guardarIcon} alt="" /></button>
                                 </div>
                                 <div className="home-torneo-info">
                                     <div className="home-fecha"><strong>{fecha.toLocaleDateString('es-AR', { day: '2-digit' })}</strong><span>{fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase()}</span></div>
@@ -196,6 +205,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings }) {
                             </article>;
                             })}
                     </div>
+                    {errorFavoritos && <p className="home-torneos-mensaje" role="alert">{errorFavoritos}</p>}
                 </section>
 
                 <div className="home-dashboard">
