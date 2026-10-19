@@ -16,6 +16,7 @@ import liveIcon from '/src/assets/home/iconos/solverank-live-icon.png';
 import liveIconSeleccionado from '/src/assets/home/iconos/solverank-live-azul-icon.png';
 import searchIcon from '/src/assets/home/iconos/search-icon.png';
 import chevronIcon from '/src/assets/home/iconos/chevron-icon.svg';
+import chevronIconSelected from '/src/assets/home/iconos/chevron-icon-selected.svg';
 import userNotLogged from '/src/assets/home/iconos/icon-user.png';
 import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
@@ -130,7 +131,7 @@ function Navbar({
                             alt=""
                         />
                         <span>Torneos</span>
-                        <img className="site-navbar-chevron" src={chevronIcon} alt="" />
+                        <img className="site-navbar-chevron" src={menuAbierto === 'torneos' || vistaActiva === 'torneos' ? chevronIconSelected : chevronIcon} alt="" />
                     </button>
                     {menuAbierto === 'torneos' && (
                         <div className="site-navbar-dropdown">
@@ -164,7 +165,7 @@ function Navbar({
                             alt=""
                         />
                         <span>Resultados</span>
-                        <img className="site-navbar-chevron" src={chevronIcon} alt="" />
+                        <img className="site-navbar-chevron" src={menuAbierto === 'resultados' || vistaActiva === 'resultados' ? chevronIconSelected : chevronIcon} alt="" />
                     </button>
                     {menuAbierto === 'resultados' && (
                         <div className="site-navbar-dropdown">

@@ -1,0 +1,198 @@
+.resultados-finales {
+    padding: 16px 20px 28px;
+    border: 1px solid #1c3155;
+    border-radius: 10px;
+    background: #091328;
+    color: #f5f7ff;
+}
+
+.resultados-finales h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.resultados-finales h2 img {
+    display: block;
+    width: 17px;
+    height: 17px;
+    object-fit: contain;
+}
+
+.resultados-finales-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 24px;
+    color: #f5f7ff;
+    font-size: 14px;
+}
+
+.resultados-finales-vistas {
+    display: flex;
+    gap: 8px;
+}
+
+.resultados-finales-vistas button,
+.resultados-finales-selector-categoria select {
+    min-height: 34px;
+    padding: 7px 12px;
+    border: 1px solid #1c3155;
+    border-radius: 7px;
+    background: #101d38;
+    color: #f5f7ff;
+    font: inherit;
+    font-size: 12px;
+}
+
+.resultados-finales-vistas button {
+    cursor: pointer;
+}
+
+.resultados-finales-vistas button.activo {
+    border-color: #356eff;
+    background: #254bb6;
+}
+
+.resultados-finales-selector-categoria select {
+    min-width: 168px;
+    cursor: pointer;
+}
+
+.resultados-finales-grupos {
+    display: grid;
+    gap: 26px;
+}
+
+.resultados-finales-grupo {
+    min-width: 0;
+}
+
+.resultados-finales-grupo h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto 16px;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.resultados-finales-grupo h3 span {
+    color: #dfe7f7;
+    font-size: 10px;
+}
+
+.resultados-finales-nombre-ronda {
+    margin: -8px 0 20px;
+    color: #f0f3fb;
+    font-size: 15px;
+    font-style: italic;
+    text-align: center;
+}
+
+.resultados-finales-tabla-contenedor {
+    width: min(100%, 850px);
+    margin: 0 auto;
+    overflow-x: auto;
+    border: 1px solid #1c3155;
+    border-radius: 9px;
+    scrollbar-color: #334c79 #091328;
+}
+
+.resultados-finales-tabla-contenedor table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #091328;
+    color: #f3f5fa;
+    font-size: 10px;
+    text-align: center;
+}
+
+.resultados-finales-tabla-contenedor th,
+.resultados-finales-tabla-contenedor td {
+    min-width: 36px;
+    padding: 6px 7px;
+    border-bottom: 1px solid #1a2b48;
+    line-height: 1.2;
+}
+
+.resultados-finales-tabla-contenedor th {
+    background: #0e1c3a;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.resultados-finales-tabla-contenedor th:nth-child(2),
+.resultados-finales-tabla-contenedor td:nth-child(2) {
+    min-width: 130px;
+    text-align: left;
+}
+
+.resultados-finales-tabla-contenedor th:nth-child(3),
+.resultados-finales-tabla-contenedor td:nth-child(3) {
+    min-width: 60px;
+    text-align: left;
+}
+
+.resultados-finales-tabla-contenedor tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.resultados-finales-tabla-contenedor tbody tr:hover {
+    background: #0d1a33;
+}
+
+.resultados-finales-clasifica {
+    background: #07513b;
+    color: #5aff95;
+    font-weight: 700;
+}
+
+.resultados-finales-podio-1 {
+    color: #f3d82e;
+    font-weight: 700;
+}
+
+.resultados-finales-podio-2 {
+    color: #c2c9d5;
+    font-weight: 700;
+}
+
+.resultados-finales-podio-3 {
+    color: #d88937;
+    font-weight: 700;
+}
+
+.resultados-finales-solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+@media (max-width: 640px) {
+    .resultados-finales {
+        padding: 14px 10px 20px;
+    }
+
+    .resultados-finales-filtros {
+        align-items: flex-start;
+    }
+
+    .resultados-finales-filtros > span {
+        flex-basis: 100%;
+    }
+
+    .resultados-finales-selector-categoria select {
+        min-width: 140px;
+    }
+}

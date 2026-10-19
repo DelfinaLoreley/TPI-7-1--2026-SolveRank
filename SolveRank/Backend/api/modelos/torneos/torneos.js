@@ -117,6 +117,138 @@ function tiempoLegible(tiempo) {
     return `${String(totalMinutos).padStart(2, '0')}:${String(Number(segundo)).padStart(2, '0')}.${centesimas}`;
 }
 
+router.get('/:idTorneo/resultados/finales', async (req, res) => {
+    const idTorneo = idValido(req.params.idTorneo);
+    if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
+    try {
+        const [torneos] = await db.execute(
+            'SELECT idTorneo FROM torneos WHERE idTorneo = ? AND CURDATE() > DATE(fecha_fin)',
+            [idTorneo]
+        );
+        if (!torneos.length) {
+            return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+        }
+
+        const [categoriasTorneo] = await db.execute(
+            `SELECT cxt.idCategoria, c.categoria,
+                    COUNT(DISTINCT ci.idUsuario) AS totalCompetidores
+             FROM categorias_x_torneo cxt
+             INNER JOIN categorias c ON c.idCategoria = cxt.idCategoria
+             LEFT JOIN categorias_x_inscripcion ci
+                ON ci.idTorneo = cxt.idTorneo AND ci.idCategoria = cxt.idCategoria
+             WHERE cxt.idTorneo = ?
+             GROUP BY cxt.idCategoria, c.categoria
+             ORDER BY c.categoria`,
+            [idTorneo]
+        );
+        const [rondas] = await db.execute(
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+                    r.porcentajeAvance, f.formato, f.cantidad_Solves AS cantidadIntentos
+             FROM rondas_x_categoria_x_torneo rct
+             INNER JOIN categorias c ON c.idCategoria = rct.idCategoria
+             INNER JOIN rondas r ON r.idRonda = rct.idRonda
+             LEFT JOIN formato_x_categoria_x_torneo fct
+                ON fct.idTorneo = rct.idTorneo AND fct.idCategoria = rct.idCategoria
+             LEFT JOIN formatos f ON f.idFormato = fct.idFormato
+             WHERE rct.idTorneo = ?
+             ORDER BY c.categoria, rct.idRonda`,
+            [idTorneo]
+        );
+
+        const idsCategorias = new Set(rondas.map((ronda) => Number(ronda.idCategoria)));
+        if (!categoriasTorneo.length || idsCategorias.size !== categoriasTorneo.length) {
+            return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+        }
+
+        const [intentos] = await db.execute(
+            `SELECT i.idRonda, u.idUsuario, u.wcaid,
+                    CONCAT_WS(' ', u.Nombre, u.apellido) AS nombre,
+                    p.pais, i.tiempo, i.penalizacion
+             FROM intentos_x_competidor i
+             INNER JOIN rondas_x_categoria_x_torneo rct
+                ON rct.idTorneo = i.idTorneo AND rct.idRonda = i.idRonda
+             INNER JOIN categorias_x_inscripcion ci
+                ON ci.idTorneo = i.idTorneo
+                AND ci.idCategoria = rct.idCategoria
+                AND ci.idUsuario = i.idUsuario
+             INNER JOIN usuarios u ON u.idUsuario = i.idUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             WHERE i.idTorneo = ?
+             ORDER BY i.idRonda, u.idUsuario, i.id`,
+            [idTorneo]
+        );
+        const intentosPorRonda = new Map();
+        for (const intento of intentos) {
+            const idRonda = Number(intento.idRonda);
+            if (!intentosPorRonda.has(idRonda)) intentosPorRonda.set(idRonda, new Map());
+            const competidores = intentosPorRonda.get(idRonda);
+            const idUsuario = Number(intento.idUsuario);
+            if (!competidores.has(idUsuario)) {
+                competidores.set(idUsuario, {
+                    idUsuario,
+                    wcaid: intento.wcaid,
+                    nombre: intento.nombre,
+                    pais: intento.pais,
+                    intentos: [],
+                });
+            }
+            competidores.get(idUsuario).intentos.push(
+                ['DNF', 'DNS'].includes(String(intento.penalizacion).toUpperCase())
+                    ? String(intento.penalizacion).toUpperCase()
+                    : `${tiempoLegible(intento.tiempo)}${intento.penalizacion === '+2' ? '+2' : ''}`
+            );
+        }
+
+        const categoriasPublicadas = [];
+        for (const categoria of categoriasTorneo) {
+            const rondasCategoria = rondas
+                .filter((ronda) => Number(ronda.idCategoria) === Number(categoria.idCategoria))
+                .sort((a, b) => Number(a.idRonda) - Number(b.idRonda));
+            let participantesEsperados = Number(categoria.totalCompetidores);
+            if (!participantesEsperados || !rondasCategoria.length) {
+                return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+            }
+
+            const rondasPublicadas = [];
+            for (const ronda of rondasCategoria) {
+                const cantidadIntentos = Number(ronda.cantidadIntentos);
+                const porcentajeAvance = Number(ronda.porcentajeAvance);
+                const competidoresMap = intentosPorRonda.get(Number(ronda.idRonda)) ?? new Map();
+                const competidores = [...competidoresMap.values()];
+                const rondaCompleta = Number.isInteger(cantidadIntentos)
+                    && cantidadIntentos > 0
+                    && competidores.length === participantesEsperados
+                    && competidores.every((competidor) => competidor.intentos.length === cantidadIntentos);
+                if (!rondaCompleta) {
+                    return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+                }
+
+                rondasPublicadas.push({
+                    ...ronda,
+                    cantidadIntentos,
+                    competidores,
+                });
+                if (!/final/i.test(String(ronda.ronda || ''))) {
+                    if (!Number.isInteger(porcentajeAvance) || porcentajeAvance < 0 || porcentajeAvance > 100) {
+                        return res.status(403).json({ mensaje: 'Los resultados finales todavía no están disponibles' });
+                    }
+                    participantesEsperados = Math.ceil(participantesEsperados * porcentajeAvance / 100);
+                }
+            }
+            categoriasPublicadas.push({
+                idCategoria: categoria.idCategoria,
+                categoria: categoria.categoria,
+                rondas: rondasPublicadas,
+            });
+        }
+
+        return res.json({ categorias: categoriasPublicadas });
+    } catch (error) {
+        console.error('Error al consultar resultados finales del torneo:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron consultar los resultados finales' });
+    }
+});
+
 router.get('/:idTorneo/resultados/acceso', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
     const idTorneo = idValido(req.params.idTorneo);
     if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });

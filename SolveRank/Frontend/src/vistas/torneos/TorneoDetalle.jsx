@@ -8,6 +8,7 @@ import Inscripcion from './Inscripcion.jsx';
 import MezclasTorneo from './MezclasTorneo.jsx';
 import CargaResultadosTorneo from './CargaResultadosTorneo.jsx';
 import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
+import ResultadosFinalesTorneo from './ResultadosFinalesTorneo.jsx';
 import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
 
@@ -37,6 +38,8 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const [puedeVerMezclas, setPuedeVerMezclas] = useState(false);
     const [accesoResultados, setAccesoResultados] = useState(null);
     const [errorAccesoResultados, setErrorAccesoResultados] = useState('');
+    const [resultadosFinales, setResultadosFinales] = useState(null);
+    const [errorResultadosFinales, setErrorResultadosFinales] = useState('');
     const [rondaSeleccionada, setRondaSeleccionada] = useState('');
 
     useEffect(() => {
@@ -47,6 +50,25 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
             .then(({ data }) => { if (activo) setDetalle(data); })
             .catch((err) => { if (activo) setError(err?.response?.data?.mensaje || 'No se pudo cargar el torneo.'); })
             .finally(() => { if (activo) setCargando(false); });
+        return () => { activo = false; };
+    }, [idTorneo]);
+
+    useEffect(() => {
+        let activo = true;
+        axios.get(`/torneos/${idTorneo}/resultados/finales`)
+            .then(({ data }) => {
+                if (activo) {
+                    setResultadosFinales({ idTorneo: String(idTorneo), datos: data });
+                    setErrorResultadosFinales(null);
+                }
+            })
+            .catch((err) => {
+                if (!activo || err?.response?.status === 403) return;
+                setErrorResultadosFinales({
+                    idTorneo: String(idTorneo),
+                    mensaje: err?.response?.data?.mensaje || 'No se pudieron consultar los resultados finales.',
+                });
+            });
         return () => { activo = false; };
     }, [idTorneo]);
 
@@ -123,6 +145,8 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         && accesoResultados?.idTorneo === String(idTorneo)
         && accesoResultados?.idUsuario === String(usuario?.idUsuario)
         && accesoResultados.permitido;
+    const resultadosFinalesDisponibles = resultadosFinales?.idTorneo === String(idTorneo)
+        && Boolean(resultadosFinales.datos);
     const estadoRegistro = estadoInscripcion(torneo);
     const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ') || torneo.Lugar_Venue || 'Ubicación por confirmar';
     const puedeInscribirse = ['Competidor', 'Juez'].includes(usuario?.rol);
@@ -131,7 +155,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         ['categorias', 'Categorías'],
         ...(puedeVerMezclas ? [['mezclas', 'Mezclas']] : []),
         ['cronograma', 'Cronograma'],
-        ...(resultadosAutorizados ? [['resultados', 'Resultados']] : []),
+        ...(resultadosAutorizados || resultadosFinalesDisponibles ? [['resultados', 'Resultados']] : []),
         ['importante', 'Información importante'],
         ...(puedeInscribirse ? [['inscripcion', 'Inscripción']] : [])
     ];
@@ -210,6 +234,9 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 {errorAccesoResultados && ['Organizador', 'Delegado'].includes(usuario?.rol) && (
                     <p role="alert">{errorAccesoResultados}</p>
                 )}
+                {errorResultadosFinales?.idTorneo === String(idTorneo) && (
+                    <p role="alert">{errorResultadosFinales.mensaje}</p>
+                )}
 
                 {seccionActiva === 'general' && <TorneoGeneral torneo={torneo} />}
 
@@ -232,7 +259,11 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
                 {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} />}
 
-                {seccionActiva === 'resultados' && resultadosAutorizados && (
+                {seccionActiva === 'resultados' && resultadosFinalesDisponibles && (
+                    <ResultadosFinalesTorneo datos={resultadosFinales.datos} />
+                )}
+
+                {seccionActiva === 'resultados' && resultadosAutorizados && !resultadosFinalesDisponibles && (
                     <PanelResultadosTorneo
                         torneo={torneo}
                         rondas={accesoResultados.rondas}
