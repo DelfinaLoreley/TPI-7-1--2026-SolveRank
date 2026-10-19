@@ -148,6 +148,10 @@
     min-height: 540px;
 }
 
+.carga-resultados-columnas.solo-lectura {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 .carga-resultados-formulario,
 .carga-resultados-en-vivo {
     min-width: 0;

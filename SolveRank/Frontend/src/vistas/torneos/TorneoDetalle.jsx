@@ -8,7 +8,9 @@ import Inscripcion from './Inscripcion.jsx';
 import MezclasTorneo from './MezclasTorneo.jsx';
 import CargaResultadosTorneo from './CargaResultadosTorneo.jsx';
 import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
-import ResultadosFinalesTorneo from './ResultadosFinalesTorneo.jsx';
+import ResultadosPublicosTorneo from './ResultadosPublicosTorneo.jsx';
+import CategoriaTorneoCard from './CategoriaTorneoCard.jsx';
+import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
 import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
 
@@ -38,8 +40,6 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const [puedeVerMezclas, setPuedeVerMezclas] = useState(false);
     const [accesoResultados, setAccesoResultados] = useState(null);
     const [errorAccesoResultados, setErrorAccesoResultados] = useState('');
-    const [resultadosFinales, setResultadosFinales] = useState(null);
-    const [errorResultadosFinales, setErrorResultadosFinales] = useState('');
     const [rondaSeleccionada, setRondaSeleccionada] = useState('');
 
     useEffect(() => {
@@ -55,25 +55,6 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
     useEffect(() => {
         let activo = true;
-        axios.get(`/torneos/${idTorneo}/resultados/finales`)
-            .then(({ data }) => {
-                if (activo) {
-                    setResultadosFinales({ idTorneo: String(idTorneo), datos: data });
-                    setErrorResultadosFinales(null);
-                }
-            })
-            .catch((err) => {
-                if (!activo || err?.response?.status === 403) return;
-                setErrorResultadosFinales({
-                    idTorneo: String(idTorneo),
-                    mensaje: err?.response?.data?.mensaje || 'No se pudieron consultar los resultados finales.',
-                });
-            });
-        return () => { activo = false; };
-    }, [idTorneo]);
-
-    useEffect(() => {
-        let activo = true;
         setPuedeVerMezclas(false);
         if (!['Organizador', 'Delegado'].includes(usuario?.rol)) return () => { activo = false; };
         axios.get(`/mezclas/torneos/${idTorneo}/acceso`)
@@ -84,7 +65,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
     useEffect(() => {
         let activo = true;
-        if (!['Organizador', 'Delegado'].includes(usuario?.rol)) {
+        if (!['Organizador', 'Delegado', 'Competidor', 'Juez'].includes(usuario?.rol)) {
             return () => { activo = false; };
         }
         axios.get(`/torneos/${idTorneo}/resultados/acceso`)
@@ -107,11 +88,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                     permitido: false,
                     rondas: [],
                 });
-                if (err?.response?.status !== 403) {
-                    setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudo consultar el acceso a la carga de resultados.');
-                } else {
-                    setErrorAccesoResultados('');
-                }
+                setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudieron consultar los resultados de este torneo.');
             });
         return () => { activo = false; };
     }, [idTorneo, usuario?.idUsuario, usuario?.rol]);
@@ -119,8 +96,19 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const categorias = useMemo(() => {
         const unicas = new Map();
         for (const categoria of detalle?.categorias ?? []) {
-            if (!unicas.has(categoria.idCategoria)) unicas.set(categoria.idCategoria, { ...categoria, rondas: [] });
-            if (categoria.idRonda) unicas.get(categoria.idCategoria).rondas.push(categoria.ronda);
+            if (!unicas.has(categoria.idCategoria)) {
+                unicas.set(categoria.idCategoria, { ...categoria, rondas: [] });
+            }
+            if (categoria.idRonda) {
+                unicas.get(categoria.idCategoria).rondas.push({
+                    idRonda: categoria.idRonda,
+                    nombre: categoria.ronda,
+                    formato: categoria.formato,
+                    cutoff: categoria.cutoff,
+                    tiempoLimite: categoria.tiempoLimite,
+                    porcentajeAvance: categoria.porcentajeAvance
+                });
+            }
         }
         return [...unicas.values()];
     }, [detalle]);
@@ -141,12 +129,11 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const limite = Number(torneo.limite_participantes) || 0;
     const cuposRestantes = Math.max(limite - (Number(torneo.inscriptos) || 0), 0);
     const estado = estadoTorneo(torneo);
-    const resultadosAutorizados = ['Organizador', 'Delegado'].includes(usuario?.rol)
-        && accesoResultados?.idTorneo === String(idTorneo)
+    const accesoResultadosActual = accesoResultados?.idTorneo === String(idTorneo)
         && accesoResultados?.idUsuario === String(usuario?.idUsuario)
         && accesoResultados.permitido;
-    const resultadosFinalesDisponibles = resultadosFinales?.idTorneo === String(idTorneo)
-        && Boolean(resultadosFinales.datos);
+    const resultadosAutorizados = ['Organizador', 'Delegado'].includes(usuario?.rol) && accesoResultadosActual;
+    const resultadosVisibles = ['Competidor', 'Juez'].includes(usuario?.rol) && accesoResultadosActual;
     const estadoRegistro = estadoInscripcion(torneo);
     const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ') || torneo.Lugar_Venue || 'Ubicación por confirmar';
     const puedeInscribirse = ['Competidor', 'Juez'].includes(usuario?.rol);
@@ -155,7 +142,9 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         ['categorias', 'Categorías'],
         ...(puedeVerMezclas ? [['mezclas', 'Mezclas']] : []),
         ['cronograma', 'Cronograma'],
-        ...(resultadosAutorizados || resultadosFinalesDisponibles ? [['resultados', 'Resultados']] : []),
+        ...(resultadosAutorizados
+            ? [['resultados', 'Cargar resultados']]
+            : resultadosVisibles ? [['resultados', 'Ver resultados']] : []),
         ['importante', 'Información importante'],
         ...(puedeInscribirse ? [['inscripcion', 'Inscripción']] : [])
     ];
@@ -176,13 +165,14 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         }
     }
 
-    if (seccionActiva === 'resultados' && resultadosAutorizados && rondaSeleccionada) {
+    if (seccionActiva === 'resultados' && (resultadosAutorizados || resultadosVisibles) && rondaSeleccionada) {
         return (
             <CargaResultadosTorneo
                 idTorneo={idTorneo}
                 torneo={torneo}
                 rondas={accesoResultados.rondas}
                 rondaSeleccionada={rondaSeleccionada}
+                soloLectura={resultadosVisibles}
                 onVolver={volverPanelResultados}
             />
         );
@@ -231,11 +221,8 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                     ))}
                 </nav>
 
-                {errorAccesoResultados && ['Organizador', 'Delegado'].includes(usuario?.rol) && (
+                {errorAccesoResultados && ['Organizador', 'Delegado', 'Competidor', 'Juez'].includes(usuario?.rol) && (
                     <p role="alert">{errorAccesoResultados}</p>
-                )}
-                {errorResultadosFinales?.idTorneo === String(idTorneo) && (
-                    <p role="alert">{errorResultadosFinales.mensaje}</p>
                 )}
 
                 {seccionActiva === 'general' && <TorneoGeneral torneo={torneo} />}
@@ -244,26 +231,29 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                     <section className="torneo-detalle-contenido">
                         <h2>Categorías y rondas</h2>
                         {categorias.length ? (
-                            <ul className="torneo-detalle-lista">
+                            <div className="torneo-detalle-categorias-grid">
                                 {categorias.map((categoria) => (
-                                    <li key={categoria.idCategoria}>
-                                        <strong>{categoria.categoria}</strong>
-                                        <span>{categoria.formato || 'Formato por confirmar'}</span>
-                                        <span>{categoria.rondas.filter(Boolean).join(', ') || 'Rondas por confirmar'}</span>
-                                    </li>
+                                    <CategoriaTorneoCard
+                                        key={categoria.idCategoria}
+                                        categoria={categoria}
+                                        catalogo={catalogoCategorias}
+                                    />
                                 ))}
-                            </ul>
+                            </div>
                         ) : <p>No hay categorías cargadas para este torneo.</p>}
                     </section>
                 )}
 
                 {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} />}
 
-                {seccionActiva === 'resultados' && resultadosFinalesDisponibles && (
-                    <ResultadosFinalesTorneo datos={resultadosFinales.datos} />
+                {seccionActiva === 'resultados' && resultadosVisibles && (
+                    <ResultadosPublicosTorneo
+                        idTorneo={idTorneo}
+                        rondas={accesoResultados.rondas}
+                    />
                 )}
 
-                {seccionActiva === 'resultados' && resultadosAutorizados && !resultadosFinalesDisponibles && (
+                {seccionActiva === 'resultados' && resultadosAutorizados && (
                     <PanelResultadosTorneo
                         torneo={torneo}
                         rondas={accesoResultados.rondas}

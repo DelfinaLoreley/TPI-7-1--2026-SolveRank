@@ -28,12 +28,12 @@ function estadoRonda(ronda, fechaTorneo) {
     return 'Pendiente';
 }
 
-function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarRonda }) {
+function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarRonda, soloLectura = false }) {
     return (
         <div className="panel-resultados-torneo">
             <section className="panel-resultados-seccion" aria-labelledby="panel-resultados-titulo">
-                <h2 id="panel-resultados-titulo"><span aria-hidden="true"><img src={categoriasIcon}/></span> Resultados en VIVO</h2> 
-                <p>Gestioná los resultados de cada categoría y ronda del torneo.</p>
+                <h2 id="panel-resultados-titulo"><span aria-hidden="true"><img src={categoriasIcon}/></span> {soloLectura ? 'Resultados del torneo' : 'Resultados en VIVO'}</h2>
+                <p>{soloLectura ? 'Consultá los resultados cargados por categoría y ronda.' : 'Gestioná los resultados de cada categoría y ronda del torneo.'}</p>
                 {rondas.length ? ( 
                     <div className="panel-resultados-grid">
                         {rondas.map((ronda) => {
@@ -51,13 +51,24 @@ function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarR
                                         <p>{ronda.ronda} · <span className={`panel-resultados-estado ${estado.toLowerCase().replace(' ', '-')}`}>{estado}</span></p>
                                         <small>{conResultados}/{total} competidores</small>
                                     </div>
-                                    <button
-                                        className={estado === 'Finalizada' ? 'panel-resultados-boton-ver' : 'panel-resultados-boton-cargar'}
-                                        type="button"
-                                        onClick={() => onSeleccionarRonda(ronda.idRonda)}
-                                    >
-                                        {estado === 'Finalizada' ? 'Ver' : 'Cargar'}
-                                    </button>
+                                    {soloLectura ? (
+                                        <button
+                                            className="panel-resultados-boton-ver"
+                                            type="button"
+                                            disabled={conResultados === 0}
+                                            onClick={() => onSeleccionarRonda(ronda.idRonda)}
+                                        >
+                                            {conResultados === 0 ? 'Sin resultados' : 'Ver'}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className={estado === 'Finalizada' ? 'panel-resultados-boton-ver' : 'panel-resultados-boton-cargar'}
+                                            type="button"
+                                            onClick={() => onSeleccionarRonda(ronda.idRonda)}
+                                        >
+                                            {estado === 'Finalizada' ? 'Ver' : 'Cargar'}
+                                        </button>
+                                    )}
                                 </article>
                             );
                         })}
@@ -95,14 +106,14 @@ function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarR
                 )}
             </section>
 
-            <aside className="panel-resultados-importante">
+            {!soloLectura && <aside className="panel-resultados-importante">
                 <strong><span aria-hidden="true">ⓘ</span> IMPORTANTE</strong>
                 <ul>
                     <li>Revisá que los resultados se carguen en el orden correcto de cada ronda.</li>
                     <li>Los competidores deben presentarse al menos 15 minutos antes de su ronda.</li>
                     <li>Cargá cada solve en orden con centésimas; usá +2 para penalización o DNF cuando corresponda.</li>
                 </ul>
-            </aside>
+            </aside>}
         </div>
     );
 }

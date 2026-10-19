@@ -133,6 +133,12 @@
     background-color: #3078EF;
 }
 
+.panel-resultados-boton-ver:disabled {
+    cursor: not-allowed;
+    filter: none;
+    opacity: 0.55;
+}
+
 .panel-resultados-cronograma {
     padding: 14px 16px 18px;
 }

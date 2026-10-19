@@ -4,13 +4,6 @@ import cuboBanner from '/src/assets/img-cubo-banner.png';
 import './CargaResultadosTorneo.css';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import formIcon from '/src/assets/torneos/info-general-icon.svg';
-import {
-    estadisticasCompetidor,
-    intentoLegible,
-    compararResultados,
-    tiempoLegible,
-    tiempoPromedioLegible,
-} from './utilidadesResultados.js';
 
 function fechaLegible(fecha) {
     if (!fecha) return 'Fecha por confirmar';
@@ -43,7 +36,74 @@ function formatearEntradaTiempo(valor) {
     return `${digitos.slice(0, 2)}:${digitos.slice(2, 4)}.${digitos.slice(4)}${penalizacion}`;
 }
 
-function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, onVolver }) {
+function centesimas(tiempo) {
+    if (['DNF', 'DNS'].includes(String(tiempo || '').trim().toUpperCase())) return null;
+    const coincidencia = String(tiempo || '').trim().match(/^(?:(\d{1,5}):)?([0-5]?\d)\.(\d{2})(\+2)?$/i);
+    if (!coincidencia) return null;
+    return ((Number(coincidencia[1] || 0) * 60 + Number(coincidencia[2])) * 100)
+        + Number(coincidencia[3]) + (coincidencia[4] ? 200 : 0);
+}
+
+function tiempoLegible(valor) {
+    if (!Number.isFinite(valor)) return 'DNF';
+    const minutos = Math.floor(valor / 6000);
+    const segundos = Math.floor((valor % 6000) / 100);
+    const parteCentesimas = Math.trunc(valor % 100);
+    const parteSegundos = `${String(segundos).padStart(2, '0')}.${String(parteCentesimas).padStart(2, '0')}`;
+    return minutos > 0 ? `${String(minutos).padStart(2, '0')}:${parteSegundos}` : parteSegundos;
+}
+
+function tiempoPromedioLegible(sumaCentesimas, cantidad) {
+    if (!cantidad) return '—';
+    // Se muestran centésimas truncadas; el orden de la tabla usa la fracción exacta.
+    return tiempoLegible(Math.floor(sumaCentesimas / cantidad));
+}
+
+function intentoLegible(valor) {
+    if (!valor) return '—';
+    return String(valor).replace(/^00:/, '');
+}
+
+function estadisticasCompetidor(competidor, formato, cantidadIntentosFormato) {
+    const cantidad = Number(cantidadIntentosFormato) || 0;
+    const valores = (competidor.intentos ?? []).slice(0, cantidad);
+    const tiempos = valores.map(centesimas);
+    const validos = tiempos.filter((tiempo) => tiempo !== null);
+    const mejor = validos.length ? Math.min(...validos) : null;
+    const completo = cantidad > 0 && valores.length === cantidad && valores.every((tiempo) => tiempo !== '');
+    let promedio = null;
+    let resultado = null;
+
+    if (completo) {
+        if (String(formato).toUpperCase().startsWith('BO')) {
+            resultado = mejor ?? Infinity;
+        } else if (String(formato).toUpperCase() === 'AO5') {
+            const promediar = [...tiempos].sort((a, b) => (a ?? Infinity) - (b ?? Infinity)).slice(1, -1);
+            if (promediar.some((tiempo) => tiempo === null)) {
+                promedio = Infinity;
+            } else {
+                const sumaPromedio = promediar.reduce((suma, tiempo) => suma + tiempo, 0);
+                promedio = sumaPromedio / promediar.length;
+            }
+            resultado = promedio;
+        } else {
+            promedio = tiempos.some((tiempo) => tiempo === null)
+                ? Infinity
+                : tiempos.reduce((suma, tiempo) => suma + tiempo, 0) / tiempos.length;
+            resultado = promedio;
+        }
+    }
+
+    const valoresPromedio = String(formato).toUpperCase() === 'AO5'
+        ? [...tiempos].sort((a, b) => (a ?? Infinity) - (b ?? Infinity)).slice(1, -1)
+        : tiempos;
+    const promedioSuma = valoresPromedio.every((tiempo) => tiempo !== null)
+        ? valoresPromedio.reduce((suma, tiempo) => suma + tiempo, 0)
+        : null;
+    return { mejor, promedio, resultado, completo, promedioSuma, promedioCantidad: valoresPromedio.length };
+}
+
+function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, onVolver, soloLectura = false }) {
     const idRondaInicial = String(rondaSeleccionada || rondas[0]?.idRonda || '');
     const rondaInicial = rondas.find((ronda) => String(ronda.idRonda) === idRondaInicial);
     const cantidadInicial = Number(rondaInicial?.cantidadIntentos) || 0;
@@ -123,7 +183,17 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
             ...competidor,
             ...estadisticasCompetidor(competidor, rondaActiva?.formato, rondaActiva?.cantidadIntentos),
         }))
-        .sort(compararResultados), [competidores, rondaActiva?.cantidadIntentos, rondaActiva?.formato]);
+        .sort((a, b) => {
+            if (a.resultado === null) return b.resultado === null
+                ? (a.nombre || '').localeCompare(b.nombre || '', 'es')
+                : 1;
+            if (b.resultado === null) return -1;
+            const ambosPromedios = Number.isFinite(a.promedio) && Number.isFinite(b.promedio);
+            const diferencia = ambosPromedios
+                ? a.promedioSuma * b.promedioCantidad - b.promedioSuma * a.promedioCantidad
+                : (a.resultado ?? Infinity) - (b.resultado ?? Infinity);
+            return diferencia || (a.nombre || '').localeCompare(b.nombre || '', 'es');
+        }), [competidores, rondaActiva?.cantidadIntentos, rondaActiva?.formato]);
 
     function seleccionarCompetidor(valor) {
         setBusquedaCompetidor(valor);
@@ -173,7 +243,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
     if (!rondas.length) {
         return (
             <section className="carga-resultados-vacia">
-                <h2>Cargar resultados</h2>
+            <h2>{soloLectura ? 'Ver resultados' : 'Cargar resultados'}</h2>
                 <p>Este torneo todavía no tiene rondas configuradas.</p>
             </section>
         );
@@ -184,7 +254,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
             <header className="carga-resultados-hero">
                 <div className="carga-resultados-hero-contenido">
                     <button className="carga-resultados-volver" type="button" onClick={onVolver}>← Volver al torneo</button>
-                    <h1>Cargar resultados</h1>
+                    <h1>{soloLectura ? 'Ver resultados' : 'Cargar resultados'}</h1>
                     <p>
                         <span>{rondaActiva?.categoria}</span>
                         <span aria-hidden="true">·</span>
@@ -220,9 +290,16 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 </label>
             </section>
 
-            {!cantidadIntentos && <p className="carga-resultados-error" role="alert">Esta ronda no tiene un formato configurado y no admite carga de resultados.</p>}
+            {!cantidadIntentos && (
+                <p className="carga-resultados-error" role="alert">
+                    {soloLectura
+                        ? 'Esta ronda no tiene un formato configurado para mostrar los resultados.'
+                        : 'Esta ronda no tiene un formato configurado y no admite carga de resultados.'}
+                </p>
+            )}
 
-            <div className="carga-resultados-columnas">
+            <div className={`carga-resultados-columnas${soloLectura ? ' solo-lectura' : ''}`}>
+                {!soloLectura && (
                 <form className="carga-resultados-formulario" onSubmit={confirmarResultados}>
                     <h2><span aria-hidden="true"><img src={formIcon} /></span> Formulario de resultados</h2>
                     <p>Escribí los seis números del tiempo en orden (MMSSCC); los separadores aparecen automáticamente. Para penalizar, agregá +2. También podés escribir DNF o DNS.</p>
@@ -296,10 +373,11 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                         {guardando ? 'Guardando…' : 'Confirmar'}
                     </button>
                 </form>
+                )}
 
                 <section className="carga-resultados-en-vivo" aria-label="Resultados en vivo">
-                    <h2><span aria-hidden="true"><img src={resultadosIcon} /></span> Resultados en vivo</h2>
-                    <p>Se actualiza automáticamente al confirmar los resultados.</p>
+                    <h2><span aria-hidden="true"><img src={resultadosIcon} /></span> {soloLectura ? 'Resultados de la ronda' : 'Resultados en vivo'}</h2>
+                    <p>{soloLectura ? 'La tabla se actualiza automáticamente cuando se registran nuevos resultados.' : 'Se actualiza automáticamente al confirmar los resultados.'}</p>
                     {error && !guardando && <p className="carga-resultados-error" role="alert">{error}</p>}
                     <div className="carga-resultados-tabla-contenedor">
                         <table>
