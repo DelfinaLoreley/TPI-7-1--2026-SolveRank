@@ -15,8 +15,8 @@ const EVENTOS = new Map([
     ['6x6x6', '666'], ['6x6', '666'],
     ['7x7x7', '777'], ['7x7', '777'],
     ['skewb', 'skewb'], ['pyraminx', 'pyram'], ['megaminx', 'minx'],
-    ['3x3 oh', '333oh'], ['3x3 bld', '333bf'], ['3x3 mbld', '333mbf'],
-    ['3x3 fm', '333fm'], ['4x4 bld', '444bf'], ['5x5 bld', '555bf'],
+    ['3x3 oh', '333oh'], ['3x3 bld', '333bf'],
+    ['4x4 bld', '444bf'], ['5x5 bld', '555bf'],
     ['clock', 'clock'], ['square-1', 'sq1'], ['square 1', 'sq1']
 ]);
 
@@ -172,10 +172,6 @@ router.post('/torneos/:idTorneo/rondas/:idRonda/generar', verificarToken, permit
         if (!evento) {
             return res.status(422).json({ mensaje: `La categoría "${ronda.categoria}" no está soportada por este port` });
         }
-        if (evento === '333mbf') {
-            return res.status(422).json({ mensaje: 'La generación de Multi-Blind requiere guardar la agrupación de cubos por intento; todavía no está habilitada en la base actual' });
-        }
-
         const [existentes] = await db.execute(
             'SELECT COUNT(*) AS total FROM mezclas WHERE idTorneo = ? AND idRonda = ? AND grupo = ?',
             [idTorneo, idRonda, grupo]

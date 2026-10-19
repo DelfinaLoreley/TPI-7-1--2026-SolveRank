@@ -6,13 +6,15 @@ const crypto = require('crypto');
 const verificarToken = require('../../middleware/authMiddleware');
 const { ROLES, permitirRoles } = require('../../middleware/autorizacion');
 
+const CATEGORIAS_EXCLUIDAS_SQL = "LOWER(TRIM(categoria)) NOT IN ('3x3x3 fmc', '3x3x3 multi-blind', '3x3 fm', '3x3 mbld')";
+
 // Catálogos que necesita el formulario de creación.
 router.get('/catalogos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     try {
         const [paises] = await db.execute('SELECT idPais, pais FROM paises ORDER BY pais');
         const [provincias] = await db.execute('SELECT idProvincia, provincia, idPais FROM provincias ORDER BY provincia');
         const [ciudades] = await db.execute('SELECT idCiudad, ciudad, idProvincia FROM ciudades ORDER BY ciudad');
-        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        const [categorias] = await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`);
         const [formatos] = await db.execute('SELECT idFormato, formato FROM formatos ORDER BY idFormato');
         const [jueces] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.JUEZ]);
         const [delegados] = await db.execute("SELECT u.idUsuario, u.Nombre AS nombre, u.apellido FROM usuarios u INNER JOIN tipos_usuarios t ON t.idTipoUsuario=u.idTipoUsuario WHERE LOWER(t.Nombre)=LOWER(?) ORDER BY u.Nombre, u.apellido", [ROLES.DELEGADO]);
@@ -84,14 +86,17 @@ function normalizarIntento(valor) {
     const texto = valor.trim().toUpperCase();
     if (!texto) return { tiempo: null, penalizacion: null };
     if (texto === 'DNF' || texto === 'DNS') return { tiempo: null, penalizacion: texto };
-    const coincidencia = texto.match(/^(?:(\d{1,2}):)?([0-5]?\d)\.(\d{1,3})(\+2)?$/);
+    const coincidencia = texto.match(/^(?:(\d{1,5}):)?([0-5]?\d)\.(\d{2})(\+2)?$/);
     if (!coincidencia) return null;
     const minutos = Number(coincidencia[1] || 0);
     const segundos = Number(coincidencia[2]);
-    const fraccion = coincidencia[3].padEnd(3, '0');
+    const centesimas = Number(coincidencia[3]);
+    const totalCentesimas = (minutos * 60 + segundos) * 100 + centesimas;
+    const maximoCentesimas = (838 * 3600 + 59 * 60 + 59) * 100 + 99;
+    if (totalCentesimas > maximoCentesimas) return null;
     const horas = Math.floor(minutos / 60);
     const minutosRestantes = minutos % 60;
-    const tiempo = `${String(horas).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}:${String(segundos).padStart(2, '0')}.${fraccion}`;
+    const tiempo = `${String(horas).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}:${String(segundos).padStart(2, '0')}.${coincidencia[3]}`;
     return { tiempo, penalizacion: coincidencia[4] ? '+2' : null };
 }
 
@@ -108,11 +113,8 @@ function tiempoLegible(tiempo) {
     const [horas, minutos, segundos] = String(tiempo).split(':');
     const [segundo, fraccion = '00'] = String(segundos).split('.');
     const totalMinutos = Number(horas) * 60 + Number(minutos);
-    const decimales = fraccion.padEnd(2, '0').replace(/0+$/, '').padEnd(2, '0');
-    const parteSegundos = `${String(Number(segundo)).padStart(2, '0')}.${decimales}`;
-    return totalMinutos
-        ? `${String(totalMinutos).padStart(2, '0')}:${parteSegundos}`
-        : parteSegundos;
+    const centesimas = fraccion.padEnd(2, '0').slice(0, 2);
+    return `${String(totalMinutos).padStart(2, '0')}:${String(Number(segundo)).padStart(2, '0')}.${centesimas}`;
 }
 
 router.get('/:idTorneo/resultados/acceso', verificarToken, permitirRoles(ROLES.ORGANIZADOR, ROLES.DELEGADO), async (req, res) => {
@@ -310,7 +312,7 @@ router.post('/:idTorneo/resultados/rondas/:idRonda', verificarToken, permitirRol
 // Listado público de torneos.
 router.get('/categorias', async (req, res) => {
     try {
-        const [categorias] = await db.execute('SELECT idCategoria, categoria FROM categorias ORDER BY idCategoria');
+        const [categorias] = await db.execute(`SELECT idCategoria, categoria FROM categorias WHERE ${CATEGORIAS_EXCLUIDAS_SQL} ORDER BY idCategoria`);
         return res.json({ categorias });
     } catch (error) {
         console.error('Error al obtener categorías para el ranking:', error.message);
@@ -507,8 +509,10 @@ router.post('/:idTorneo/inscripcion', verificarToken, permitirRoles(ROLES.COMPET
 
         const placeholdersCategorias = idsCategorias.map(() => '?').join(',');
         const [categoriasValidas] = await connection.execute(
-            `SELECT idCategoria FROM categorias_x_torneo
-             WHERE idTorneo = ? AND idCategoria IN (${placeholdersCategorias})`,
+            `SELECT ct.idCategoria FROM categorias_x_torneo ct
+             INNER JOIN categorias c ON c.idCategoria = ct.idCategoria
+             WHERE ct.idTorneo = ? AND ct.idCategoria IN (${placeholdersCategorias})
+               AND ${CATEGORIAS_EXCLUIDAS_SQL}`,
             [idTorneo, ...idsCategorias]
         );
         if (categoriasValidas.length !== idsCategorias.length) {
@@ -791,7 +795,8 @@ router.post('/', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, r
 
         const placeholdersCategorias = categorias.map(() => '?').join(',');
         const [categoriasValidas] = await connection.execute(
-            `SELECT idCategoria FROM categorias WHERE idCategoria IN (${placeholdersCategorias})`, categorias
+            `SELECT idCategoria, categoria FROM categorias WHERE idCategoria IN (${placeholdersCategorias})
+               AND ${CATEGORIAS_EXCLUIDAS_SQL}`, categorias
         );
         const [formatosValidos] = await connection.execute('SELECT idFormato FROM formatos');
         const idsFormatosValidos = new Set(formatosValidos.map((item) => Number(item.idFormato)));

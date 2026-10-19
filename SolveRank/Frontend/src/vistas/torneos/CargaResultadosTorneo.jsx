@@ -18,62 +18,56 @@ function mensajeErrorResultados(error, mensajePredeterminado) {
     return mensajePredeterminado;
 }
 
-function milisegundos(tiempo) {
+function formatearEntradaTiempo(valor) {
+    const texto = String(valor || '').toUpperCase().trim();
+    if (['D', 'DN', 'DNF', 'DS', 'DNS'].includes(texto)) return texto;
+
+    const tiempoCompleto = texto.match(/^(\d{1,2}):(\d{1,2})\.(\d{1,2})(\+2)?$/);
+    if (tiempoCompleto) {
+        const [, minutos, segundos, centesimasTiempo, penalizacion = ''] = tiempoCompleto;
+        return `${minutos.padStart(2, '0')}:${segundos.padStart(2, '0')}.${centesimasTiempo.padEnd(2, '0')}${penalizacion}`;
+    }
+
+    const penalizacion = texto.match(/(\+2?)$/)?.[1] || '';
+    const digitos = texto.replace(/\+2?$/, '').replace(/\D/g, '').slice(0, 6);
+    if (!digitos) return penalizacion;
+    if (digitos.length <= 2) return `${digitos}${penalizacion}`;
+    if (digitos.length <= 4) return `${digitos.slice(0, 2)}:${digitos.slice(2)}${penalizacion}`;
+    return `${digitos.slice(0, 2)}:${digitos.slice(2, 4)}.${digitos.slice(4)}${penalizacion}`;
+}
+
+function centesimas(tiempo) {
     if (['DNF', 'DNS'].includes(String(tiempo || '').trim().toUpperCase())) return null;
-    const coincidencia = String(tiempo || '').match(/^(?:(\d{1,2}):)?([0-5]?\d)\.(\d{1,3})(\+2)?$/);
+    const coincidencia = String(tiempo || '').trim().match(/^(?:(\d{1,5}):)?([0-5]?\d)\.(\d{2})(\+2)?$/i);
     if (!coincidencia) return null;
-    const fraccionMs = Number(coincidencia[3].padEnd(3, '0'));
-    return ((Number(coincidencia[1] || 0) * 60 + Number(coincidencia[2])) * 1000)
-        + fraccionMs + (coincidencia[4] ? 2000 : 0);
+    return ((Number(coincidencia[1] || 0) * 60 + Number(coincidencia[2])) * 100)
+        + Number(coincidencia[3]) + (coincidencia[4] ? 200 : 0);
 }
 
 function tiempoLegible(valor) {
     if (!Number.isFinite(valor)) return 'DNF';
-    const minutos = Math.floor(valor / 60000);
-    const segundos = Math.floor((valor % 60000) / 1000);
-    const milisegundosRestantes = valor % 1000;
-    const fraccion = String(milisegundosRestantes).padStart(3, '0').replace(/0+$/, '').padEnd(2, '0');
-    const parteSegundos = `${String(segundos).padStart(2, '0')}.${fraccion}`;
-    return minutos ? `${String(minutos).padStart(2, '0')}:${parteSegundos}` : parteSegundos;
+    const minutos = Math.floor(valor / 6000);
+    const segundos = Math.floor((valor % 6000) / 100);
+    const parteCentesimas = Math.trunc(valor % 100);
+    const parteSegundos = `${String(segundos).padStart(2, '0')}.${String(parteCentesimas).padStart(2, '0')}`;
+    return minutos > 0 ? `${String(minutos).padStart(2, '0')}:${parteSegundos}` : parteSegundos;
 }
 
-function tiempoPromedioLegible(sumaMilisegundos, cantidad) {
-    const divisor = cantidad * 1000;
-    const totalSegundos = Math.floor(sumaMilisegundos / divisor);
-    const milisegundosRestantes = sumaMilisegundos - totalSegundos * divisor;
-    const minutos = Math.floor(totalSegundos / 60);
-    const segundos = totalSegundos % 60;
-    let resto = milisegundosRestantes;
-    let fraccion = '';
-    const posicionesResto = new Map();
-    let ciclo = -1;
+function tiempoPromedioLegible(sumaCentesimas, cantidad) {
+    if (!cantidad) return '—';
+    // Se muestran centésimas truncadas; el orden de la tabla usa la fracción exacta.
+    return tiempoLegible(Math.floor(sumaCentesimas / cantidad));
+}
 
-    while (resto && fraccion.length < 12) {
-        if (posicionesResto.has(resto)) {
-            ciclo = posicionesResto.get(resto);
-            break;
-        }
-        posicionesResto.set(resto, fraccion.length);
-        resto *= 10;
-        fraccion += Math.floor(resto / divisor);
-        resto %= divisor;
-    }
-
-    if (ciclo >= 0) {
-        fraccion = `${fraccion.slice(0, ciclo)}(${fraccion.slice(ciclo)})`;
-    } else if (resto) {
-        fraccion += '…';
-    }
-    fraccion = fraccion.replace(/0+$/, '');
-
-    const parteSegundos = `${String(segundos).padStart(2, '0')}.${fraccion.padEnd(2, '0')}`;
-    return minutos ? `${String(minutos).padStart(2, '0')}:${parteSegundos}` : parteSegundos;
+function intentoLegible(valor) {
+    if (!valor) return '—';
+    return String(valor).replace(/^00:/, '');
 }
 
 function estadisticasCompetidor(competidor, formato, cantidadIntentosFormato) {
     const cantidad = Number(cantidadIntentosFormato) || 0;
     const valores = (competidor.intentos ?? []).slice(0, cantidad);
-    const tiempos = valores.map(milisegundos);
+    const tiempos = valores.map(centesimas);
     const validos = tiempos.filter((tiempo) => tiempo !== null);
     const mejor = validos.length ? Math.min(...validos) : null;
     const completo = cantidad > 0 && valores.length === cantidad && valores.every((tiempo) => tiempo !== '');
@@ -107,28 +101,6 @@ function estadisticasCompetidor(competidor, formato, cantidadIntentosFormato) {
         ? valoresPromedio.reduce((suma, tiempo) => suma + tiempo, 0)
         : null;
     return { mejor, promedio, resultado, completo, promedioSuma, promedioCantidad: valoresPromedio.length };
-}
-
-function formatearTiempoEntrada(valor) {
-    const texto = String(valor || '').toUpperCase().trim();
-    if (['D', 'DN', 'DNF', 'DS', 'DNS'].includes(texto)) return texto;
-
-    const penalizacion = texto.endsWith('+2') ? '+2' : texto.endsWith('+') ? '+' : '';
-    const digitos = texto.replace(/\+2?$/, '').replace(/\D/g, '').slice(-7);
-    if (!digitos) return '';
-
-    if (digitos.length <= 4) {
-        const tiempo = digitos.padStart(4, '0');
-        return `${tiempo.slice(0, 2)}.${tiempo.slice(2)}${penalizacion}`;
-    }
-    if (digitos.length === 5) {
-        return `${digitos.slice(0, 2)}.${digitos.slice(2)}${penalizacion}`;
-    }
-
-    const minutos = digitos.slice(0, 2);
-    const segundos = digitos.slice(2, 4);
-    const fraccion = digitos.slice(4);
-    return `${minutos}:${segundos}.${fraccion}${penalizacion}`;
 }
 
 function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, onVolver }) {
@@ -199,9 +171,11 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 ? (a.nombre || '').localeCompare(b.nombre || '', 'es')
                 : 1;
             if (b.resultado === null) return -1;
-            const resultadoA = a.resultado ?? Infinity;
-            const resultadoB = b.resultado ?? Infinity;
-            return resultadoA - resultadoB || (a.nombre || '').localeCompare(b.nombre || '', 'es');
+            const ambosPromedios = Number.isFinite(a.promedio) && Number.isFinite(b.promedio);
+            const diferencia = ambosPromedios
+                ? a.promedioSuma * b.promedioCantidad - b.promedioSuma * a.promedioCantidad
+                : (a.resultado ?? Infinity) - (b.resultado ?? Infinity);
+            return diferencia || (a.nombre || '').localeCompare(b.nombre || '', 'es');
         }), [competidores, rondaActiva?.cantidadIntentos, rondaActiva?.formato]);
 
     function seleccionarCompetidor(valor) {
@@ -219,8 +193,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
     }
 
     function cambiarTiempo(indice, valor) {
-        const tiempo = formatearTiempoEntrada(valor);
-        setIntentos((actuales) => actuales.map((actual, posicion) => posicion === indice ? tiempo : actual));
+        setIntentos((actuales) => actuales.map((actual, posicion) => posicion === indice ? formatearEntradaTiempo(valor) : actual));
     }
 
     async function confirmarResultados(evento) {
@@ -238,6 +211,10 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 intentos,
             });
             setMensaje(data.mensaje || 'Resultados guardados correctamente.');
+            setIdCompetidor('');
+            setBusquedaCompetidor('');
+            setSelectorCompetidoresAbierto(false);
+            setIntentos(Array(cantidadIntentos).fill(''));
             await cargarResultados();
         } catch (err) {
             setError(mensajeErrorResultados(err, 'No se pudieron guardar los resultados.'));
@@ -301,7 +278,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
             <div className="carga-resultados-columnas">
                 <form className="carga-resultados-formulario" onSubmit={confirmarResultados}>
                     <h2><span aria-hidden="true"><img src={formIcon} /></span> Formulario de resultados</h2>
-                    <p>Completá todos los intentos del formato seleccionado. Usá MM:SS.CC, +2, DNF o DNS.</p>
+                    <p>Escribí los seis números del tiempo en orden (MMSSCC); los separadores aparecen automáticamente. Para penalizar, agregá +2. También podés escribir DNF o DNS.</p>
                     <div className="carga-resultados-campo carga-resultados-selector-competidor">
                         <label htmlFor="carga-resultados-busqueda-competidor">ID/Nombre del competidor</label>
                         <input
@@ -360,7 +337,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                 inputMode="text"
                                 value={tiempo}
                                 onChange={(evento) => cambiarTiempo(indice, evento.target.value)}
-                                placeholder="00:00.00"
+                                placeholder="MM:SS.CC"
                                 required
                             />
                         </label>
@@ -405,7 +382,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                                     : tiempoLegible(competidor.resultado))
                                                 : 'DNF'
                                         )}</td>
-                                        {Array.from({ length: cantidadIntentos }, (_, intento) => <td key={intento}>{competidor.intentos?.[intento] || '—'}</td>)}
+                                        {Array.from({ length: cantidadIntentos }, (_, intento) => <td key={intento}>{intentoLegible(competidor.intentos?.[intento])}</td>)}
                                     </tr>
                                 )) : (
                                     <tr><td colSpan={5 + cantidadIntentos}>Todavía no se cargaron resultados para esta ronda.</td></tr>
