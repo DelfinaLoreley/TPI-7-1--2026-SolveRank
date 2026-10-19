@@ -67,7 +67,13 @@
     color: #9fbbe8;
     font-size: 34px;
     line-height: 1;
-    transform: rotate(-25deg);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+.rankings-lupa img {
+    width: 24px;
+    height: 23px;
 }
 
 .rankings-buscar-pais input {

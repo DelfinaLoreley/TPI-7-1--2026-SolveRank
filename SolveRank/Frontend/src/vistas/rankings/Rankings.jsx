@@ -14,6 +14,7 @@ import estadisticasIcon from '/src/assets/icons/estadisticas-icon.svg';
 import actualizacionIcon from '/src/assets/icons/ult-actualizacion-icon.svg';
 import paginaAnteriorIcon from '/src/assets/icons/triflecha-izq-icon.png';
 import paginaSiguienteIcon from '/src/assets/icons/triflecha-der-icon.png';
+import lupaIcono from '/src/assets/icons/search-icon.png';
 
 function formatearTiempo(segundos) {
     if (segundos === null || segundos === undefined || !Number.isFinite(Number(segundos))) return 'DNF';
@@ -127,7 +128,7 @@ function Rankings({ usuario }) {
                 <section className="rankings-panel" aria-label="Rankings de competidores">
                     <div className="rankings-filtros">
                         <label className="rankings-buscar-pais">
-                            <span className="rankings-lupa" aria-hidden="true">⌕</span>
+                            <span className="rankings-lupa" aria-hidden="true"><img src={lupaIcono} alt=""/></span>
                             <input
                                 type="search"
                                 value={busquedaPais}
