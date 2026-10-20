@@ -198,7 +198,7 @@
 
 .torneo-detalle-contenido {
     min-width: 0;
-    padding: 24px;
+    padding: 14px 24px;
     border: 1px solid var(--detalle-borde);
     border-radius: 10px;
     background: var(--detalle-panel);

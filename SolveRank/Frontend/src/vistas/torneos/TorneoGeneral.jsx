@@ -264,7 +264,7 @@ function TorneoGeneral({ torneo }) {
                         </>
                     ) : (
                         <><p className="torneo-general-vacio">Si haces click a esta pestaña, podrás ver información importante y muy útil sobre los torneos, como las reglas básicas y los requisitos.</p>
-                        <a href="link a revisar" rel="noopener noreferrer" target='blank'>Leer más →</a></>
+                        <a className="torneo-general-expandir" href="/?vista=info-extra-torneo" target="_blank" rel="noopener noreferrer">Leer más →</a></>
                     )}
                 </Tarjeta>
             </div>

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
-import calendarIcon from '/src/assets/torneos/calendar-icon.svg';
-import ubicacionIcon from '/src/assets/torneos/ubicacion-azul-icon.svg';
+
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import categoIcon from '/src/assets/torneos/categorias-azul-icon.png';
+import fechaTorneoIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
+import ubicacionIcon2 from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
@@ -189,12 +190,12 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                         <h1>{torneo.nombre}</h1>
                         <div className="torneo-detalle-resumen">
                             <div className="torneo-detalle-resumen-div">
-                                <img src={calendarIcon} alt="" />
+                                <img src={fechaTorneoIcon} alt="" />
                                 <span>{fechaLegible(torneo.fecha_Inicio)} - {fechaLegible(torneo.fecha_fin)}</span>
                                 <p>Fecha del torneo</p>
                             </div>
                             <div className="torneo-detalle-resumen-div">
-                                <img src={ubicacionIcon} alt="" />
+                                <img src={ubicacionIcon2} alt="" />
                                 <span>{torneo.ciudad || torneo.Lugar_Venue || 'Sede por confirmar'}</span>
                                 <p>{lugar}</p>
                             </div>

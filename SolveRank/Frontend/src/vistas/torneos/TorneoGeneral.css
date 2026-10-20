@@ -318,6 +318,15 @@
     line-height: 1.45;
 }
 
+.torneo-general-importante a {
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    color: #3078EF;
+    text-decoration: none;
+    font-family: 'Inclusive Sans';
+}
+
 .torneo-general-expandir {
     display: block;
     margin: 8px 0 0 auto;

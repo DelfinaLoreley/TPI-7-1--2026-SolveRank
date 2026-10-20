@@ -12,13 +12,15 @@ import ListadoTorneo from './vistas/torneos/ListadoTorneo.jsx'
 import Rankings from './vistas/rankings/Rankings.jsx'
 import Records from './vistas/records/Records.jsx'
 import MisTorneos from './vistas/torneos/MisTorneos.jsx'
+import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
 
 function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
-  const [vista, setVista] = useState('home')
+  const esVistaInfoExtra = new URLSearchParams(window.location.search).get('vista') === 'info-extra-torneo'
+  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : 'home')
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [volverDetalleA, setVolverDetalleA] = useState('home')
@@ -38,10 +40,12 @@ function App() {
       .then(({ data }) => {
         if (activo) {
           setUsuario(data.usuario ?? null)
-          if (data.usuario?.perfilCompleto === false) {
-            setVista('completar-registro-google')
-          } else if (data.usuario?.rol === 'Organizador') {
-            setVista('panel-organizador')
+          if (!esVistaInfoExtra) {
+            if (data.usuario?.perfilCompleto === false) {
+              setVista('completar-registro-google')
+            } else if (data.usuario?.rol === 'Organizador') {
+              setVista('panel-organizador')
+            }
           }
         }
       })
@@ -166,6 +170,8 @@ function App() {
             usuario={usuario}
             onSalir={() => setVista(volverDetalleA)}
           />
+        : vista === 'info-extra-torneo'
+        ? <InfoExtraTorneo />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
           ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} onPublicar={async (datos) => {

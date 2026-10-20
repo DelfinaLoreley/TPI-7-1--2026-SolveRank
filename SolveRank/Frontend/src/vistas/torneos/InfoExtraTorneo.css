@@ -1,0 +1,163 @@
+.info-extra-page {
+    min-height: 100vh;
+    padding: 20px 12px 34px;
+    background: #020b21;
+    color: #f5f6fb;
+    font-family: 'Inclusive Sans', Arial, sans-serif;
+}
+
+.info-extra-page * {
+    box-sizing: border-box;
+}
+
+.info-extra-contenedor {
+    width: min(100%, 1500px);
+    margin: 0 auto;
+}
+
+.info-extra-hero {
+    position: relative;
+    display: flex;
+    min-height: 68px;
+    align-items: center;
+    padding: 8px 30px 18px;
+    background-image: var(--info-extra-banner);
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: auto 135px;
+}
+
+.info-extra-hero h1 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.2;
+    font-family: 'Instrument Sans';
+}
+
+.info-extra-panel {
+    min-height: 500px;
+    padding: 8px 30px 20px;
+    border: 1px solid #d5c900;
+    border-radius: 11px;
+    background: #091326;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.info-extra-titulo-panel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 0 -16px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.info-extra-titulo-panel img {
+    width: 20px;
+    height: 20px;
+}
+
+.info-extra-seccion {
+    margin: 0 auto 30px;
+}
+
+.info-extra-seccion h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 18px;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.info-extra-seccion h3::before,
+.info-extra-seccion h3::after {
+    width: 42px;
+    height: 1px;
+    background: #697184;
+    content: '';
+}
+
+.info-extra-seccion ul {
+    margin: 0;
+    padding-left: 17px;
+}
+
+.info-extra-seccion li {
+    font-size: 18px;;
+}
+
+.info-extra-seccion p {
+    margin: 12px 0 0;
+}
+
+.info-extra-page a {
+    color: #a8c5f5;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.info-extra-page a:hover {
+    color: #d4e2ff;
+}
+
+.info-extra-recursos {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    margin-top: 4px;
+}
+
+.info-extra-recursos a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 18px;
+}
+
+.info-extra-recursos img {
+    width: 13px;
+    height: 13px;
+}
+
+
+@media (max-width: 700px) {
+    .info-extra-page {
+        padding: 12px 8px 24px;
+    }
+
+    .info-extra-hero {
+        min-height: 90px;
+        padding: 16px 12px 18px;
+        background-position: right center;
+        background-size: auto 110px;
+    }
+
+    .info-extra-hero h1 {
+        max-width: 58%;
+        font-size: 20px;
+    }
+
+    .info-extra-panel {
+        padding: 10px 16px 20px;
+        font-size: 14px;
+    }
+
+    .info-extra-titulo-panel {
+        margin-left: -5px;
+    }
+
+    .info-extra-seccion {
+        margin-bottom: 26px;
+    }
+
+    .info-extra-seccion h3 {
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+}
