@@ -1,5 +1,6 @@
 import './PanelResultadosTorneo.css';
 import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
+import importanteIcon from '/src/assets/torneos/importante-icon.svg';
 import { categorias } from './pasos/datosCategorias';
 
 function horaLegible(hora) {
@@ -44,7 +45,7 @@ function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarR
                             return (
                                 <article className="panel-resultados-card" key={ronda.idRonda}>
                                     <div className="panel-resultados-icono" aria-hidden="true">
-                                        {icono && <img src={icono} alt="" />}
+                                        {icono && <img src={icono} alt="" />} 
                                     </div>
                                     <div className="panel-resultados-card-info">
                                         <h3>{ronda.categoria}</h3>
@@ -107,7 +108,7 @@ function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarR
             </section>
 
             {!soloLectura && <aside className="panel-resultados-importante">
-                <strong><span aria-hidden="true">ⓘ</span> IMPORTANTE</strong>
+                <strong><span aria-hidden="true"><img src={importanteIcon} alt="Importante"/></span> IMPORTANTE</strong>
                 <ul>
                     <li>Revisá que los resultados se carguen en el orden correcto de cada ronda.</li>
                     <li>Los competidores deben presentarse al menos 15 minutos antes de su ronda.</li>

@@ -24,9 +24,9 @@
 }
 
 .panel-resultados-seccion > p {
-    margin: 0 0 15px;
+    margin: 0 0 20px;
     color: #a6b1c8;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .panel-resultados-grid {
@@ -40,7 +40,7 @@
     display: grid;
     grid-template-columns: 38px minmax(0, 1fr);
     grid-template-rows: 1fr auto;
-    column-gap: 9px;
+    column-gap: 15px;
     min-height: 78px;
     padding: 8px;
     border: 1px solid #263b5e;
@@ -51,8 +51,8 @@
 .panel-resultados-icono {
     display: grid;
     grid-row: 1 / 3;
-    width: 36px;
-    height: 36px;
+    width: 45px;
+    height: 45px;
     place-items: center;
     border-radius: 50%;
     border: 2px solid transparent;
@@ -74,7 +74,7 @@
 .panel-resultados-card-info h3 {
     overflow: hidden;
     margin: 0 0 2px;
-    font-size: 13px;
+    font-size: 16px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -82,20 +82,20 @@
 .panel-resultados-card-info p {
     overflow: hidden;
     margin: 0 0 5px;
-    color: #a6b1c8;
-    font-size: 10px;
+    color: #D9D9D9;
+    font-size: 13px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .panel-resultados-card-info small {
     color: #a6b1c8;
-    font-size: 9px;
+    font-size: 11px;
 }
 
-.panel-resultados-estado.finalizada { color: #a6b1c8; }
-.panel-resultados-estado.en-curso { color: #23ce65; }
-.panel-resultados-estado.pendiente { color: #a6b1c8; }
+.panel-resultados-estado.finalizada { color: #6A81A1; }
+.panel-resultados-estado.en-curso { color: #0AA50A; }
+.panel-resultados-estado.pendiente { color: #FBF3F3; }
 
 .panel-resultados-card > button {
     grid-column: 2;
@@ -110,7 +110,7 @@
 }
 
 .panel-resultados-boton-cargar {
-    border: 1px solid;
+    border: 2px solid;
     background: 
         linear-gradient(to right, #6548D8, #1246B4) padding-box,
         linear-gradient(to right, #00118F, #6548D8) border-box;
@@ -122,7 +122,7 @@
 }
 
 .panel-resultados-boton-ver {
-    border: 1px solid;
+    border: 2px solid;
     background: 
         linear-gradient(to right, #3078EF, #1246B4) padding-box,
         linear-gradient(to right, #00118F, #3078EF) border-box;
@@ -161,7 +161,7 @@
     width: 100%;
     border-collapse: collapse;
     background: #101d34;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .panel-resultados-tabla-contenedor th,
@@ -176,6 +176,7 @@
     top: 0;
     background: #10264a;
     font-weight: 500;
+    font-size: 14px;
 }
 
 .panel-resultados-vacio {
@@ -189,15 +190,18 @@
     border: 1px solid #d8bd00;
     border-radius: 10px;
     background: #091328;
-    color: #e8eaf0;
-    font-size: 11px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'Instrument Sans';
 }
 
 .panel-resultados-importante strong {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: 'Inclusive Sans';
 }
 
 .panel-resultados-importante strong span {
@@ -210,7 +214,7 @@
     gap: 3px;
     margin: 8px 0 0;
     padding-left: 18px;
-    color: #bac4d6;
+    color: #fff;
 }
 
 @media (max-width: 900px) {

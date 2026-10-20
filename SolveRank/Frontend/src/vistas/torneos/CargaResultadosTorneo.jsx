@@ -1,9 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
+import rondaIcon from '/src/assets/torneos/rondas-blanco-icon.svg';
+import formatoIcon from '/src/assets/torneos/formato-icon.svg';
+import tiempoIcon from '/src/assets/torneos/tiempo-limite-icon.svg';
+import competidoresIcon from '/src/assets/torneos/competidores-blanco-icon.svg';
 import './CargaResultadosTorneo.css';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import formIcon from '/src/assets/torneos/info-general-icon.svg';
+import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
+
+function iconoCategoria(nombre) {
+    const normalizado = String(nombre || '').trim().toLocaleLowerCase('es');
+    return catalogoCategorias.find(({ id, etiqueta }) =>
+        String(id).toLocaleLowerCase('es') === normalizado
+        || String(etiqueta).toLocaleLowerCase('es') === normalizado
+    )?.icono;
+}
 
 function fechaLegible(fecha) {
     if (!fecha) return 'Fecha por confirmar';
@@ -160,6 +173,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
     }, [idTorneo, idRondaActiva]);
 
     const rondaActiva = rondas.find((ronda) => String(ronda.idRonda) === idRondaActiva);
+    const iconoCategoriaActiva = iconoCategoria(rondaActiva?.categoria);
     const cantidadIntentos = Number(rondaActiva?.cantidadIntentos) || 0;
     const rondasCategoria = rondas
         .filter((ronda) => String(ronda.idCategoria) === String(rondaActiva?.idCategoria))
@@ -267,11 +281,16 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
             </header>
 
             <section className="carga-resultados-resumen" aria-label="Información de la ronda">
-                <div><span className="carga-resultados-icono">▦</span><span><small>Categoría</small><strong>{rondaActiva?.categoria}</strong></span></div>
-                <div><span className="carga-resultados-icono">◴</span><span><small>Ronda</small><strong>{rondaActiva?.ronda}</strong></span></div>
-                <div><span className="carga-resultados-icono">▤</span><span><small>Formato</small><strong>{rondaActiva?.formato || 'Formato no configurado'}</strong></span></div>
-                <div><span className="carga-resultados-icono">◷</span><span><small>Tiempo límite</small><strong>{rondaActiva?.tiempoLimite || '—'}</strong></span></div>
-                <div><span className="carga-resultados-icono">♧</span><span><small>Competidores</small><strong>{competidores.length}</strong></span></div>
+                <div><span className="carga-resultados-icono">{iconoCategoriaActiva && <img src={iconoCategoriaActiva} alt="" />}</span><span><small>Categoría</small><strong>{rondaActiva?.categoria}</strong></span></div>
+                <hr className="carga-resultados-separador" aria-hidden="true" />
+                <div><span className="carga-resultados-icono"><img src={rondaIcon}/></span><span><small>Ronda</small><strong>{rondaActiva?.ronda}</strong></span></div>
+                <hr className="carga-resultados-separador" aria-hidden="true" />
+                <div><span className="carga-resultados-icono"><img src={formatoIcon}/></span><span><small>Formato</small><strong>{rondaActiva?.formato || 'Formato no configurado'}</strong></span></div>
+                <hr className="carga-resultados-separador" aria-hidden="true" />
+                <div><span className="carga-resultados-icono"><img src={tiempoIcon}/></span><span><small>Tiempo límite</small><strong>{rondaActiva?.tiempoLimite || '—'}</strong></span></div>
+                <hr className="carga-resultados-separador" aria-hidden="true" />
+                <div><span className="carga-resultados-icono"><img src={competidoresIcon}/></span><span><small>Competidores</small><strong>{competidores.length}</strong></span></div>
+                <hr className="carga-resultados-separador" aria-hidden="true" />
                 <label className="carga-resultados-selector-ronda">
                     <span>Seleccionar Ronda</span>
                     <select value={idRondaActiva} onChange={(evento) => {
@@ -302,7 +321,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 {!soloLectura && (
                 <form className="carga-resultados-formulario" onSubmit={confirmarResultados}>
                     <h2><span aria-hidden="true"><img src={formIcon} /></span> Formulario de resultados</h2>
-                    <p>Escribí los seis números del tiempo en orden (MMSSCC); los separadores aparecen automáticamente. Para penalizar, agregá +2. También podés escribir DNF o DNS.</p>
+                    <p>Ingresá los resultados del competidor.</p>
                     <div className="carga-resultados-campo carga-resultados-selector-competidor">
                         <label htmlFor="carga-resultados-busqueda-competidor">ID/Nombre del competidor</label>
                         <input
