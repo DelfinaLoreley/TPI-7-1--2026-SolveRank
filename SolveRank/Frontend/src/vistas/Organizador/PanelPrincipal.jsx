@@ -2,7 +2,7 @@ import './PanelPrincipal.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 
-import cuboBanner from '/src/assets/cubo-banner.svg';
+import cuboBanner from '/src/assets/img-cubo-banner.png';
 import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
 import competidoresIcon2 from '/src/assets/Organizador/competidores-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';

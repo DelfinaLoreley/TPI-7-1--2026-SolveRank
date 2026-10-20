@@ -529,13 +529,13 @@
 }
 
 .creacion-boton-secundario {
-    border: 1px solid #354968;
-    background: #0b1730;
-    color: #d7e0f0;
+    border: 2px solid #31466E;
+    background: linear-gradient(to right, #1D2F53, #0E1629);
+    color: #fff;
 }
 
 .creacion-boton-primario {
-    border: 1px solid #3985ff;
+    border: 2px solid #3985ff;
     background: linear-gradient(110deg, #4939f4, #075ee8);
     color: #fff;
     box-shadow: 0 6px 20px rgb(18 88 227 / 22%);

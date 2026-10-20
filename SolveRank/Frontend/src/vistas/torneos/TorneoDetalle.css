@@ -51,9 +51,40 @@
     letter-spacing: -0.04em;
 }
 
+.torneo-detalle-hero {
+    min-width: 0;
+}
+
+.torneo-detalle-hero-contenido {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+    overflow: hidden;
+    padding: 12px 0 14px;
+}
+
+.torneo-detalle-hero-contenido > :not(.torneo-detalle-hero-imagen) {
+    position: relative;
+    z-index: 1;
+}
+
+.torneo-detalle-hero-imagen {
+    position: absolute;
+    z-index: 0;
+    inset: 0 0 0 auto;
+    width: min(48%, 650px);
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.72;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
+}
+
 .torneo-detalle-resumen {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    width: min(100%, 740px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: center;
     gap: 12px 22px;
 }
@@ -64,15 +95,15 @@
     grid-template-columns: 30px minmax(0, 1fr);
     align-items: center;
     column-gap: 8px;
-    min-width: 155px;
-    padding-right: 20px;
+    min-width: 0;
+    padding-right: 12px;
 }
 
 .torneo-detalle-resumen-div:not(:nth-of-type(3))::after {
     position: absolute;
-    top: 2px;
+    top: 8px;
     right: 0;
-    height: 32px;
+    height: 42px;
     border-right: 1px solid #53617a;
     content: '';
 }
@@ -98,24 +129,40 @@
 .torneo-detalle-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 15px;
+    grid-column: 1 / -1;
     width: 100%;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .torneo-detalle-tags span {
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 4px;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
 }
 
 .tag-inscripciones {
     background: #18863d;
+    text-transform: uppercase;
 }
 
-.tag-cupos-restantes,
+.tag-inscripciones-proximas{
+    background: linear-gradient(to right, #C7841C, #C5933E, #D07F11, #C98E1C, #C57B02, #D28B17, #C77B0D);
+    border: 1px solid #DB8B2F;
+    text-transform: uppercase;
+}
+
 .tag-estado-torneo {
-    background: #142442;
+    background: linear-gradient(to right, #AC0202, #D21717, #AA0606, #C91C1C, #B90707, #C53E3E, #C71C1C);
+    border: 1px solid #DB2F2F;
+    text-transform: uppercase;
+}
+
+.tag-cupos-restantes{
+    background: #22314E;
 }
 
 .tag-estado-evento {
@@ -123,19 +170,29 @@
 }
 
 .tag-estado-evento-en-curso {
-    background: #15472d;
-    color: #83e6a6;
+    background: transparent;
+    border: 2px solid #0AA50A;
+    color: #0AA50A;
+}
+
+.tag-estado-evento-proximo {
+    background: transparent;
+    border: 2px solid #4685EE;
+    color: #4685EE;
+    padding: 5px 20px !important;
 }
 
 .tag-estado-evento-finalizado {
-    background: #3b2630;
-    color: #e9a8b5;
+    background: transparent;
+    color: #6A81A1;
+    border: 2px solid #6A81A1;
 }
 
 .torneo-detalle-btns {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top: 15px;
 }
 
 .torneo-detalle-btns button {
@@ -164,6 +221,14 @@
 .btn-ver-resultados img {
     width: 16px;
     height: 16px;
+}
+
+.btn-ver-resultados:disabled {
+    cursor: not-allowed;
+}
+
+#seccion-inscripcion {
+    scroll-margin-top: 24px;
 }
 
 .navbar-torneo-detalle {
@@ -878,7 +943,13 @@
     }
 
     .torneo-detalle-resumen {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
         gap: 12px;
+    }
+
+    .torneo-detalle-tags {
+        grid-column: auto;
     }
 
     .torneo-detalle-resumen-div {

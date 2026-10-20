@@ -5,6 +5,8 @@ import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-ic
 import categoIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import fechaTorneoIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
 import ubicacionIcon2 from '/src/assets/torneos/ubicacion-violeta-icon.svg';
+import liveIcon from '/src/assets/torneos/en-vivo-icon.svg';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
@@ -22,7 +24,7 @@ function fechaLegible(fecha) {
     if (!fecha) return 'Fecha por confirmar';
     const dia = new Date(`${String(fecha).slice(0, 10)}T12:00:00`);
     if (Number.isNaN(dia.getTime())) return 'Fecha por confirmar';
-    return dia.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
+    return dia.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(' de ', ' ').replace('.', '').replace(' de ', ' ').replace('.', '').toLocaleUpperCase('es-AR');
 }
 
 function estadoInscripcion(torneo) {
@@ -42,6 +44,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const [error, setError] = useState('');
     const [seccionActiva, setSeccionActiva] = useState('general');
     const [puedeVerMezclas, setPuedeVerMezclas] = useState(false);
+    const [estadoInscripcionUsuario, setEstadoInscripcionUsuario] = useState(null);
     const [accesoResultados, setAccesoResultados] = useState(null);
     const [errorAccesoResultados, setErrorAccesoResultados] = useState('');
     const [rondaSeleccionada, setRondaSeleccionada] = useState('');
@@ -97,6 +100,37 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         return () => { activo = false; };
     }, [idTorneo, usuario?.idUsuario, usuario?.rol]);
 
+    useEffect(() => {
+        if (usuario?.rol !== 'Competidor') return undefined;
+        let activo = true;
+        axios.get(`/torneos/${idTorneo}/inscripcion/estado`)
+            .then(({ data }) => {
+                if (activo) {
+                    setEstadoInscripcionUsuario({
+                        idTorneo: String(idTorneo),
+                        idUsuario: String(usuario.idUsuario),
+                        inscripto: Boolean(data.inscripto),
+                    });
+                }
+            })
+            .catch(() => {
+                if (activo) {
+                    setEstadoInscripcionUsuario({
+                        idTorneo: String(idTorneo),
+                        idUsuario: String(usuario.idUsuario),
+                        inscripto: false,
+                    });
+                }
+            });
+        return () => { activo = false; };
+    }, [idTorneo, usuario?.idUsuario, usuario?.rol]);
+
+    useEffect(() => {
+        if (seccionActiva === 'inscripcion') {
+            document.getElementById('seccion-inscripcion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [seccionActiva]);
+
     const categorias = useMemo(() => {
         const unicas = new Map();
         for (const categoria of detalle?.categorias ?? []) {
@@ -139,6 +173,10 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const resultadosAutorizados = ['Organizador', 'Delegado'].includes(usuario?.rol) && accesoResultadosActual;
     const resultadosVisibles = ['Competidor', 'Juez'].includes(usuario?.rol) && accesoResultadosActual;
     const estadoRegistro = estadoInscripcion(torneo);
+    const inscripcionUsuarioActual = estadoInscripcionUsuario?.idTorneo === String(idTorneo)
+        && estadoInscripcionUsuario?.idUsuario === String(usuario?.idUsuario)
+        ? estadoInscripcionUsuario
+        : null;
     const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ') || torneo.Lugar_Venue || 'Ubicación por confirmar';
     const puedeInscribirse = ['Competidor', 'Juez'].includes(usuario?.rol);
     const secciones = [
@@ -187,28 +225,55 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 <header className="torneo-detalle-encabezado">
                     {onSalir && <button className="torneo-detalle-volver" type="button" onClick={onSalir}>← Volver a torneos</button>}
                     <div className="torneo-detalle-hero">
-                        <h1>{torneo.nombre}</h1>
-                        <div className="torneo-detalle-resumen">
-                            <div className="torneo-detalle-resumen-div">
-                                <img src={fechaTorneoIcon} alt="" />
-                                <span>{fechaLegible(torneo.fecha_Inicio)} - {fechaLegible(torneo.fecha_fin)}</span>
-                                <p>Fecha del torneo</p>
+                        <div className="torneo-detalle-hero-contenido">
+                            <h1>{torneo.nombre}</h1>
+                            <div className="torneo-detalle-resumen">
+                                <div className="torneo-detalle-resumen-div">
+                                    <img src={fechaTorneoIcon} alt="" />
+                                    <span>{fechaLegible(torneo.fecha_Inicio)} - {fechaLegible(torneo.fecha_fin)}</span>
+                                    <p>Fecha del torneo</p>
+                                </div>
+                                <div className="torneo-detalle-resumen-div">
+                                    <img src={ubicacionIcon2} alt="" />
+                                    <span>{torneo.ciudad || torneo.Lugar_Venue || 'Sede por confirmar'}</span>
+                                    <p>{lugar}</p>
+                                </div>
+                                <div className="torneo-detalle-resumen-div">
+                                    <img src={competidoresLimIcon} alt="" />
+                                    <span>{limite} competidores</span>
+                                    <p>Límite de inscripción</p>
+                                </div>
+                                <div className="torneo-detalle-tags">
+                                    <span className={estadoRegistro === 'Inscripciones abiertas'
+                                        ? 'tag-inscripciones'
+                                        : estadoRegistro === 'Inscripciones próximamente'
+                                            ? 'tag-inscripciones-proximas'
+                                            : 'tag-estado-torneo'}>
+                                        {estadoRegistro}
+                                    </span>
+                                    <span className="tag-cupos-restantes">Quedan {cuposRestantes} cupos</span>
+                                    <span className={`tag-estado-evento tag-estado-evento-${estado.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`}>{estado}</span>
+                                </div>
                             </div>
-                            <div className="torneo-detalle-resumen-div">
-                                <img src={ubicacionIcon2} alt="" />
-                                <span>{torneo.ciudad || torneo.Lugar_Venue || 'Sede por confirmar'}</span>
-                                <p>{lugar}</p>
+                            <div className="torneo-detalle-btns">
+                                {usuario?.rol === 'Competidor' && inscripcionUsuarioActual && !inscripcionUsuarioActual.inscripto && (
+                                    <button className="btn-inscribirme" type="button" onClick={() => setSeccionActiva('inscripcion')}>
+                                        Inscribirme <span aria-hidden="true">→</span>
+                                    </button>
+                                )}
+                                {estado === 'En curso' && (
+                                    <button className="btn-ver-resultados" type="button" disabled title="Próximamente">
+                                        <img src={liveIcon} alt="" />
+                                        Ver resultados en vivo
+                                    </button>
+                                )}
                             </div>
-                            <div className="torneo-detalle-resumen-div">
-                                <img src={competidoresLimIcon} alt="" />
-                                <span>{limite} competidores</span>
-                                <p>Límite de inscripción</p>
-                            </div>
-                            <div className="torneo-detalle-tags">
-                                <span className={estadoRegistro === 'Inscripciones abiertas' ? 'tag-inscripciones' : 'tag-estado-torneo'}>{estadoRegistro}</span>
-                                <span className="tag-cupos-restantes">Quedan {cuposRestantes} cupos</span>
-                                <span className={`tag-estado-evento tag-estado-evento-${estado.toLowerCase().replace(' ', '-')}`}>{estado}</span>
-                            </div>
+                            <img
+                                className="torneo-detalle-hero-imagen"
+                                src={torneo.pathImagen ? `${axios.defaults.baseURL.replace(/\/api\/?$/, '')}${torneo.pathImagen}` : cuboBanner}
+                                alt={torneo.pathImagen ? `Imagen del torneo ${torneo.nombre}` : ''}
+                                aria-hidden={!torneo.pathImagen}
+                            />
                         </div>
                     </div>
                 </header>
@@ -270,7 +335,9 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 )}
 
                 {seccionActiva === 'inscripcion' && puedeInscribirse && (
-                    <Inscripcion torneo={torneo} categoriasTorneo={categorias} inscripcionAbierta={estadoRegistro === 'Inscripciones abiertas' && cuposRestantes > 0} />
+                    <div id="seccion-inscripcion">
+                        <Inscripcion torneo={torneo} categoriasTorneo={categorias} inscripcionAbierta={estadoRegistro === 'Inscripciones abiertas' && cuposRestantes > 0} />
+                    </div>
                 )}
             </div>
         </main>
