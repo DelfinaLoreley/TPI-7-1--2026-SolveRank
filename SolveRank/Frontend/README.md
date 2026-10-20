@@ -1,5 +1,11 @@
 # React + Vite
 
+## Detalle de torneo
+
+El cronograma muestra los horarios guardados y los iconos de las categorias, junto con el formato, limite, corte y avance de cada ronda. Comparte el formato de tiempos con las tarjetas de categorias. En pantallas pequenas, las tablas permiten desplazamiento horizontal.
+
+Actualmente las actividades tienen hora de inicio y fin, pero no una fecha individual: se muestra el periodo del torneo y una sola tabla, sin asignar dias a las rondas.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import calendarIcon from '/src/assets/torneos/calendar-icon.svg';
 import locationIcon from '/src/assets/torneos/ubicacion-azul-icon.svg';
+import sedeIcon from '/src/assets/torneos/local-azul-icon.svg';
 import contactIcon from '/src/assets/torneos/contacto-icon.svg';
 import categoriesIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import registrationIcon from '/src/assets/torneos/inscripcion-azul-icon.svg';
 import delegatesIcon from '/src/assets/torneos/delegados-azul-icon.svg';
-import documentsIcon from '/src/assets/torneos/documentacion-icon.svg';
+import organizadorIcon from '/src/assets/icons/organizador-azul-icon.svg';
+import documentacionIcon from '/src/assets/torneos/documentacion-azul-icon.svg';
 import importantIcon from '/src/assets/torneos/importante-icon.svg';
+import descIcon from '/src/assets/torneos/desc-icon.svg';
+import perdiodoInscIcon from '/src/assets/torneos/periodo-inscripcion-azul-icon.svg';
+
 import { categorias } from './pasos/datosCategorias.js';
 import './TorneoGeneral.css';
 
@@ -100,7 +105,7 @@ function EstadoInscripcion({ torneo }) {
                 </div>
             </div>
             <div className="torneo-general-periodo">
-                <img src={calendarIcon} alt="" />
+                <img src={perdiodoInscIcon} alt="" />
                 <div>
                     <strong>Período de inscripción</strong>
                     <span>{inicio || fin ? `${inicio || 'Por confirmar'} - ${fin || 'Por confirmar'}` : 'Por confirmar'}</span>
@@ -135,11 +140,23 @@ function CategoriasTorneo({ torneo }) {
                             ? original
                             : original.id || original.idCategoria || nombre;
                         const detalle = categorias.find((opcion) => opcion.id === idCategoria || opcion.etiqueta === nombre || opcion.id === nombre);
+                        const rondas = typeof original === 'string' ? [] : original.rondas || [];
+                        const formatos = [...new Set(rondas.map((ronda) => ronda.formato).filter(Boolean))];
+                        const formato = formatos.join(' / ') || (typeof original === 'string' ? '' : original.formato) || 'Por confirmar';
+                        const finales = rondas.filter((ronda) => String(ronda.nombre || '').trim().toLocaleLowerCase('es') === 'final').length;
+                        const rondasPrevias = rondas.length - finales;
+                        const textoRondas = !rondas.length ? 'Por confirmar'
+                            : finales ? `${rondasPrevias ? `${rondasPrevias} + ` : ''}Final`
+                                : String(rondas.length);
 
                         return (
                             <li key={clave}>
-                                {detalle?.icono && <img src={detalle.icono} alt="" />}
-                                <strong>{detalle?.etiqueta || nombre}</strong>
+                                {detalle?.icono && <span className="torneo-general-categoria-icono"><img src={detalle.icono} alt="" /></span>}
+                                <div className="torneo-general-categoria-detalle">
+                                    <strong>{detalle?.etiqueta || nombre}</strong>
+                                    <span>Formato: {formato}</span>
+                                    <span>Rondas: {textoRondas}</span>
+                                </div>
                             </li>
                         );
                     })}
@@ -176,7 +193,7 @@ function ListaPersonas({ titulo, personas, icono }) {
 function Documentacion({ documentos }) {
     const lista = Array.isArray(documentos) ? documentos : [];
     return (
-        <Tarjeta titulo="DOCUMENTACIÓN" icono={documentsIcon}>
+        <Tarjeta titulo="DOCUMENTACIÓN" icono={documentacionIcon}>
             {lista.length > 0 ? (
                 <ul className="torneo-general-documentos">
                     {lista.map((documento) => {
@@ -215,13 +232,13 @@ function TorneoGeneral({ torneo }) {
     return (
         <section id="seccion-general" className="torneo-general" aria-label="Resumen general del torneo">
             <div className="torneo-general-columna">
-                <Tarjeta titulo="INFORMACIÓN GENERAL" icono={calendarIcon}>
+                <Tarjeta titulo="INFORMACIÓN GENERAL" icono={documentacionIcon}>
                     <div className="torneo-general-datos">
                         <Dato icono={calendarIcon} etiqueta="Fecha" valor={periodoFechas(torneo.fecha_Inicio, torneo.fecha_fin)} />
-                        <Dato icono={locationIcon} etiqueta="Ciudad" valor={[torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')} />
-                        <Dato icono={locationIcon} etiqueta="Sede" valor={torneo.Lugar_Venue} />
-                        <Dato icono={contactIcon} etiqueta="Organizador principal" valor={organizador} />
                         <Dato icono={contactIcon} etiqueta="Contacto" valor={contacto} />
+                        <Dato icono={locationIcon} etiqueta="Ciudad" valor={[torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')} />
+                        <Dato icono={organizadorIcon} etiqueta="Organizador principal" valor={organizador} />
+                        <Dato icono={sedeIcon} etiqueta="Sede" valor={torneo.Lugar_Venue} />
                         <Dato icono={delegatesIcon} etiqueta="Delegados de la WCA" valor={normalizarLista(delegados).join(', ')} />
                     </div>
                 </Tarjeta>
@@ -246,8 +263,8 @@ function TorneoGeneral({ torneo }) {
                             )}
                         </>
                     ) : (
-                        <><p className="torneo-general-vacio">Consultá con la organización si necesitás información sobre requisitos y reglamento.</p>
-                        <a href="link a revisar" rel="noopener noreferrer" target='blank'>Leer mas ...</a></>
+                        <><p className="torneo-general-vacio">Si haces click a esta pestaña, podrás ver información importante y muy útil sobre los torneos, como las reglas básicas y los requisitos.</p>
+                        <a href="link a revisar" rel="noopener noreferrer" target='blank'>Leer más →</a></>
                     )}
                 </Tarjeta>
             </div>
@@ -255,7 +272,7 @@ function TorneoGeneral({ torneo }) {
             <div className="torneo-general-columna">
                 <EstadoInscripcion torneo={torneo} />
 
-                <Tarjeta titulo="DESCRIPCIÓN" icono={documentsIcon}>
+                <Tarjeta titulo="DESCRIPCIÓN" icono={descIcon}>
                     <p className="torneo-general-descripcion">
                         {torneo.descripcion || 'La organización todavía no publicó una descripción para este torneo.'}
                     </p>

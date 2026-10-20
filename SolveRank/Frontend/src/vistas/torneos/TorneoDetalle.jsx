@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
-import calendarIcon from '/src/assets/torneos/calendar-icon.svg';
-import ubicacionIcon from '/src/assets/torneos/ubicacion-azul-icon.svg';
+import calendarIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
+import ubicacionIcon from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
+import categoIcon from '/src/assets/torneos/categorias-azul-icon.png';
+
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
 import MezclasTorneo from './MezclasTorneo.jsx';
@@ -10,6 +12,7 @@ import CargaResultadosTorneo from './CargaResultadosTorneo.jsx';
 import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
 import ResultadosPublicosTorneo from './ResultadosPublicosTorneo.jsx';
 import CategoriaTorneoCard from './CategoriaTorneoCard.jsx';
+import CronogramaTorneo from './CronogramaTorneo.jsx';
 import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
 import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
@@ -145,7 +148,6 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         ...(resultadosAutorizados
             ? [['resultados', 'Cargar resultados']]
             : resultadosVisibles ? [['resultados', 'Ver resultados']] : []),
-        ['importante', 'Información importante'],
         ...(puedeInscribirse ? [['inscripcion', 'Inscripción']] : [])
     ];
 
@@ -229,7 +231,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
                 {seccionActiva === 'categorias' && (
                     <section className="torneo-detalle-contenido">
-                        <h2>Categorías y rondas</h2>
+                        <h2> <span aria-hidden="true"><img src={categoIcon}/></span> Categorías</h2>
                         {categorias.length ? (
                             <div className="torneo-detalle-categorias-grid">
                                 {categorias.map((categoria) => (
@@ -263,28 +265,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 )}
 
                 {seccionActiva === 'cronograma' && (
-                    <section className="torneo-detalle-contenido">
-                        <h2>Cronograma</h2>
-                        {detalle.cronograma?.length ? (
-                            <ul className="torneo-detalle-lista">
-                                {detalle.cronograma.map((actividad, indice) => (
-                                    <li key={`${actividad.idRonda}-${indice}`}>
-                                        <strong>{actividad.categoria} · {actividad.ronda}</strong>
-                                        <span>{String(actividad.horaInicio).slice(0, 5)}–{String(actividad.horaFin).slice(0, 5)}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : <p>El cronograma todavía no está disponible.</p>}
-                    </section>
-                )}
-
-                {seccionActiva === 'importante' && (
-                    <section className="torneo-detalle-contenido">
-                        <h2>Información importante</h2>
-                        <p><strong>Inscripción:</strong> {fechaLegible(torneo.Fecha_Inicio_Inscripcion)} al {fechaLegible(torneo.Fecha_fin_Inscripcion)}</p>
-                        {torneo.observacion && <p>{torneo.observacion}</p>}
-                        {torneo.Contacto_Organizador && <p><strong>Contacto:</strong> {torneo.Contacto_Organizador}</p>}
-                    </section>
+                    <CronogramaTorneo actividades={detalle.cronograma ?? []} categorias={categorias} torneo={torneo} />
                 )}
 
                 {seccionActiva === 'inscripcion' && puedeInscribirse && (

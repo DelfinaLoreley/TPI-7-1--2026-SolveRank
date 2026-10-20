@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     align-items: start;
-    gap: 18px;
+    gap: 24px;
     margin: 0 0 24px;
     scroll-margin-top: 24px;
 }
@@ -10,13 +10,13 @@
 .torneo-general-columna {
     display: grid;
     align-content: start;
-    gap: 12px;
+    gap: 18px;
     min-width: 0;
 }
 
 .torneo-general-tarjeta {
     min-width: 0;
-    padding: 12px;
+    padding: 18px;
     border: 1px solid var(--detalle-borde);
     border-radius: 10px;
     background: var(--detalle-panel);
@@ -27,7 +27,7 @@
     align-items: center;
     gap: 7px;
     margin: 0 0 12px;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -45,15 +45,15 @@
 
 .torneo-general-tarjeta h2 img {
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
 }
 
 .torneo-general-datos {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 12px;
 }
 
 .torneo-general-dato {
@@ -61,8 +61,8 @@
     align-items: flex-start;
     gap: 8px;
     min-width: 0;
-    min-height: 54px;
-    padding: 9px;
+    min-height: 72px;
+    padding: 12px;
     border: 1px solid #1a2a48;
     border-radius: 8px;
     background: #0b152b;
@@ -70,8 +70,8 @@
 
 .torneo-general-dato > img {
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
 }
 
@@ -84,12 +84,12 @@
 .torneo-general-dato span,
 .torneo-general-periodo span {
     color: var(--detalle-suave);
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .torneo-general-dato strong {
     overflow-wrap: anywhere;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 1.35;
 }
@@ -99,14 +99,14 @@
     grid-template-columns: minmax(84px, 1fr) minmax(60px, 0.8fr) minmax(90px, 0.9fr);
     align-items: center;
     gap: 8px;
-    min-height: 110px;
+    min-height: 136px;
     padding: 2px 5px 10px;
     border-bottom: 1px solid #5a6479;
 }
 
 .torneo-general-dona {
     display: grid;
-    width: min(100%, 84px);
+    width: min(100%, 104px);
     aspect-ratio: 1;
     place-items: center;
     border-radius: 50%;
@@ -125,12 +125,12 @@
 }
 
 .torneo-general-dona strong {
-    font-size: 19px;
+    font-size: 24px;
     line-height: 1;
 }
 
 .torneo-general-dona span {
-    font-size: 7px;
+    font-size: 10px;
 }
 
 .torneo-general-cifra {
@@ -142,12 +142,12 @@
 }
 
 .torneo-general-cifra strong {
-    font-size: clamp(20px, 2.5vw, 27px);
+    font-size: clamp(24px, 2.5vw, 34px);
     line-height: 1.1;
 }
 
 .torneo-general-cifra span {
-    font-size: 12px;
+    font-size: 15px;
 }
 
 .torneo-general-periodo {
@@ -169,21 +169,21 @@
 }
 
 .torneo-general-periodo strong {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 400;
 }
 
 .torneo-general-personas {
     margin: 0;
     color: #6ca3ff;
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.5;
 }
 
 .torneo-general-categorias {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -192,31 +192,62 @@
 .torneo-general-categorias li {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     min-width: 0;
-    min-height: 42px;
-    padding: 7px;
+    min-height: 92px;
+    padding: 12px;
     border: 1px solid #263958;
-    border-radius: 7px;
-    background: #172746;
+    border-radius: 6px;
+    background: #182641;
+    font-family: 'Instrument Sans', sans-serif;
+}
+
+.torneo-general-categoria-icono {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #1b3058;
+    background: linear-gradient(to bottom, #0a1b40, #0a1b40) padding-box,
+                linear-gradient(to bottom, #161E31, #102A63) border-box;
 }
 
 .torneo-general-categorias img {
     flex: 0 0 auto;
-    width: 25px;
-    height: 25px;
+    box-sizing: border-box;
+    width: 43px;
+    height: 43px;
+    padding: 10px;
     object-fit: contain;
 }
 
 .torneo-general-categorias strong {
     overflow-wrap: anywhere;
-    font-size: 11px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.torneo-general-categoria-detalle {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.torneo-general-categoria-detalle > span {
+    color: #c5cee0;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .torneo-general-vacio {
     margin: 0;
     color: var(--detalle-suave);
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.45;
 }
 
@@ -228,7 +259,7 @@
     margin: 0;
     padding-left: 17px;
     color: #d4dbea;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.45;
 }
 
@@ -240,7 +271,7 @@
     background: transparent;
     color: #438bff;
     font: inherit;
-    font-size: 11px;
+    font-size: 14px;
     cursor: pointer;
 }
 
@@ -252,7 +283,7 @@
 .torneo-general-descripcion {
     margin: 0;
     color: #f1f3fa;
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.45;
     white-space: pre-line;
 }
@@ -261,7 +292,7 @@
     display: grid;
     gap: 3px;
     margin: 0 0 10px;
-    font-size: 12px;
+    font-size: 15px;
 }
 
 .torneo-general-lugar strong {
@@ -280,7 +311,7 @@
     border: 1px solid #315eff;
     border-radius: 7px;
     color: #8db7ff;
-    font-size: 11px;
+    font-size: 14px;
     text-decoration: none;
 }
 
@@ -299,7 +330,7 @@
 .torneo-general-documentos a,
 .torneo-general-documentos span {
     color: #f1f3fa;
-    font-size: 11px;
+    font-size: 14px;
     overflow-wrap: anywhere;
 }
 
@@ -307,14 +338,18 @@
     color: #8db7ff;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
     .torneo-general {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 18px;
     }
 }
 
 @media (max-width: 430px) {
+    .torneo-general-categorias {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
     .torneo-general-datos {
         grid-template-columns: 1fr;
     }
@@ -329,6 +364,6 @@
     }
 
     .torneo-general-cifra span {
-        font-size: 10px;
+        font-size: 12px;
     }
 }

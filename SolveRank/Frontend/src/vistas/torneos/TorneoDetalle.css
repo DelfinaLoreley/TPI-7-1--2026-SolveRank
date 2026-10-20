@@ -8,7 +8,7 @@
     --detalle-azul: #1678ff;
     --detalle-violeta: #5038ff;
     min-height: 100vh;
-    padding: 28px 14px 18px;
+    padding: 36px 20px 40px;
     background:
         radial-gradient(ellipse at 50% -10%, rgb(39 82 171 / 18%), transparent 45%),
         var(--detalle-fondo);
@@ -23,12 +23,12 @@
 }
 
 .torneo-detalle-contenedor {
-    width: min(100%, 1080px);
+    width: min(100%, 1280px);
     margin: 0 auto;
 }
 
 .torneo-detalle-encabezado {
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
 .torneo-detalle-volver {
@@ -47,7 +47,7 @@
 
 .torneo-detalle-hero h1 {
     margin: 0 0 14px;
-    font-size: clamp(25px, 3vw, 32px);
+    font-size: clamp(28px, 3vw, 38px);
     letter-spacing: -0.04em;
 }
 
@@ -61,7 +61,7 @@
 .torneo-detalle-resumen-div {
     position: relative;
     display: grid;
-    grid-template-columns: 24px auto;
+    grid-template-columns: 30px minmax(0, 1fr);
     align-items: center;
     column-gap: 8px;
     min-width: 155px;
@@ -79,19 +79,20 @@
 
 .torneo-detalle-resumen-div img {
     grid-row: span 2;
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
     object-fit: contain;
 }
 
 .torneo-detalle-resumen-div span {
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .torneo-detalle-resumen-div p {
     margin: 0;
     color: var(--detalle-suave);
-    font-size: 11px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
 }
 
 .torneo-detalle-tags {
@@ -99,7 +100,7 @@
     flex-wrap: wrap;
     gap: 8px;
     width: 100%;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
 }
 
@@ -138,13 +139,13 @@
 }
 
 .torneo-detalle-btns button {
-    min-height: 38px;
-    padding: 8px 16px;
+    min-height: 46px;
+    padding: 10px 20px;
     border: 1px solid #315eff;
     border-radius: 9px;
     color: white;
     font: inherit;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -167,15 +168,16 @@
 
 .navbar-torneo-detalle {
     display: flex;
+    overflow-x: auto;
     justify-content: space-around;
     gap: 8px;
-    margin: 0 0 20px;
-    padding: 9px 12px;
+    margin: 0 0 24px;
+    padding: 12px 16px;
     border: 1px solid var(--detalle-borde);
     border-radius: 10px;
     background: #0a1428;
     color: #e5e9f3;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .navbar-torneo-detalle span,
@@ -195,19 +197,26 @@
 }
 
 .torneo-detalle-contenido {
-    padding: 18px 20px;
+    min-width: 0;
+    padding: 24px;
     border: 1px solid var(--detalle-borde);
     border-radius: 10px;
     background: var(--detalle-panel);
     color: var(--detalle-suave);
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.6;
 }
 
 .torneo-detalle-contenido h2 {
     margin: 0 0 12px;
     color: var(--detalle-texto);
-    font-size: 18px;
+    font-size: 20px;
+    
+}
+
+.torneo-detalle-contenido h2 span img {
+    width: 23px;
+    height: 23px;
 }
 
 .torneo-detalle-contenido p {
@@ -817,6 +826,7 @@
 
     .torneo-detalle-resumen-div {
         min-width: min(100%, 150px);
+        max-width: 100%;
     }
 
     .torneo-detalle-resumen-div:nth-of-type(2)::after {
@@ -827,6 +837,10 @@
         justify-content: flex-start;
         overflow-x: auto;
         white-space: nowrap;
+    }
+
+    .torneo-detalle-contenido {
+        padding: 18px 12px;
     }
 
     .inscripcion-section {

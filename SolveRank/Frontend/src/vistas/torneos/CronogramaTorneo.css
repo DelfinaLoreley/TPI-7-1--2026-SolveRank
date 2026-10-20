@@ -1,0 +1,132 @@
+.torneo-cronograma > h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.torneo-cronograma > h2 img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.torneo-cronograma-fecha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--detalle-texto);
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    text-wrap: balance;
+}
+
+.torneo-cronograma-fecha::before,
+.torneo-cronograma-fecha::after {
+    flex: 0 0 42px;
+    height: 1px;
+    background: #53617a;
+    content: '';
+}
+
+.torneo-cronograma-tabla-contenedor {
+    overflow-x: auto;
+    margin: 0 16px 16px;
+    border: 1px solid var(--detalle-borde);
+    border-radius: 8px;
+}
+
+.torneo-cronograma-tabla-contenedor:focus-visible {
+    outline: 2px solid var(--detalle-azul);
+    outline-offset: 3px;
+}
+
+.torneo-cronograma-tabla {
+    width: 100%;
+    min-width: 860px;
+    border-collapse: collapse;
+    background: #0f1a30;
+    color: #f1f3fa;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.torneo-cronograma-tabla thead {
+    background: #0d1e45;
+}
+
+.torneo-cronograma-tabla th,
+.torneo-cronograma-tabla td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #1c2c49;
+    font-weight: 400;
+}
+
+.torneo-cronograma-tabla thead th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #d8e1f3;
+    white-space: nowrap;
+}
+
+.torneo-cronograma-tabla tbody tr:last-child > * {
+    border-bottom: 0;
+}
+
+.torneo-cronograma-tabla tbody tr:hover {
+    background: #15243e;
+}
+
+.torneo-cronograma-tabla tbody th {
+    width: 30%;
+    text-align: left;
+}
+
+.torneo-cronograma-actividad {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 200px;
+}
+
+.torneo-cronograma-actividad img {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.torneo-cronograma-hora,
+.torneo-cronograma-tiempo {
+    font-family: Consolas, monospace;
+    white-space: nowrap;
+}
+
+.torneo-cronograma-asterisco {
+    margin-left: 2px;
+    color: #ffc85c;
+}
+
+@media (max-width: 640px) {
+    .torneo-cronograma-fecha {
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .torneo-cronograma-fecha::before,
+    .torneo-cronograma-fecha::after {
+        flex-basis: 18px;
+    }
+
+    .torneo-cronograma-tabla-contenedor {
+        margin-right: 0;
+        margin-left: 0;
+    }
+}
