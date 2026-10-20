@@ -252,10 +252,12 @@
 }
 
 .inscripcion-section {
-    padding: 10px 16px 28px;
-    border: 1px solid var(--detalle-violeta);
+    padding: 16px 24px 30px;
+    border: 2px solid transparent;
     border-radius: 10px;
-    background: var(--detalle-panel);
+    background:
+        linear-gradient(var(--detalle-panel), var(--detalle-panel)) padding-box,
+        linear-gradient(180deg, #1c4484, #233663 35%, #5038ff 85%) border-box;
 }
 
 .inscripcion-categorias-registradas {
@@ -266,20 +268,25 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    margin-bottom: 22px;
+    margin-bottom: 28px;
 }
 
 .inscripcion-titulo img {
-    width: 15px;
-    height: 15px;
+    width: 18px;
+    height: 18px;
     object-fit: contain;
 }
 
 .inscripcion-titulo h2,
 .inscripcion-estado h3 {
     margin: 0;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 600;
+}
+
+.inscripcion-titulo h2 {
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .inscripcion-resumen {
@@ -295,9 +302,12 @@
     gap: 14px;
     min-height: 82px;
     padding: 12px 16px;
-    border: 1px solid var(--detalle-borde);
+    min-width: 0;
+    border: 2px solid transparent;
     border-radius: 9px;
-    background: #0b152b;
+    background:
+        linear-gradient(#0b1325, #0b1325) padding-box,
+        linear-gradient(#243b61, #111b30) border-box;
 }
 
 .inscripcion-dato-icono {
@@ -317,12 +327,16 @@
     margin: 0;
     color: var(--detalle-suave);
     font-size: 14px;
+    overflow-wrap: anywhere;
 }
 
 .inscripcion-estado {
     padding: 14px 16px 18px;
-    border: 1px solid var(--detalle-borde);
+    border: 2px solid transparent;
     border-radius: 9px;
+    background:
+        linear-gradient(#0b1325, #0b1325) padding-box,
+        linear-gradient(#243b61, #111b30) border-box;
 }
 
 .inscripcion-estado h3 {
@@ -332,10 +346,10 @@
 }
 
 .inscripcion-estado-icono {
+    flex: 0 0 22px;
     width: 20px;
     height: 22px;
-    border: 2px solid var(--detalle-azul);
-    border-radius: 4px;
+    background: url('../../assets/torneos/inscripcion-azul-icon.svg') center / contain no-repeat;
 }
 
 .inscripcion-estadisticas {
@@ -353,7 +367,7 @@
     aspect-ratio: 1;
     place-items: center;
     border-radius: 50%;
-    background: conic-gradient(var(--detalle-azul) 0 var(--inscripcion-ocupacion, 0%), #9bb9f0 var(--inscripcion-ocupacion, 0%) 100%);
+    background: conic-gradient(from 165deg, var(--detalle-azul) 0 var(--inscripcion-ocupacion, 0%), #9bb9f0 var(--inscripcion-ocupacion, 0%) 100%);
 }
 
 .inscripcion-dona > div {
@@ -364,7 +378,7 @@
     width: 78%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: var(--detalle-panel);
+    background: #0b1325;
 }
 
 .inscripcion-dona strong {
@@ -396,14 +410,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 0 0;
+    padding: 24px 0 0;
 }
 
 .inscripcion-proceso > h3 {
     display: flex;
     align-items: center;
     gap: 7px;
-    margin: 0 0 28px;
+    margin: 0 0 30px;
     font-size: 20px;
     font-weight: 500;
 }
@@ -415,14 +429,16 @@
 }
 
 .inscripcion-pasos {
+    --paso-punta: 28px;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: min(100%, 810px);
+    width: min(100%, 900px);
     min-height: 82px;
     margin: 0 0 28px;
     padding: 0;
     border-radius: 10px;
-    background: var(--detalle-panel-claro);
+    background: #0f1a30;
+    box-shadow: inset 0 2px #1b3158;
     list-style: none;
 }
 
@@ -430,12 +446,24 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     min-width: 0;
     min-height: 82px;
     padding: 10px 24px 10px 16px;
     color: #fff;
     isolation: isolate;
+}
+
+.inscripcion-pasos li:not(:last-child) {
+    width: calc(100% + var(--paso-punta));
+}
+
+.inscripcion-pasos li.paso-1 {
+    z-index: 3;
+}
+
+.inscripcion-pasos li.paso-2 {
+    z-index: 2;
 }
 
 .inscripcion-pasos li::before,
@@ -448,27 +476,27 @@
 }
 
 .inscripcion-pasos li::before {
-    background: #182642;
+    background: #172c54;
 }
 
 .inscripcion-pasos li::after {
     inset: 1px;
-    background: #101d38;
+    background: #0f1a30;
 }
 
 .inscripcion-pasos li.paso-1 {
-    --paso-chevron: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%);
+    --paso-chevron: polygon(0 0, calc(100% - var(--paso-punta)) 0, 100% 50%, calc(100% - var(--paso-punta)) 100%, 0 100%);
     padding-left: 24px;
 }
 
 .inscripcion-pasos li.paso-2 {
-    --paso-chevron: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 12% 50%);
-    padding-left: 34px;
+    --paso-chevron: polygon(0 0, calc(100% - var(--paso-punta)) 0, 100% 50%, calc(100% - var(--paso-punta)) 100%, 0 100%, var(--paso-punta) 50%);
+    padding-left: 46px;
 }
 
 .inscripcion-pasos li.paso-3 {
-    --paso-chevron: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12% 50%);
-    padding-left: 34px;
+    --paso-chevron: polygon(0 0, 100% 0, 100% 100%, 0 100%, var(--paso-punta) 50%);
+    padding-left: 46px;
     padding-right: 18px;
 }
 
@@ -478,17 +506,18 @@
 }
 
 .inscripcion-pasos li.actual {
-    z-index: 1;
-    filter: drop-shadow(0 0 4px #1680ff) drop-shadow(0 0 8px rgb(20 120 255 / 75%));
+    z-index: 4;
+    filter: drop-shadow(0 0 2px #1680ff) drop-shadow(0 0 6px #1680ff) drop-shadow(0 0 10px rgb(20 120 255 / 60%));
 }
 
 .inscripcion-pasos li.actual::before {
-    background: #3285ff;
+    background: #f5fbff;
 }
 
 .inscripcion-pasos li.actual::after {
-    inset: 2px;
-    background: linear-gradient(110deg, #0c1e45, #10244e);
+    inset: 1.5px;
+    background: linear-gradient(110deg, #0b1731, #102650);
+    box-shadow: inset 0 0 10px #1678ff;
 }
 
 .inscripcion-pasos li.paso-3::before,
@@ -504,6 +533,8 @@
     flex: 0 0 auto;
     font-size: 28px;
     line-height: 1;
+    font-weight: 500;
+    font-family: 'Inclusive Sans';
 }
 
 .inscripcion-paso-check {
@@ -512,6 +543,14 @@
     font-size: 32px;
     font-weight: 700;
     line-height: 1;
+    width: 30px;
+    height: auto;
+}
+
+.inscripcion-paso-check img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
 }
 
 .inscripcion-pasos li div {
@@ -522,12 +561,15 @@
 
 .inscripcion-pasos li b {
     font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inclusive Sans';
 }
 
 .inscripcion-pasos li div > span {
     color: #c0c8d7;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.3;
+    font-family: 'Inclusive Sans';
 }
 
 .inscripcion-pasos li .inscripcion-paso-check {
@@ -543,7 +585,7 @@
     width: min(100%, 810px);
     border: 1px solid #1b3158;
     border-radius: 14px;
-    background: #0c1a37;
+    background: #0B1A3B;
     box-shadow: inset 0 1px 4px rgb(180 202 255 / 14%);
 }
 
@@ -617,7 +659,7 @@
     cursor: pointer;
 }
 
-.inscripcion-seleccion-acciones button.seleccion-todas {
+.inscripcion-seleccion-acciones button.activa {
     border-color: #1c42ff;
     background: #0b1832;
     box-shadow: 0 0 8px rgb(20 70 255 / 55%);
@@ -639,10 +681,11 @@
 
 .inscripcion-confirmar {
     min-height: 48px;
+    width: 100%;
     padding: 10px 24px;
-    border: 1px solid #3980ff;
+    border: 1px solid #0A276E;
     border-radius: 12px;
-    background: linear-gradient(110deg, #343eff, #111dbb);
+    background: linear-gradient(110deg, #6A00FF, #00118F);
     color: #fff;
     font: inherit;
     font-size: 17px;
@@ -672,6 +715,7 @@
     color: #fff;
     font: inherit;
     cursor: pointer;
+    width: 100%;
 }
 
 .inscripcion-confirmacion,
@@ -681,6 +725,10 @@
     gap: 20px;
     margin-bottom: 18px;
     padding: 18px 22px;
+}
+
+.inscripcion-eventos{
+    padding-bottom: 30px;
 }
 
 .inscripcion-confirmacion-check {
@@ -695,6 +743,7 @@
 .inscripcion-eventos h4 {
     margin: 0 0 6px;
     font-size: 18px;
+    font-family: 'Inclusive Sans';
 }
 
 .inscripcion-confirmacion p {
@@ -702,6 +751,7 @@
     color: #c1cadd;
     font-size: 14px;
     line-height: 1.4;
+    font-family: 'Inter';
 }
 
 .inscripcion-eventos {
@@ -758,6 +808,7 @@
     font: inherit;
     font-size: 17px;
     cursor: pointer;
+    padding: 6px 35px;
 }
 
 .inscripcion-eliminar {
@@ -769,14 +820,17 @@
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    width: min(100%, 600px);
+    width: min(100%, 810px);
     margin-bottom: 18px;
     padding: 14px 18px;
-    border: 1px solid #405578;
+    border: 2px solid transparent;
     border-radius: 11px;
-    background: #20304e;
+    background:
+        linear-gradient(#23314c, #23314c) padding-box,
+        linear-gradient(135deg, #52617c, #2e3d58 45%, #17233b) border-box;
+    box-shadow: 0 0 0 1px #15213a, inset 0 1px 3px rgb(185 205 255 / 10%);
     color: #d4dbea;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.45;
     cursor: pointer;
 }
@@ -790,15 +844,18 @@
 }
 
 .inscripcion-continuar {
-    min-width: 196px;
+    width:100%;
+    width: min(100%, 810px);
     min-height: 42px;
     padding: 8px 22px;
-    border: 0;
+    border: 1px solid transparent;
     border-radius: 12px;
-    background: linear-gradient(110deg, #343eff, #111dbb);
+    background:
+        linear-gradient(110deg, #343eff, #111dbb) padding-box,
+        linear-gradient(140deg, #91afff, #3449ea 55%, #111dbb) border-box;
     color: #fff;
     font: inherit;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -883,15 +940,19 @@
     }
 
     .inscripcion-pasos {
+        --paso-punta: 14px;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         min-height: 72px;
         margin-bottom: 18px;
     }
 
     .inscripcion-pasos li {
-        min-height: 72px;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 110px;
         gap: 5px;
         padding: 7px 8px;
+        text-align: center;
     }
 
     .inscripcion-pasos li.paso-1 {
@@ -900,12 +961,12 @@
     }
 
     .inscripcion-pasos li.paso-2 {
-        padding-left: 17px;
+        padding-left: 20px;
         padding-right: 11px;
     }
 
     .inscripcion-pasos li.paso-3 {
-        padding-left: 17px;
+        padding-left: 20px;
         padding-right: 7px;
     }
 
@@ -919,6 +980,7 @@
 
     .inscripcion-pasos li b {
         font-size: 11px;
+        overflow-wrap: anywhere;
     }
 
     .inscripcion-pasos li div > span {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
-import calendarIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
-import ubicacionIcon from '/src/assets/torneos/ubicacion-violeta-icon.svg';
+import calendarIcon from '/src/assets/torneos/calendar-icon.svg';
+import ubicacionIcon from '/src/assets/torneos/ubicacion-azul-icon.svg';
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import categoIcon from '/src/assets/torneos/categorias-azul-icon.png';
 

@@ -1,15 +1,18 @@
 
 import { useEffect, useState } from 'react';
 import inscripcionIcon from '/src/assets/torneos/inscripcion-azul-icon.svg';
-import calendarioInscripcionIcon from '/src/assets/torneos/calendar-icon.svg';
-import registroIcon from '/src/assets/torneos/documentacion-icon.svg';
+import periodoInsIcon from '/src/assets/torneos/periodo-inscripcion-azul-icon.svg';
+import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
+import registroIcon from '/src/assets/torneos/registro-icon.svg';
+import checkIcon from '/src/assets/torneos/check-icon.png';
+
 import { categorias } from './pasos/datosCategorias.js';
 import axios from '../../axiosApi';
 
 const pasos = [
     { titulo: 'Requisitos', descripcion: <>Aceptá los términos<br />del torneo</> },
     { titulo: 'Registrarse', descripcion: <>Elegí tus categorías<br />para este torneo</> },
-    { titulo: 'Aprobación', descripcion: <>Por los organizadores</> }
+    { titulo: 'Aprobación', descripcion: <>Confirmación de tu<br />inscripción</> }
 ];
 
 function fechaPeriodo(fecha) {
@@ -46,6 +49,9 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
             };
         })
         .filter(Boolean);
+    const todasSeleccionadas = categoriasDisponibles.length > 0
+        && categoriasDisponibles.every(({ id }) => categoriasSeleccionadas.includes(id));
+    const ningunaSeleccionada = categoriasSeleccionadas.length === 0;
 
     useEffect(() => {
         let activo = true;
@@ -131,7 +137,7 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
 
             <div className="inscripcion-resumen">
                 <article className="inscripcion-dato">
-                    <img className="inscripcion-dato-icono" src={calendarioInscripcionIcon} alt="" />
+                    <img className="inscripcion-dato-icono" src={periodoInsIcon} alt="" />
                     <div>
                         <h3>Periodo de inscripción</h3>
                         <p>{fechaPeriodo(torneo.Fecha_Inicio_Inscripcion)} - {fechaPeriodo(torneo.Fecha_fin_Inscripcion)}</p>
@@ -183,10 +189,10 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                         </h2>
                     </div>
                     {categoriasInscripcion.length > 0 ? (
-                        <ul className="torneo-general-categorias">
+                        <ul className="torneo-general-categorias-inscripcion">
                             {categoriasInscripcion.map((categoria) => (
                                 <li key={categoria.id}>
-                                    {categoria.icono && <img src={categoria.icono} alt="" />}
+                                    {categoria.icono && <span className="torneo-general-categoria-inscripcion-icono"><img src={categoria.icono} alt="" /></span>}
                                     <strong>{categoria.etiqueta}</strong>
                                 </li>
                             ))}
@@ -227,7 +233,7 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                                 key={paso.titulo}
                             >
                                 {completado
-                                    ? <span className="inscripcion-paso-check" aria-label="Completado">✓</span>
+                                    ? <span className="inscripcion-paso-check" aria-label="Completado"><img src={checkIcon}/></span>
                                     : <strong>{numero}</strong>}
                                 <div><b>{paso.titulo}</b><span>{paso.descripcion}</span></div>
                             </li>
@@ -281,14 +287,17 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                             </div>
                             <div className="inscripcion-seleccion-acciones">
                                 <button
-                                    className="seleccion-todas"
+                                    className={`seleccion-todas${todasSeleccionadas ? ' activa' : ''}`}
                                     type="button"
+                                    aria-pressed={todasSeleccionadas}
                                     onClick={() => setCategoriasSeleccionadas(categoriasDisponibles.map(({ id }) => id))}
                                 >
                                     Todas
                                 </button>
                                 <button
+                                    className={`seleccion-ninguna${ningunaSeleccionada ? ' activa' : ''}`}
                                     type="button"
+                                    aria-pressed={ningunaSeleccionada}
                                     onClick={() => setCategoriasSeleccionadas([])}
                                 >
                                     Ninguna
@@ -329,7 +338,7 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                         </section>
                         <section className="inscripcion-eventos" aria-labelledby="inscripcion-eventos-titulo">
                             <h4 id="inscripcion-eventos-titulo">
-                                <img src={registroIcon} alt="" />
+                                <img src={categoriasIcon} alt="" />
                                 Tus eventos seleccionados
                             </h4>
                             <div className="inscripcion-eventos-lista">
@@ -341,9 +350,6 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                                         </span>
                                     ))}
                             </div>
-                            <p className="inscripcion-seleccion-conteo">
-                                Las categorías seleccionadas se guardarán junto con tu inscripción al torneo.
-                            </p>
                         </section>
                         {errorInscripcion && <p className="inscripcion-error" role="alert">{errorInscripcion}</p>}
                         {!inscripcionConfirmada
