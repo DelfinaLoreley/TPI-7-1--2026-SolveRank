@@ -152,7 +152,7 @@
 
     .mis-torneos-hero p {
         max-width: min(60%, 430px);
-        font-size: clamp(15px, 2.6vw, 20px);
+        font-size: clamp(10px, 2.6vw, 20px);
     }
 
     .mis-torneos-secciones {
@@ -328,7 +328,7 @@
     }
 
     .mis-torneos-vacio p {
-        font-size: clamp(16px, 2.8vw, 21px);
+        font-size: clamp(13px, 2.8vw, 21px);
     }
 
     .mis-torneos-proximos-vacio button {
@@ -360,18 +360,17 @@
 
     .mis-torneos-contenedor {
         padding-top: 12px;
+        margin-top: -30px;
     }
 
     .mis-torneos-hero {
-        min-height: 185px;
         padding: 22px 8px;
-        background-size: auto 75%;
-        background-position: right bottom;
+        background-size: auto 80%;
+        background-position: right top;
     }
 
     .mis-torneos-hero p {
-        max-width: 100%;
-        padding-bottom: 48px;
+        max-width: 60%;
     }
 
     .mis-torneos-secciones {
