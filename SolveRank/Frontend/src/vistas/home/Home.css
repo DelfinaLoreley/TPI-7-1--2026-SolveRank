@@ -134,8 +134,8 @@
     width: fit-content;
     min-height: 42px;
     padding: 15px 25px;
-    border: 1px solid #182743;
-    border-radius: 8px;
+    border: 2px solid #182743;
+    border-radius: 10px;
     background: rgba(10, 22, 44, 0.88);
     font-family: var(--font2);
 }
@@ -211,8 +211,8 @@
 
 /*Proximos torneos section----------------------------------------------------------*/
 .home-panel {
-    border: 1px solid #162540;
-    border-radius: 9px;
+    border: 2px solid #162540;
+    border-radius: 15px;
     background: #09152b;
 }
 
@@ -436,7 +436,7 @@
     border-radius: 4px;
     background: #0d1d3b;
     color: #d6e3fa !important;
-    font-size: 12px;
+    font-size: 14px;
     padding: 5px;
     margin: 10px;
 }
@@ -466,6 +466,7 @@
 .home-ranking,
 .home-estadisticas {
     min-width: 0;
+    border: 2px solid;
     padding: 18px 12px 10px;
 }
 
@@ -475,6 +476,7 @@
     width: 20px;
     height: 20px;
     object-fit: contain;
+    align-self: center;
 }
 
 .home-ranking .home-section-heading h2{
@@ -525,8 +527,8 @@
     grid-template-columns: 20px 28px minmax(65px, 1fr) minmax(36px, 0.55fr) 56px;
     align-items: center;
     gap: 5px;
-    margin: 2px;
-    min-height: 29px;
+    margin: 5px;
+    min-height: 30px;
     border-bottom: 1px solid #1a2941;
     font-family: var(--font2);
 }
@@ -564,6 +566,8 @@
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
+    align-self: center;
+    margin-bottom: 5px;
 }
 
 .home-ranking-lista strong {

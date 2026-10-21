@@ -174,12 +174,13 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                 <p>Configurá las categorías, cronogramas, <br className="panel-hero-br"/> rondas clasificaciones en pocos pasos.</p>
                                 <button type="button" onClick={onCrearTorneo}>Crear torneo ⟶</button>
                             </div>
-                            <div className="panel-cubo-img-cta">
+                            <div className="panel-cubo-img-cta2">
                                 <img src="/src/assets/organizador/img-cubo-hom-removebg-preview.png" alt="" />
                             </div>
                         </div>
                     
                         <div className="accesos-rapidos-container">
+                            <h3>Accesos rápidos</h3>
                             <button className="acceso-rapido-btn" type="button" onClick={onCrearTorneo}>Crear <br/> Torneo</button>
                             <button className="acceso-rapido-btn mt">Mis Torneos <br/> en VIVO</button>
                             <button className="acceso-rapido-btn">Cargar <br/> resultados</button>

@@ -226,9 +226,6 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                             ))}
                         </div>
                         <ol className="home-ranking-lista home-ranking-tabla" aria-label="Ranking de la categoría seleccionada">
-                            <li className="home-ranking-header">
-                                <span>#</span><span></span><span>Competidor</span><span>País</span><span>Mejor single</span>
-                            </li>
                             {cargandoRanking ? <li className="home-ranking-mensaje">Cargando ranking…</li>
                                 : errorRanking ? <li className="home-ranking-mensaje" role="alert">{errorRanking}</li>
                                 : resultadosRanking.length === 0 ? <li className="home-ranking-mensaje">Todavía no hay resultados para esta categoría.</li>
