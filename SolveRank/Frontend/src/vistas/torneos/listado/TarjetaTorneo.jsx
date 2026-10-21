@@ -3,6 +3,7 @@ import ubicacionIcon from '/src/assets/home/iconos/ubicacion-icon.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';
 import guardarIcon from '/src/assets/home/iconos/guardado.png';
+import finalizadoIcon from '/src/assets/torneos/finalizado-icon.png';
 import sedeUshuaia from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
 import sedeRioGrande from '/src/assets/home/cards-torneos/Universidad_Torcuato_Di_Tella.jpg';
 import sedeBuenosAires from '/src/assets/home/cards-torneos/club_defensores_de_belgrano.jpg';
@@ -50,7 +51,8 @@ function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onSol
             <div className="listado-torneo-imagen">
                 <img src={imagen} alt={`Sede del torneo ${torneo.nombre}`} />
                 <span className={`listado-torneo-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>
-                    {estado}
+                    {estado === 'Torneo finalizado' && <img src={finalizadoIcon} alt="" />}
+                    {estado === 'Torneo finalizado' ? 'Finalizado' : estado}
                 </span>
                 <button
                     type="button"

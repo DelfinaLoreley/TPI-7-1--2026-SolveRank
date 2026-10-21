@@ -11,15 +11,17 @@
 }
 
 .mis-torneos-contenedor {
-    width: min(100%, 1600px);
+    width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 0 0 12px;
-    border: 2px solid #1c2c4c;
+    padding: 16px 0 0;
+    border: 3px solid #1c2c4c;
     border-radius: 20px;
     background: #081328;
 }
 
 .mis-torneos-hero {
+    width: min(100%, 1280px);
+    margin: 0 auto;
     min-height: 210px;
     padding: 38px 5% 26px;
     background-color: #020d22;
@@ -32,13 +34,13 @@
     margin: 0 0 18px;
     font-size: clamp(30px, 3vw, 44px);
     font-weight: 700;
+    font-family: 'Instrument Sans';
 }
 
 .mis-torneos-hero p {
     max-width: 440px;
     margin: 0;
-    font-size: clamp(16px, 1.4vw, 21px);
-    font-weight: 600;
+    font-size: clamp(16px, 1.4vw, 20px);
     line-height: 1.3;
 }
 
@@ -52,7 +54,7 @@
 .mis-torneos-seccion {
     min-width: 0;
     padding: 17px 18px 22px;
-    border: 2px solid #1c2c4c;
+    border: 3px solid #1c2c4c;
     border-radius: 17px;
     background: #091328;
 }
@@ -63,6 +65,7 @@
     font-size: clamp(20px, 2vw, 29px);
     font-weight: 700;
     text-transform: uppercase;
+    font-family: 'Instrument Sans';
 }
 
 .mis-torneos-titulo {
@@ -95,28 +98,28 @@
 .mis-torneos-vacio {
     display: flex;
     align-items: flex-start;
-    gap: 17px;
+    gap: 10px;
     padding: 0 0 2px;
 }
 
 .mis-torneos-vacio img {
     flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     object-fit: contain;
 }
 
 .mis-torneos-vacio p {
     margin: 0;
     color: #e6eaf2;
-    font-size: clamp(16px, 1.9vw, 27px);
+    font-size: clamp(16px, 1.9vw, 20px);
     line-height: 1.35;
 }
 
 .mis-torneos-mensaje {
     margin: 14px 2px;
     color: #bdc9dd;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 @media (max-width: 1000px) {
@@ -125,57 +128,310 @@
     }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
     .mis-torneos-page {
-        padding: 0 10px 22px;
+        padding: 0 clamp(10px, 3.6vw, 28px) 28px;
     }
 
     .mis-torneos-contenedor {
-        border-radius: 15px;
+        padding-top: clamp(14px, 2.5vw, 22px);
+        border-radius: clamp(18px, 4vw, 30px);
+    }
+
+    .mis-torneos-hero {
+        min-height: clamp(145px, 20vw, 175px);
+        padding: 24px 0 20px;
+        background-size: auto 100%;
+        background-position: right center;
+    }
+
+    .mis-torneos-hero h1 {
+        margin-bottom: 12px;
+        font-size: clamp(27px, 5vw, 38px);
+    }
+
+    .mis-torneos-hero p {
+        max-width: min(60%, 430px);
+        font-size: clamp(15px, 2.6vw, 20px);
+    }
+
+    .mis-torneos-secciones {
+        margin: 0 2% 16px;
+        gap: clamp(12px, 2vw, 18px);
+    }
+
+    .mis-torneos-seccion {
+        display: flex;
+        flex-direction: column;
+        padding: clamp(14px, 2.4vw, 20px) clamp(10px, 2vw, 18px);
+        border-radius: clamp(14px, 2.5vw, 20px);
+    }
+
+    .mis-torneos-seccion > h2,
+    .mis-torneos-titulo h2 {
+        margin-bottom: clamp(14px, 2.5vw, 22px);
+        font-size: clamp(20px, 3.5vw, 28px);
+    }
+
+    .mis-torneos-titulo {
+        display: contents;
+    }
+
+    .mis-torneos-titulo > button {
+        order: 1;
+        align-self: flex-end;
+        margin: 12px 4px 0 0;
+        font-size: clamp(15px, 2.8vw, 20px);
+    }
+
+    .mis-torneos-seccion .listado-torneos-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: clamp(12px, 2.3vw, 18px);
+        padding: 0 clamp(4px, 2.5vw, 20px);
+    }
+
+    .mis-torneos-page .listado-torneo-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        padding: clamp(12px, 2.6vw, 22px);
+        border-width: 3px;
+        border-radius: clamp(16px, 3vw, 24px);
+        background: #081329;
+    }
+
+    .mis-torneos-page .listado-torneo-imagen {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        order: 0;
+        height: clamp(27px, 4vw, 38px);
+        overflow: visible;
+        background: transparent;
+    }
+
+    .mis-torneos-page .listado-torneo-imagen::after,
+    .mis-torneos-page .listado-torneo-imagen > img:first-child {
+        display: none;
+    }
+
+    .mis-torneos-page .listado-torneo-estado {
+        position: static;
+        max-width: calc(100% - 48px);
+        padding: 5px 10px;
+        font-size: clamp(10px, 2vw, 15px);
+    }
+
+    .mis-torneos-page .listado-torneo-estado.finalizado img {
+        width: clamp(11px, 2vw, 16px);
+        height: clamp(11px, 2vw, 16px);
+    }
+
+    .mis-torneos-page .listado-torneo-guardar {
+        position: static;
+        width: clamp(27px, 4vw, 36px);
+        height: clamp(27px, 4vw, 36px);
+        background: #030d20;
+    }
+
+    .mis-torneos-page .listado-torneo-guardar img {
+        width: 60%;
+        height: 60%;
+    }
+
+    .mis-torneos-page .listado-torneo-info {
+        grid-template-columns: clamp(58px, 14vw, 105px) minmax(0, 1fr);
+        column-gap: clamp(10px, 3vw, 25px);
+        row-gap: clamp(10px, 2.5vw, 18px);
+        min-height: 0;
+        margin-top: 0;
+        padding: clamp(8px, 1.8vw, 14px) 0 0;
+        background: none;
+    }
+
+    .mis-torneos-page .listado-torneo-fecha {
+        min-height: clamp(60px, 13vw, 100px);
+        padding: 7px;
+        border-radius: clamp(8px, 1.7vw, 14px);
+    }
+
+    .mis-torneos-page .listado-torneo-fecha strong {
+        font-size: clamp(24px, 5vw, 40px);
+    }
+
+    .mis-torneos-page .listado-torneo-fecha span {
+        font-size: clamp(14px, 2.8vw, 22px);
+    }
+
+    .mis-torneos-page .listado-torneo-detalle h2 {
+        margin-bottom: clamp(5px, 1vw, 9px);
+        font-size: clamp(16px, 3.8vw, 29px);
+        white-space: normal;
+    }
+
+    .mis-torneos-page .listado-torneo-detalle p {
+        align-items: center;
+        overflow: visible;
+        font-size: clamp(11px, 2.2vw, 17px);
+    }
+
+    .mis-torneos-page .listado-torneo-detalle p img {
+        flex-basis: clamp(13px, 2.4vw, 19px);
+        width: clamp(13px, 2.4vw, 19px);
+        height: clamp(13px, 2.4vw, 19px);
+        margin-right: clamp(5px, 1vw, 9px);
+    }
+
+    .mis-torneos-page .listado-torneo-meta {
+        gap: 8px;
+        padding: 0 clamp(42px, 7vw, 60px) 0 4px;
+        font-size: clamp(12px, 2.5vw, 20px);
+    }
+
+    .mis-torneos-page .listado-torneo-meta span {
+        gap: clamp(4px, 1vw, 8px);
+    }
+
+    .mis-torneos-page .listado-torneo-meta img {
+        width: clamp(17px, 3.5vw, 27px);
+        height: clamp(17px, 3.5vw, 27px);
+        margin: 0;
+    }
+
+    .mis-torneos-page .listado-torneo-ver {
+        position: absolute;
+        right: clamp(8px, 1.5vw, 14px);
+        bottom: clamp(5px, 1vw, 10px);
+        display: grid;
+        width: clamp(34px, 6vw, 50px);
+        height: clamp(34px, 6vw, 50px);
+        min-height: 0;
+        padding: 0;
+        background: transparent;
+    }
+
+    .mis-torneos-page .listado-torneo-ver span:first-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        clip-path: inset(50%);
+    }
+
+    .mis-torneos-page .listado-torneo-ver span:last-child {
+        margin: 0;
+        font-size: clamp(30px, 6vw, 48px);
+    }
+
+    .mis-torneos-vacio {
+        gap: clamp(8px, 1.6vw, 12px);
+    }
+
+    .mis-torneos-vacio p {
+        font-size: clamp(16px, 2.8vw, 21px);
+    }
+
+    .mis-torneos-proximos-vacio button {
+        display: inline;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #4387f5;
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .mis-torneos-mensaje {
+        font-size: clamp(14px, 2.4vw, 17px);
+    }
+
+    .mis-torneos-vacio img {
+        flex-basis: clamp(23px, 4vw, 30px);
+        width: clamp(23px, 4vw, 30px);
+        height: clamp(23px, 4vw, 30px);
+    }
+}
+
+@media (max-width: 500px) {
+    .mis-torneos-page {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .mis-torneos-contenedor {
+        padding-top: 12px;
     }
 
     .mis-torneos-hero {
         min-height: 185px;
-        padding: 28px 18px;
+        padding: 22px 8px;
         background-size: auto 75%;
         background-position: right bottom;
     }
 
     .mis-torneos-hero p {
-        max-width: 65%;
-        font-size: 15px;
+        max-width: 100%;
+        padding-bottom: 48px;
     }
 
     .mis-torneos-secciones {
-        margin: 0 10px 12px;
-        gap: 12px;
-    }
-
-    .mis-torneos-seccion {
-        padding: 14px 12px 17px;
-        border-radius: 13px;
+        margin-right: 2%;
+        margin-left: 2%;
     }
 
     .mis-torneos-seccion .listado-torneos-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
+        padding-right: 0;
+        padding-left: 0;
     }
 
-    .mis-torneos-vacio {
-        gap: 10px;
+    .mis-torneos-page .listado-torneo-card {
+        padding: 12px;
+        border-radius: 16px;
     }
 
-    .mis-torneos-vacio img {
-        flex-basis: 23px;
-        width: 23px;
-        height: 23px;
+    .mis-torneos-page .listado-torneo-info {
+        grid-template-columns: 58px minmax(0, 1fr);
+        column-gap: 10px;
     }
-}
 
-@media (max-width: 420px) {
-    .mis-torneos-hero p {
-        max-width: 100%;
-        padding-bottom: 48px;
+    .mis-torneos-page .listado-torneo-fecha {
+        min-height: 62px;
+    }
+
+    .mis-torneos-page .listado-torneo-fecha strong {
+        font-size: 25px;
+    }
+
+    .mis-torneos-page .listado-torneo-fecha span {
+        font-size: 14px !important;
+    }
+
+    .mis-torneos-page .listado-torneo-detalle h2 {
+        font-size: clamp(15px, 4vw, 20px);
+    }
+
+    .mis-torneos-page .listado-torneo-detalle p {
+        font-size: clamp(10px, 2.8vw, 13px);
+    }
+
+    .mis-torneos-page .listado-torneo-meta {
+        font-size: clamp(10px, 2.8vw, 13px);
+    }
+
+    .mis-torneos-page .listado-torneo-meta img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .mis-torneos-page .listado-torneo-ver {
+        right: 7px;
+        bottom: 5px;
+        width: 34px;
+        height: 34px;
+    }
+
+    .mis-torneos-page .listado-torneo-ver span:last-child {
+        font-size: 32px;
     }
 
     .mis-torneos-seccion .listado-torneos-grid {

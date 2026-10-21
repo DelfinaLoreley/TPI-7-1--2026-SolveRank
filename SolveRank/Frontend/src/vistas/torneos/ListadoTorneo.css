@@ -54,7 +54,7 @@
     margin: 0;
     color: #e0e6f1;
     font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.2;
 }
 
@@ -420,7 +420,23 @@
 
 .listado-torneo-estado.abiertas { background: #218a4c; }
 .listado-torneo-estado.cerradas { background: #bf2427; }
-.listado-torneo-estado.finalizado { background: #596579; }
+.listado-torneo-estado.finalizado { 
+    background: linear-gradient(to right, #3E4B62, #4B576B, #596579, #6A81A1, #566072, #596579, #7F8DA6); 
+    border: 2px solid #6A81A1;
+}
+
+.listado-torneo-estado.finalizado {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.listado-torneo-estado.finalizado img {
+    display: block;
+    width: 10px;
+    height: 10px;
+    object-fit: contain;
+}
 
 .listado-torneo-guardar {
     position: absolute;

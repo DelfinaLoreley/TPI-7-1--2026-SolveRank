@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
-import infoIcon from '/src/assets/home/iconos/resultados-azul-icon.png';
+import infoIcon from '/src/assets/icons/Info.png';
 import TarjetaTorneo from './listado/TarjetaTorneo.jsx';
 import './ListadoTorneo.css';
 import './MisTorneos.css';
@@ -74,12 +74,12 @@ function MisTorneos({ usuario, onVerTorneo, onVerTodosTorneos }) {
 
     return (
         <main className="mis-torneos-page">
-            <div className="mis-torneos-contenedor">
-                <header className="mis-torneos-hero" style={{ backgroundImage: `url(${cuboBanner})` }}>
-                    <h1>Mis torneos</h1>
-                    <p>Aquí se muestran sólo competencias que utilizan el sistema de registro de la WCA.</p>
-                </header>
+            <header className="mis-torneos-hero" style={{ backgroundImage: `url(${cuboBanner})` }}>
+                <h1>Mis torneos</h1>
+                <p>Aquí se muestran sólo competencias que utilizan el sistema de registro de la WCA.</p>
+            </header>
 
+            <div className="mis-torneos-contenedor">
                 {error ? <p className="mis-torneos-mensaje" role="alert">{error}</p> : (
                     <div className="mis-torneos-secciones">
                         <section className="mis-torneos-seccion">
@@ -89,7 +89,10 @@ function MisTorneos({ usuario, onVerTorneo, onVerTodosTorneos }) {
                             </div>
                             {cargando ? <p className="mis-torneos-mensaje" role="status">Cargando torneos…</p>
                                 : proximos.length ? <div className="listado-torneos-grid">{renderCards(proximos)}</div>
-                                    : <p className="mis-torneos-mensaje">Todavía no tienes próximos torneos asociados a tu cuenta.</p>}
+                                    : <div className="mis-torneos-vacio mis-torneos-proximos-vacio">
+                                        <img src={infoIcon} alt="" />
+                                        <p>No tienes próximos torneos. Puedes buscar más en <button type="button" onClick={onVerTodosTorneos}>Lista de Torneos↗</button></p>
+                                    </div>}
                         </section>
 
                         <section className="mis-torneos-seccion">
