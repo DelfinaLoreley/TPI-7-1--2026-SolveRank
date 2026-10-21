@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+
+import paginaAnteriorIcon from '/src/assets/icons/triflecha-izq-icon.png';
+import paginaSiguienteIcon from '/src/assets/icons/triflecha-der-icon.png';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
+
 import './ListadoTorneo.css';
 import FiltrosTorneo from './listado/FiltrosTorneo.jsx';
 import TarjetaTorneo from './listado/TarjetaTorneo.jsx';
@@ -158,12 +162,11 @@ function ListadoTorneo({ onVerTorneo, usuario, onIniciarSesion }) {
     return (
         <main className="listado-torneos">
             <div className="listado-torneos-contenido">
-                <header className="listado-torneos-hero">
+                <header className="listado-torneos-hero" style={{ backgroundImage: `url(${cuboBanner})` }}>
                     <div>
                         <h1>TORNEOS</h1>
                         <p>Descubrí los próximos torneos de<br className="listado-desktop-break" /> speedcubing en el mundo.</p>
                     </div>
-                    <img src={cuboBanner} alt="" aria-hidden="true" />
                 </header>
 
                 <section className="listado-torneos-panel" aria-label="Listado de torneos">
@@ -253,9 +256,9 @@ function ListadoTorneo({ onVerTorneo, usuario, onIniciarSesion }) {
                                 ? `Mostrando ${desde}–${hasta} de ${torneosFiltrados.length} torneos`
                                 : `Mostrando ${torneosFiltrados.length} torneos`}</span>
                             <div>
-                                <button type="button" aria-label="Página anterior" disabled={paginaActual === 1} onClick={() => setPagina(paginaActual - 1)}>‹</button>
+                                <button type="button" aria-label="Página anterior" disabled={paginaActual <= 1 || cargando} onClick={() => setPagina(paginaActual - 1)}><img src={paginaAnteriorIcon} alt="" /></button>
                                 <span>{paginaActual}</span>
-                                <button type="button" aria-label="Página siguiente" disabled={paginaActual === totalPaginas} onClick={() => setPagina(paginaActual + 1)}>›</button>
+                                <button type="button" aria-label="Página siguiente" disabled={paginaActual >= totalPaginas || cargando} onClick={() => setPagina(paginaActual + 1)}><img src={paginaSiguienteIcon} alt="" /></button>
                             </div>
                         </nav>
                     )}

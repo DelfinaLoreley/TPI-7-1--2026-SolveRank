@@ -28,10 +28,14 @@
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 102px;
+    min-height: 190px;
     overflow: hidden;
-    padding: 12px 35px;
+    padding: 39px 64px 28px;
     isolation: isolate;
+    background-color: #020d22;
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
 }
 
 .listado-torneos-hero > div {
@@ -42,7 +46,7 @@
 .listado-torneos-hero h1 {
     margin: 0 0 10px;
     font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
-    font-size: 22px;
+    font-size: 38px;
     line-height: 1;
 }
 
@@ -50,8 +54,7 @@
     margin: 0;
     color: #e0e6f1;
     font-family: var(--font2, 'Instrument Sans'), Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 16px;
     line-height: 1.2;
 }
 
@@ -83,7 +86,7 @@
 
 .listado-torneos-filtros {
     display: grid;
-    gap: 9px;
+    gap: 14px;
 }
 
 .listado-filtro-busqueda {
@@ -91,6 +94,7 @@
     align-items: center;
     gap: 8px;
     min-width: 0;
+    max-width: 70%;
     height: 38px;
     padding: 0 10px;
     border: 1px solid #1c2b45;
@@ -114,7 +118,7 @@
     outline: 0;
     background: transparent;
     color: #f5f7fc;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .listado-filtro-busqueda input::placeholder {
@@ -125,7 +129,7 @@
 .listado-filtros-selectores {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 20px;
 }
 
 .listado-filtro-select {
@@ -137,22 +141,22 @@
 
 .listado-filtro-select select {
     width: 100%;
-    height: 29px;
+    height: auto;
     appearance: none;
-    padding: 0 25px 0 9px;
+    padding: 10px 25px 10px 12px;
     border: 1px solid #1c2b45;
     border-radius: 7px;
     background: #101d34;
     color: #e5eaf4;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 15px;
 }
 
 .listado-filtro-select::after {
     position: absolute;
-    top: 12px;
+    top: 17px;
     right: 9px;
-    width: 0;
+    width: 10px;
     height: 0;
     border-top: 5px solid #e5eaf4;
     border-right: 4px solid transparent;
@@ -176,18 +180,18 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 7px;
+    gap: 14px;
 }
 
 .listado-torneos-pestanas button {
     min-height: 29px;
-    padding: 0 12px;
+    padding: 10px 12px;
     border: 1px solid #1c2b45;
     border-radius: 7px;
     background: #101d34;
     color: #e5eaf4;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 14px;
     white-space: nowrap;
 }
 
@@ -199,13 +203,13 @@
 
 .listado-torneos-inscripciones {
     min-height: 29px;
-    padding: 0 12px;
+    padding: 10px 12px;
     border: 1px solid #1c2b45;
     border-radius: 7px;
     background: #101d34;
     color: #e5eaf4;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 14px !important;
 }
 
 .listado-torneos-inscripciones.activa {
@@ -227,7 +231,7 @@
     gap: 7px;
     margin: 0;
     color: #f5f7fc;
-    font-size: 10px;
+    font-size: 15px;
 }
 
 .listado-orden::after {
@@ -282,6 +286,7 @@
     padding: 0 4px;
     color: #e5eaf4;
     font-size: 10px;
+    margin-top: 20px;
 }
 
 .listado-torneos-grid {
@@ -496,39 +501,53 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
-    min-height: 28px;
-    margin-top: 7px;
+    gap: 14px;
+    margin-top: 20px;
     color: #f5f7fc;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .listado-torneos-paginacion div {
     display: flex;
     align-items: center;
     overflow: hidden;
-    border-radius: 4px;
-    background: #183464;
+    border: 1px solid #304567;
+    border-radius: 6px;
+    background: #182e5c;
 }
 
 .listado-torneos-paginacion button,
 .listado-torneos-paginacion div span {
-    display: grid;
-    width: 24px;
-    height: 22px;
-    place-items: center;
+    min-width: 35px;
+    height: 28px;
     border: 0;
     background: transparent;
-    color: #fff;
-    font-size: 12px;
+    color: #f5f7fc;
+    text-align: center;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.listado-torneos-paginacion div span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.listado-torneos-paginacion img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
 }
 
 .listado-torneos-paginacion button {
+    background: #29436b;
     cursor: pointer;
 }
 
 .listado-torneos-paginacion button:disabled {
-    color: #8998b2;
+    opacity: .45;
     cursor: default;
 }
 
@@ -782,7 +801,13 @@
     }
 
     .listado-torneos-paginacion {
-        justify-content: flex-end;
+        justify-content: space-between;
+        font-size: 12px;
+    }
+
+    .listado-torneos-paginacion div span,
+    .listado-torneos-paginacion button {
+        min-width: 30px;
     }
 }
 

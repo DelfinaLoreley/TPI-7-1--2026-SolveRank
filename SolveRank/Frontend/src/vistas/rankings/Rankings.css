@@ -1,5 +1,7 @@
 .rankings-page {
     min-height: calc(100vh - var(--navbar-height, 70px));
+    width: min(100%, 1280px);
+    margin: 0 auto;
     padding: 0 20px 34px;
     background: #020d22;
     color: #f5f7fc;
@@ -26,7 +28,7 @@
 
 .rankings-hero h1 {
     margin: 0 0 16px;
-    font-size: clamp(28px, 3vw, 44px);
+    font-size: clamp(28px, 3vw, 38px);
     font-weight: 700;
     letter-spacing: .01em;
 }
@@ -34,7 +36,7 @@
 .rankings-hero p {
     max-width: 570px;
     margin: 0;
-    font-size: clamp(15px, 1.3vw, 20px);
+    font-size: clamp(15px, 1.3vw, 16px);
     line-height: 1.25;
 }
 
