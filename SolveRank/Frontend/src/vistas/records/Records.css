@@ -426,6 +426,7 @@
     .records-hero {
         min-height: 79px;
         background-size: auto 75%;
+        padding: 20px 0 16px;
     }
 
     .records-hero p { font-size: 10px; width: 55%;}
@@ -454,12 +455,34 @@
         padding: 18px 12px 32px; 
         border-radius: 18px;
     }
-    .record-data-panel h2 { font-size: 18px !important; }
-    .records-tabla { min-width: 620px; }
+    .records-data-panel,
+    .records-tabla-panel,
+    .records-categoria,
+    .records-tabla-scroll {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .records-tabla-scroll {
+        overflow-x: hidden;
+    }
+
+    .records-tabla {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 10px;
+    }
 
     .records-tabla-panel img {
         width: 18px;
         height: 18px;
+    }
+
+    .records-buscar-pais img{
+        width: 20px;
+        height: 20px;
+        margin-bottom: 2px;
     }
 
     .records-actualizacion { align-self: center; 
@@ -481,13 +504,36 @@
         flex: 0 0 38px;
     }
 
-    .records-tabla th{ font-size: 11px; }
-    .records-table td { font-size: 10px !important; }
-
-    .records-nombre td { font-size: 10px !important; }
-
     .records-tabla th, .records-tabla td {
-        padding: 6px;
+        padding: 5px 3px;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .records-tabla th {
+        font-size: 9px;
+        line-height: 1.15;
+    }
+
+    .records-tabla th:nth-child(1),
+    .records-tabla td:nth-child(1) { width: 15%; }
+    .records-tabla th:nth-child(2),
+    .records-tabla td:nth-child(2) { width: 28%; }
+    .records-tabla th:nth-child(3),
+    .records-tabla td:nth-child(3) { width: 19%; }
+    .records-tabla th:nth-child(4),
+    .records-tabla td:nth-child(4) { width: 20%; }
+    .records-tabla th:nth-child(5),
+    .records-tabla td:nth-child(5) { width: 18%; }
+
+    .records-nombre {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    .records-tiempo {
+        white-space: normal;
     }
 
     .records-estadisticas h2{ font-size: 16px; }

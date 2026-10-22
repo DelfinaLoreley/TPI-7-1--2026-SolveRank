@@ -1,4 +1,5 @@
 .rankings-page {
+    box-sizing: border-box;
     min-height: calc(100vh - var(--navbar-height, 70px));
     width: min(100%, 1280px);
     margin: 0 auto;
@@ -28,7 +29,7 @@
 
 .rankings-hero h1 {
     margin: 0 0 16px;
-    font-size: clamp(28px, 3vw, 38px);
+    font-size: clamp(18px, 3vw, 38px);
     font-weight: 700;
     letter-spacing: .01em;
 }
@@ -36,11 +37,13 @@
 .rankings-hero p {
     max-width: 570px;
     margin: 0;
-    font-size: clamp(15px, 1.3vw, 16px);
+    font-size: clamp(10px, 1.3vw, 16px);
     line-height: 1.25;
 }
 
 .rankings-panel {
+    width: 100%;
+    min-width: 0;
     min-height: 550px;
     padding: 20px 2.7% 28px;
     border: 2px solid #1c2c4c;
@@ -93,14 +96,14 @@
 }
 
 .rankings-selectores {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 28px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
     padding-left: 20px;
 }
 
 .rankings-selectores label {
-    flex: 0 1 270px;
+    min-width: 0;
 }
 
 .rankings-selectores select {
@@ -135,9 +138,24 @@
 
 .rankings-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-areas:
+        "tabla lateral"
+        "estadisticas estadisticas";
     align-items: start;
     gap: 20px;
+}
+
+.rankings-tabla-panel {
+    grid-area: tabla;
+}
+
+.rankings-lateral {
+    grid-area: lateral;
+}
+
+.rankings-estadisticas {
+    grid-area: estadisticas;
 }
 
 .rankings-tabla-panel,
@@ -185,7 +203,7 @@
     min-width: 590px;
     border-collapse: collapse;
     text-align: center;
-    font-size: 15px;
+    font-size: 11px;
     font-family: 'Inclusive Sans';
 }
 
@@ -200,7 +218,7 @@
 }
 
 .rankings-tabla th {
-    font-size: 16px;
+    font-size: 11px;
     font-weight: 600;
 }
 
@@ -309,6 +327,16 @@
     padding: 17px 18px;
 }
 
+.rankings-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.rankings-estadisticas > h2 {
+    grid-column: 1 / -1;
+}
+
 .rankings-estadisticas > h2,
 .rankings-tu-posicion > h2,
 .rankings-actualizacion > h2 {
@@ -320,9 +348,9 @@
     display: flex;
     align-items: center;
     gap: 13px;
-    max-width: 270px;
+    max-width: none;
     min-height: 74px;
-    margin: 0 auto 12px;
+    margin: 0;
     padding: 10px 15px;
     border: 1px solid #172947;
     border-radius: 12px;
@@ -392,7 +420,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 52px;
+    min-height: fit-content;
     padding: 10px 13px;
     border: 1px solid #1b2e50;
     border-radius: 10px;
@@ -446,79 +474,386 @@
     .rankings-selectores {
         gap: 12px;
     }
-
-    .rankings-selectores label {
-        flex-basis: 220px;
-    }
 }
 
 @media (max-width: 780px) {
     .rankings-page {
-        padding: 0 10px 20px;
+        padding: 0 28px 20px;
     }
 
     .rankings-hero {
-        min-height: 190px;
-        padding: 28px 18px;
-        background-size: auto 75%;
-        background-position: right bottom;
+        min-height: 166px;
+        padding: 22px 0 16px;
+        background-size: auto 100%;
+        background-position: right center;
+    }
+
+    .rankings-hero h1 {
+        margin-bottom: 13px;
+        font-size: clamp(18px, 4.5vw, 36px);
     }
 
     .rankings-hero p {
-        max-width: 68%;
+        max-width: 70%;
+        font-size: clamp(10px, 2.5vw, 19px);
     }
 
     .rankings-panel {
-        padding: 14px 12px 20px;
-        border-radius: 15px;
+        padding: 22px 16px 24px;
+        border-radius: 24px;
     }
 
-    .rankings-buscar-pais,
     .rankings-selectores {
         width: 100%;
-        margin-left: 0;
-        padding-left: 0;
+        gap: 10px;
+        padding: 0;
     }
 
     .rankings-selectores label {
-        flex: 1 1 calc(50% - 8px);
+        min-width: 0;
+    }
+
+    .rankings-selectores select {
+        min-height: 60px;
+        padding-left: 12px;
+        padding-right: 34px;
+        font-size: 17px;
+        background-position: right 11px center;
+    }
+
+    .rankings-select-categoria select {
+        padding-left: 44px;
+        background-position: 12px center, right 11px center;
     }
 
     .rankings-layout {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .rankings-lateral {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        width: 100%;
+        order: 1;
+    }
+
+    .rankings-tu-posicion {
+        order: 1;
+    }
+
+    .rankings-actualizacion {
+        order: 2;
+        height: min-content;
+        padding: 14px 6px;
+        border-radius: 16px;
+    }
+
+    .rankings-estadisticas {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        order: 3;
+    }
+
+    .rankings-estadisticas > h2 {
+        grid-column: 1 / -1;
     }
 
     .rankings-tabla-panel {
-        padding: 16px 12px;
+        width: 100%;
+        order: 2;
     }
 
-    .rankings-tabla-panel > h2 {
-        margin-bottom: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .rankings-hero {
-        min-height: 210px;
-        background-size: auto 52%;
+    .rankings-tabla-panel {
+        padding: 20px 20px 18px;
     }
 
-    .rankings-hero p {
-        max-width: 100%;
-        padding-bottom: 70px;
+    .rankings-tabla-panel > h2,
+    .rankings-estadisticas > h2,
+    .rankings-tu-posicion > h2,
+    .rankings-actualizacion > h2 {
+        margin-bottom: 16px;
+        font-size: clamp(22px, 3.7vw, 28px);
     }
 
-    .rankings-selectores label {
-        flex-basis: 100%;
+    .rankings-estadistica {
+        max-width: none;
+        min-height: 96px;
+        margin: 0;
+        padding: 12px 14px;
+    }
+
+    .rankings-estadistica-icono {
+        flex-basis: 52px;
+        width: 52px;
+        height: 52px;
+    }
+
+    .rankings-estadistica-icono img {
+        width: 29px;
+        height: 29px;
+    }
+
+    .rankings-estadistica strong {
+        font-size: 24px;
+    }
+
+    .rankings-estadistica > div > span {
+        font-size: 16px;
+    }
+
+    .rankings-buscar-pais {
+        width: 100%;
+        min-height: clamp(58px, 11vw, 84px);
+        margin: 0 0 18px;
+        padding: 0 20px;
+    }
+
+    .rankings-buscar-pais input {
+        font-size: 18px;
+    }
+
+    .rankings-filtros {
+        margin-bottom: 20px;
+    }
+
+    .rankings-tabla th,
+    .rankings-tabla td {
+        padding: 14px 10px;
     }
 
     .rankings-paginacion {
+        gap: 8px;
+        font-size: 15px;
+    }
+
+    .rankings-paginacion > div > span,
+    .rankings-paginacion button {
+        min-width: 36px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 520px) {
+    .rankings-page {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .rankings-hero {
+        min-height: 76px;
+        padding-top: 20px;
+        background-size: auto 88%;
+        background-position: right top;
+    }
+
+    .rankings-hero p {
+        max-width: 65%;
+        font-size: 10px;
+    }
+
+    .rankings-selectores label {
+        grid-column: span 1;
+    }
+
+    .rankings-selectores {
+        gap: 9px;
+    }
+
+    .rankings-selectores select {
+        min-height: 45px;
+        padding-left: 7px;
+        padding-right: 22px;
+        border-radius: 10px;
+        font-size: 11px;
+        background-position: right 6px center;
+    }
+
+    .rankings-select-categoria select {
+        padding-left: 28px;
+        background-position: 6px center, right 6px center;
+        background-size: 15px 15px, 12px 9px;
+    }
+
+    .rankings-panel {
+        padding: 16px 12px 20px;
+        border-radius: 20px;
+    }
+
+    .rankings-buscar-pais {
+        min-height: 52px;
+        padding: 0 14px;
+    }
+
+    .rankings-buscar-pais input {
+        font-size: 15px;
+    }
+
+    .rankings-lupa img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .rankings-layout {
+        gap: 16px;
+    }
+
+    .rankings-lateral {
+        gap: 10px;
+    }
+
+    .rankings-estadisticas {
+        order: 3;
+    }
+
+    .rankings-estadisticas,
+    .rankings-tu-posicion {
+        padding: 14px 10px;
+        border-radius: 16px;
+    }
+
+    .rankings-tabla-panel {
+        padding: 16px 12px 14px;
+        border-radius: 17px;
+    }
+
+    .rankings-tabla-panel > h2,
+    .rankings-estadisticas > h2 {
+        gap: 7px;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .rankings-tu-posicion > h2 { font-size: 15px; }
+
+    .rankings-actualizacion > h2 { font-size: 12px; }
+
+    .rankings-tabla-panel > h2 > span img,
+    .rankings-estadisticas > h2 > span img,
+    .rankings-actualizacion > h2 > span img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+    }
+
+    .rankings-tabla {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 11px;
+    }
+
+    .rankings-tabla th,
+    .rankings-tabla td {
+        padding: 8px 4px;
+    }
+
+    .rankings-tabla th {
+        font-size: 11px;
+    }
+
+    .rankings-tabla th:nth-child(1),
+    .rankings-tabla td:nth-child(1) {
+        width: 9%;
+    }
+
+    .rankings-tabla th:nth-child(2),
+    .rankings-tabla td:nth-child(2) {
+        width: 37%;
+    }
+
+    .rankings-tabla th:nth-child(3),
+    .rankings-tabla td:nth-child(3) {
+        width: 34%;
+        overflow-wrap: anywhere;
+    }
+
+    .rankings-tabla th:nth-child(4),
+    .rankings-tabla td:nth-child(4) {
+        width: 20%;
+    }
+
+    .rankings-tabla .rankings-nombre {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .rankings-paginacion {
+        flex-wrap: wrap;
         justify-content: space-between;
+        margin-top: 14px;
         font-size: 12px;
     }
 
     .rankings-paginacion > div > span,
     .rankings-paginacion button {
         min-width: 30px;
+        height: 28px;
     }
+
+    .rankings-estadisticas {
+        gap: 8px;
+    }
+
+    .rankings-estadistica {
+        min-height: 82px;
+        gap: 8px;
+        padding: 9px 8px;
+    }
+
+    .rankings-estadistica-icono {
+        flex-basis: 38px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .rankings-estadistica-icono img {
+        width: 22px;
+        height: 22px;
+    }
+
+    .rankings-estadistica strong {
+        font-size: 19px;
+    }
+
+    .rankings-estadistica > div > span {
+        font-size: 12px;
+    }
+
+    .rankings-tu-posicion > h3 {
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .rankings-tu-posicion > h3 img {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .rankings-tu-posicion > h2 img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .rankings-mi-resumen {
+        flex-wrap: wrap;
+        height: 35px !important;
+        gap: 6px;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    .rankings-mi-resumen strong {
+        font-size: 15px;
+    }
+
+    .rankings-mi-resumen span,
+    .rankings-actualizacion p {
+        font-size: 12px;
+    }
+
+    .rankings-actualizacion > h2 { gap: 2px; }
 }

@@ -204,31 +204,33 @@ function Rankings({ usuario }) {
                                 </section>
 
                                 <aside className="rankings-lateral">
-                                    <section className="rankings-estadisticas">
-                                        <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
-                                        {iconosEstadisticas.map((item) => (
-                                            <article className="rankings-estadistica" key={item.key}>
-                                                <span className={`rankings-estadistica-icono ${item.className}`}><img src={item.icon} alt="" /></span>
-                                                <div><strong>{Number(estadisticas[item.key] || 0).toLocaleString('es-AR')}</strong><span>{item.label}</span></div>
-                                            </article>
-                                        ))}
-                                    </section>
-
-                                    {usuario && <section className="rankings-tu-posicion">
+                                    <section className="rankings-tu-posicion">
                                         <h2><img src={usuarioIcon} alt="" />Tu posición</h2>
                                         <h3>{iconoCategoria && <img src={iconoCategoria} alt="" />}Categoría: {nombreCategoria}</h3>
                                         <div className="rankings-mi-resumen">
-                                            {datos?.posicionUsuario
+                                            {!usuario
+                                                ? <span>Iniciá sesión para ver tu posición</span>
+                                                : datos?.posicionUsuario
                                                 ? <><strong>#{datos.posicionUsuario}</strong><span>{nombreTipo} · {idPais ? paises.find((pais) => String(pais.idPais) === idPais)?.pais : 'Mundial'}</span></>
                                                 : <span>Sin posición con los filtros seleccionados</span>}
                                         </div>
-                                    </section>}
+                                    </section>
 
                                     <section className="rankings-actualizacion">
                                         <h2><span aria-hidden="true"><img src={actualizacionIcon} alt="" /></span>Última actualización:</h2>
                                         <p>{actualizado ? actualizado.toLocaleString('es-AR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                                     </section>
                                 </aside>
+
+                                <section className="rankings-estadisticas">
+                                    <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
+                                    {iconosEstadisticas.map((item) => (
+                                        <article className="rankings-estadistica" key={item.key}>
+                                            <span className={`rankings-estadistica-icono ${item.className}`}><img src={item.icon} alt="" /></span>
+                                            <div><strong>{Number(estadisticas[item.key] || 0).toLocaleString('es-AR')}</strong><span>{item.label}</span></div>
+                                        </article>
+                                    ))}
+                                </section>
                             </div>}
                 </section>
             </div>
