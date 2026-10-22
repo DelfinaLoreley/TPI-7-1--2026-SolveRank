@@ -1,0 +1,234 @@
+.gestion-roles-pagina {
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding: clamp(24px, 4vw, 64px) clamp(18px, 5.8vw, 120px) 72px;
+    color: #f4f7ff;
+    background: #030d22 url('../../assets/img-cubo-banner.png') no-repeat right 30px top 0;
+    background-size: min(52vw, 900px) auto;
+}
+
+.gestion-roles-cabecera {
+    margin: 0 auto 30px;
+    max-width: 1800px;
+}
+
+.gestion-roles-volver {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #3986ff;
+    font: inherit;
+    font-size: clamp(16px, 1.5vw, 28px);
+    cursor: pointer;
+}
+
+.gestion-roles-cabecera h1 {
+    margin: 24px 0 0;
+    font-size: clamp(30px, 3vw, 54px);
+    font-weight: 750;
+}
+
+.gestion-roles-panel {
+    position: relative;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: clamp(24px, 2.5vw, 48px);
+    border: 1px solid #172644;
+    border-radius: 24px;
+    background: #0a1429;
+    box-shadow: 0 12px 34px rgb(0 0 0 / 13%);
+}
+
+.gestion-roles-titulo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.gestion-roles-titulo h2 {
+    margin: 0;
+    font-size: clamp(26px, 2.4vw, 46px);
+    line-height: 1.15;
+}
+
+.gestion-roles-icono {
+    color: #3181ff;
+    font-size: clamp(32px, 3vw, 54px);
+    line-height: 1;
+}
+
+.gestion-roles-descripcion {
+    margin: 28px 0 30px;
+    color: #c3cad8;
+    font-size: clamp(17px, 1.45vw, 29px);
+}
+
+.gestion-roles-campo {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.gestion-roles-campo label {
+    color: #f4f7ff;
+    font-size: clamp(17px, 1.45vw, 28px);
+    font-weight: 600;
+}
+
+.gestion-roles-input-con-icono {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.gestion-roles-input-con-icono > span:first-child {
+    position: absolute;
+    left: 18px;
+    color: #a8c4f1;
+    font-size: 32px;
+    pointer-events: none;
+}
+
+.gestion-roles-input-con-icono input,
+.gestion-roles-campo select {
+    width: 100%;
+    min-height: clamp(54px, 4vw, 88px);
+    padding: 14px 20px;
+    border: 2px solid #20375f;
+    border-radius: 16px;
+    outline: none;
+    background: #0b152b;
+    color: #f4f7ff;
+    font: inherit;
+    font-size: clamp(17px, 1.5vw, 29px);
+}
+
+.gestion-roles-input-con-icono input {
+    padding-left: 64px;
+}
+
+.gestion-roles-input-con-icono input::placeholder {
+    color: #6e7890;
+}
+
+.gestion-roles-input-con-icono input:focus,
+.gestion-roles-campo select:focus {
+    border-color: #4189ff;
+    box-shadow: 0 0 0 3px rgb(49 129 255 / 15%);
+}
+
+.gestion-roles-input-con-icono input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+.gestion-roles-cargando {
+    position: absolute;
+    right: 18px;
+    color: #9eb5db;
+    font-size: 14px !important;
+}
+
+.gestion-roles-opciones {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 4px);
+    right: 0;
+    left: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid #29436e;
+    border-radius: 12px;
+    background: #101e39;
+    box-shadow: 0 16px 32px rgb(0 0 0 / 35%);
+    list-style: none;
+}
+
+.gestion-roles-opciones button {
+    display: grid;
+    width: 100%;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #f4f7ff;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.gestion-roles-opciones button:hover,
+.gestion-roles-opciones button:focus-visible {
+    outline: none;
+    background: #1b3156;
+}
+
+.gestion-roles-opciones small,
+.gestion-roles-sin-resultados,
+.gestion-roles-ayuda,
+.gestion-roles-actual {
+    color: #aebbd1;
+    font-size: 14px;
+}
+
+.gestion-roles-sin-resultados {
+    padding: 14px;
+}
+
+.gestion-roles-campo select {
+    appearance: none;
+    padding-right: 56px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237b9bcc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
+}
+
+.gestion-roles-campo select:disabled {
+    color: #71809a;
+    cursor: not-allowed;
+    opacity: .8;
+}
+
+.gestion-roles-mensaje {
+    margin: 24px 0 0;
+    font-size: 16px;
+}
+
+.gestion-roles-mensaje.error { color: #ff9999; }
+.gestion-roles-mensaje.exito { color: #7be0a0; }
+
+.gestion-roles-confirmar {
+    display: block;
+    min-width: min(340px, 100%);
+    min-height: 68px;
+    margin: 40px auto 0;
+    padding: 14px 32px;
+    border: 2px solid #3987ff;
+    border-radius: 18px;
+    background: linear-gradient(105deg, #3175ee, #17478f);
+    color: #fff;
+    font: inherit;
+    font-size: clamp(20px, 1.8vw, 34px);
+    font-weight: 650;
+    cursor: pointer;
+    transition: filter .15s ease, opacity .15s ease;
+}
+
+.gestion-roles-confirmar:hover:not(:disabled) { filter: brightness(1.12); }
+.gestion-roles-confirmar:disabled { opacity: .5; cursor: not-allowed; }
+
+@media (max-width: 700px) {
+    .gestion-roles-pagina {
+        padding-top: 28px;
+        background-size: 90vw auto;
+        background-position: right top;
+    }
+
+    .gestion-roles-panel { border-radius: 18px; }
+    .gestion-roles-descripcion { margin: 20px 0; }
+    .gestion-roles-campo { margin-top: 20px; }
+    .gestion-roles-confirmar { width: 100%; min-height: 58px; margin-top: 28px; }
+}
