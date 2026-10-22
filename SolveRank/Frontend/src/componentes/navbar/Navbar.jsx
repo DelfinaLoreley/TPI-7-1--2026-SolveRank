@@ -22,6 +22,7 @@ import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
 import menuCelu from '/src/assets/home/iconos/Menu.png';
 import organizadorIcon from '/src/assets/home/iconos/panel-principal-icon.png';
+import BusquedaGlobal from './BusquedaGlobal.jsx';
 
 function Navbar({
     vistaActiva,
@@ -34,11 +35,14 @@ function Navbar({
     onPanelOrganizador,
     onGestionRoles,
     onMiPerfil,
+    onBuscarTorneo,
+    onBuscarCompetidor,
     onIniciarSesion,
     onCerrarSesion,
 }) {
     const [menuAbierto, setMenuAbierto] = useState(null);
     const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
+    const [busquedaAbierta, setBusquedaAbierta] = useState(false);
     const sesionIniciada = Boolean(usuario);
     const puedeVerMisTorneos = ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol);
 
@@ -167,9 +171,23 @@ function Navbar({
             </nav>
 
             <div className="site-navbar-actions">
-                <button className="site-navbar-search" type="button" aria-label="Buscar">
+                <button
+                    className={`site-navbar-search${busquedaAbierta ? ' activo' : ''}`}
+                    type="button"
+                    aria-label="Buscar torneos o competidores"
+                    aria-expanded={busquedaAbierta}
+                    onClick={() => {
+                        setBusquedaAbierta((abierta) => !abierta);
+                        setMenuAbierto(null);
+                    }}
+                >
                     <img src={searchIcon} alt="" />
                 </button>
+                {busquedaAbierta && <BusquedaGlobal
+                    onCerrar={() => setBusquedaAbierta(false)}
+                    onElegirTorneo={(torneo) => { setBusquedaAbierta(false); onBuscarTorneo?.(torneo); }}
+                    onElegirCompetidor={(competidor) => { setBusquedaAbierta(false); onBuscarCompetidor?.(competidor); }}
+                />}
 
                 {sesionIniciada ? (
                     <div className="site-navbar-user-actions menuPerfil">

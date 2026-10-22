@@ -2,6 +2,31 @@ const db = require('../config/db/conexion');
 
 const CATEGORIAS_EXCLUIDAS_SQL = "LOWER(TRIM(c.categoria)) NOT IN ('3x3x3 fmc', '3x3x3 multi-blind', '3x3 fm', '3x3 mbld')";
 
+async function buscarCompetidores(req, res) {
+    const texto = typeof req.query.texto === 'string' ? req.query.texto.trim() : '';
+    if (texto.length < 2 || texto.length > 100) return res.json({ competidores: [] });
+    try {
+        const termino = `%${texto}%`;
+        const [competidores] = await db.execute(
+            `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.wcaid, u.avatar_url,
+                    p.pais, tu.Nombre AS rol
+             FROM usuarios u
+             INNER JOIN tipos_usuarios tu ON tu.idTipoUsuario = u.idTipoUsuario
+             LEFT JOIN paises p ON p.idPais = u.idPais
+             WHERE LOWER(tu.Nombre) IN ('competidor', 'juez')
+               AND (u.Nombre LIKE ? OR u.apellido LIKE ?
+                    OR CONCAT_WS(' ', u.Nombre, u.apellido) LIKE ? OR u.wcaid LIKE ?)
+             ORDER BY u.Nombre, u.apellido
+             LIMIT 8`,
+            [termino, termino, termino, termino]
+        );
+        return res.json({ competidores });
+    } catch (error) {
+        console.error('Error al buscar competidores:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron buscar perfiles' });
+    }
+}
+
 function calcularPromedio(formato, intentos) {
     const nombre = String(formato || '').toUpperCase();
     if (nombre === 'AO5' && intentos.length === 5) {
@@ -37,7 +62,7 @@ function asignarPuestos(competidores, selector) {
 }
 
 async function obtenerMiPerfil(req, res) {
-    const idUsuario = Number(req.usuario.idUsuario);
+    const idUsuario = req.publico ? Number(req.params.idUsuario) : Number(req.usuario.idUsuario);
     try {
         const [[perfil]] = await db.execute(
             `SELECT u.idUsuario, u.idTipoUsuario, u.idPais, u.idGenero, u.Nombre AS nombre,
@@ -51,6 +76,9 @@ async function obtenerMiPerfil(req, res) {
             [idUsuario]
         );
         if (!perfil) return res.status(404).json({ mensaje: 'No se encontró el perfil' });
+        if (req.publico && !['Competidor', 'Juez'].includes(perfil.rol)) {
+            return res.status(404).json({ mensaje: 'No se encontró el perfil' });
+        }
 
         const [filas] = await db.execute(
             `SELECT i.idTorneo, i.idRonda, i.idUsuario, i.penalizacion, f.formato,
@@ -182,7 +210,9 @@ async function obtenerMiPerfil(req, res) {
         }
 
         return res.json({
-            perfil,
+            perfil: req.publico
+                ? { ...perfil, email: undefined, fecha_Nacimiento: undefined, idGenero: undefined }
+                : perfil,
             estadisticas: {
                 torneos: Number(cuentas[0].torneos),
                 soluciones: Number(cuentas[0].soluciones),
@@ -195,6 +225,15 @@ async function obtenerMiPerfil(req, res) {
         console.error('Error al cargar mi perfil:', error.message);
         return res.status(500).json({ mensaje: 'No se pudo cargar tu perfil' });
     }
+}
+
+async function obtenerPerfilPublico(req, res) {
+    const idUsuario = Number(req.params.idUsuario);
+    if (!Number.isSafeInteger(idUsuario) || idUsuario <= 0) {
+        return res.status(400).json({ mensaje: 'El usuario indicado no es válido' });
+    }
+    req.publico = true;
+    return obtenerMiPerfil(req, res);
 }
 
 async function actualizarMiPerfil(req, res) {
@@ -238,4 +277,4 @@ async function actualizarMiPerfil(req, res) {
     }
 }
 
-module.exports = { obtenerMiPerfil, actualizarMiPerfil };
+module.exports = { buscarCompetidores, obtenerMiPerfil, obtenerPerfilPublico, actualizarMiPerfil };

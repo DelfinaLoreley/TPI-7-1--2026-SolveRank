@@ -8,6 +8,35 @@ const { ROLES, permitirRoles } = require('../../middleware/autorizacion');
 
 const CATEGORIAS_EXCLUIDAS_SQL = "LOWER(TRIM(categoria)) NOT IN ('3x3x3 fmc', '3x3x3 multi-blind', '3x3 fm', '3x3 mbld')";
 
+router.get('/buscar', async (req, res) => {
+    const texto = typeof req.query.texto === 'string' ? req.query.texto.trim() : '';
+    if (texto.length < 2 || texto.length > 100) return res.json({ torneos: [] });
+    try {
+        const termino = `%${texto}%`;
+        const [torneos] = await db.execute(
+            `SELECT t.idTorneo, t.nombre,
+                    DATE_FORMAT(t.fecha_Inicio, '%Y-%m-%d') AS fecha_Inicio,
+                    DATE_FORMAT(t.fecha_fin, '%Y-%m-%d') AS fecha_fin,
+                    t.pathImagen, p.pais, pr.provincia, c.ciudad
+             FROM torneos t
+             LEFT JOIN paises p ON p.idPais = t.idPais
+             LEFT JOIN provincias pr ON pr.idProvincia = t.idProvicncia
+             LEFT JOIN ciudades c ON c.idCiudad = t.idCiudad
+             WHERE t.nombre LIKE ? OR p.pais LIKE ? OR c.ciudad LIKE ?
+             ORDER BY CASE WHEN t.fecha_fin >= CURDATE() THEN 0 ELSE 1 END,
+                      CASE WHEN t.fecha_fin >= CURDATE() THEN t.fecha_Inicio END ASC,
+                      CASE WHEN t.fecha_fin < CURDATE() THEN t.fecha_Inicio END DESC,
+                      t.nombre
+             LIMIT 8`,
+            [termino, termino, termino]
+        );
+        return res.json({ torneos });
+    } catch (error) {
+        console.error('Error al buscar torneos:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron buscar torneos' });
+    }
+});
+
 // Catálogos que necesita el formulario de creación.
 router.get('/catalogos', verificarToken, permitirRoles(ROLES.ORGANIZADOR), async (req, res) => {
     try {

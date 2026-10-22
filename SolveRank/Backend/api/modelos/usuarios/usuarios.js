@@ -4,8 +4,10 @@ const bcrypt = require('bcrypt');
 const verificarToken = require('../../middleware/authMiddleware');
 const perfilController = require('../../controladores/perfilController');
 
+router.get('/buscar', perfilController.buscarCompetidores);
 router.get('/mi-perfil', verificarToken, perfilController.obtenerMiPerfil);
 router.put('/mi-perfil', verificarToken, perfilController.actualizarMiPerfil);
+router.get('/perfil/:idUsuario', perfilController.obtenerPerfilPublico);
 
 
 //endpoint para obtener todos los usuarios
