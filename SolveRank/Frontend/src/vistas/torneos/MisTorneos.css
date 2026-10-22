@@ -95,6 +95,84 @@
     gap: 14px;
 }
 
+.mis-torneos-page .listado-torneo-imagen {
+    height: 102px;
+}
+
+.mis-torneos-page .listado-torneo-estado {
+    top: 14px;
+    font-size: 12px;
+}
+
+.mis-torneos-page .listado-torneo-guardar {
+    top: 14px;
+    width: 28px;
+    height: 28px;
+}
+
+.mis-torneos-page .listado-torneo-info {
+    grid-template-columns: 43px minmax(0, 1fr);
+    column-gap: 9px;
+    row-gap: 8px;
+    min-height: 82px;
+    margin-top: -12px;
+    padding: 19px 10px 10px;
+}
+
+.mis-torneos-page .listado-torneo-fecha {
+    min-height: 35px;
+    padding: 5px 9px;
+}
+
+.mis-torneos-page .listado-torneo-fecha strong {
+    font-size: 18px;
+}
+
+.mis-torneos-page .listado-torneo-fecha span {
+    font-size: 12px;
+}
+
+.mis-torneos-page .listado-torneo-detalle h2 {
+    font-size: 13.5px;
+}
+
+.mis-torneos-page .listado-torneo-detalle p {
+    font-size: 10px;
+}
+
+.mis-torneos-page .listado-torneo-detalle p img {
+    flex-basis: 12px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+}
+
+.mis-torneos-page .listado-torneo-meta {
+    justify-content: flex-start;
+    gap: 16px;
+    margin-left: 8px;
+    font-size: 13px;
+}
+
+.mis-torneos-page .listado-torneo-meta img {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.mis-torneos-page .listado-torneo-ver {
+    width: calc(100% - 20px);
+    min-height: 24px;
+    margin: 10px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+.mis-torneos-page .listado-torneo-ver span:last-child {
+    margin-left: 10px;
+    font-size: 17px;
+}
+
 .mis-torneos-vacio {
     display: flex;
     align-items: flex-start;
