@@ -12,6 +12,7 @@ import ListadoTorneo from './vistas/torneos/ListadoTorneo.jsx'
 import Rankings from './vistas/rankings/Rankings.jsx'
 import Records from './vistas/records/Records.jsx'
 import MisTorneos from './vistas/torneos/MisTorneos.jsx'
+import GestionRoles from './vistas/admin/GestionRoles.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
@@ -114,7 +115,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -138,6 +139,9 @@ function App() {
           onRecords={() => setVista('records')}
           onPanelOrganizador={() => {
             if (usuario?.rol === 'Organizador') setVista('panel-organizador')
+          }}
+          onGestionRoles={() => {
+            if (usuario?.rol === 'Administrador') setVista('gestion-roles')
           }}
           onIniciarSesion={() => setVista('login')}
           onCerrarSesion={manejarLogout}
@@ -164,6 +168,10 @@ function App() {
               onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'panel-organizador')}
             />
           : <Home />
+        : vista === 'gestion-roles'
+        ? usuario?.rol === 'Administrador'
+          ? <GestionRoles usuario={usuario} onVolver={() => setVista('home')} />
+          : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} />
         : vista === 'detalle-torneo'
         ? <TorneoDetalle
             idTorneo={torneoSeleccionado?.idTorneo}

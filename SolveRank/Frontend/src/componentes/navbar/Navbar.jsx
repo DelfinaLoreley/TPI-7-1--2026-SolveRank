@@ -32,6 +32,7 @@ function Navbar({
     onRankings,
     onRecords,
     onPanelOrganizador,
+    onGestionRoles,
     onIniciarSesion,
     onCerrarSesion,
 }) {
@@ -214,6 +215,19 @@ function Navbar({
                                     >
                                         <img src={organizadorIcon} alt="" />
                                         Panel de organizador
+                                    </a>
+                                )}
+                                {usuario.rol === 'Administrador' && (
+                                    <a
+                                        href="#gestion-roles"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            cerrarMenu();
+                                            onGestionRoles?.();
+                                        }}
+                                    >
+                                        <img src={organizadorIcon} alt="" />
+                                        Gestión de roles
                                     </a>
                                 )}
 
