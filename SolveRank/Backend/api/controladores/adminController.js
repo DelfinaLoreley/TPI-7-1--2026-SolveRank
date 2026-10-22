@@ -3,16 +3,38 @@ const db = require('../config/db/conexion');
 
 async function listarUsuarios(req, res) {
     try {
+        const buscar = typeof req.query.buscar === 'string' ? req.query.buscar.trim() : '';
+        if (buscar.length > 100) return res.status(400).json({ mensaje: 'La búsqueda es demasiado larga' });
+        const parametros = [];
+        let filtro = '';
+        if (buscar) {
+            filtro = "WHERE CONCAT_WS(' ', u.Nombre, u.apellido, u.email) LIKE ?";
+            parametros.push(`%${buscar}%`);
+        }
         const [usuarios] = await db.execute(
             `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.email,
                     u.idPais, u.idTipoUsuario, t.Nombre AS rol, u.wcaid
              FROM usuarios u
              INNER JOIN tipos_usuarios t ON t.idTipoUsuario = u.idTipoUsuario
-             ORDER BY u.apellido, u.Nombre`);
+             ${filtro}
+             ORDER BY u.apellido, u.Nombre
+             LIMIT 30`, parametros);
         return res.json({ usuarios });
     } catch (error) {
         console.error('Error al listar usuarios:', error.message);
         return res.status(500).json({ mensaje: 'No se pudieron obtener los usuarios' });
+    }
+}
+
+async function listarRoles(req, res) {
+    try {
+        const [roles] = await db.execute(
+            'SELECT idTipoUsuario, Nombre AS nombre FROM tipos_usuarios ORDER BY idTipoUsuario'
+        );
+        return res.json({ roles });
+    } catch (error) {
+        console.error('Error al listar roles:', error.message);
+        return res.status(500).json({ mensaje: 'No se pudieron obtener los roles' });
     }
 }
 
@@ -81,4 +103,4 @@ async function crearUsuario(req, res) {
     }
 }
 
-module.exports = { listarUsuarios, cambiarRol, crearUsuario };
+module.exports = { listarUsuarios, listarRoles, cambiarRol, crearUsuario };
