@@ -162,6 +162,27 @@
     white-space: nowrap;
 }
 
+.resultados-publicos-tabla .resultados-publicos-puesto.resultados-publicos-clasifica {
+    background: #07513b;
+    color: #5aff95;
+    font-weight: 700;
+}
+
+.resultados-publicos-tabla .resultados-publicos-puesto.resultados-publicos-podio-1 {
+    color: #f3d82e;
+    font-weight: 700;
+}
+
+.resultados-publicos-tabla .resultados-publicos-puesto.resultados-publicos-podio-2 {
+    color: #d6deeb;
+    font-weight: 700;
+}
+
+.resultados-publicos-tabla .resultados-publicos-puesto.resultados-publicos-podio-3 {
+    color: #e3a64b;
+    font-weight: 700;
+}
+
 .resultados-publicos-puesto span {
     margin-right: 5px;
     font-size: 13px;

@@ -100,9 +100,35 @@ function iconoCategoria(nombre) {
     )?.icono;
 }
 
-function TablaResultados({ ronda, podios = false }) {
+function cantidadClasifican(ronda, rondas) {
+    if (/final/i.test(String(ronda.ronda || ''))) return 0;
+    const rondasCategoria = rondas
+        .filter((item) => String(item.idCategoria) === String(ronda.idCategoria))
+        .sort((a, b) => Number(a.idRonda) - Number(b.idRonda));
+    const indice = rondasCategoria.findIndex((item) => String(item.idRonda) === String(ronda.idRonda));
+    if (indice < 0) return 0;
+
+    let participantes = Number(ronda.totalCompetidores) || 0;
+    for (let i = 0; i < indice; i += 1) {
+        if (/final/i.test(String(rondasCategoria[i].ronda || ''))) return 0;
+        const porcentaje = Math.max(0, Math.min(100, Number(rondasCategoria[i].porcentajeAvance) || 0));
+        participantes = Math.ceil(participantes * porcentaje / 100);
+    }
+    const porcentaje = Math.max(0, Math.min(100, Number(ronda.porcentajeAvance) || 0));
+    return Math.ceil(participantes * porcentaje / 100);
+}
+
+function esUltimaRonda(ronda, rondas) {
+    const rondasCategoria = rondas
+        .filter((item) => String(item.idCategoria) === String(ronda.idCategoria))
+        .sort((a, b) => Number(a.idRonda) - Number(b.idRonda));
+    return String(rondasCategoria.at(-1)?.idRonda) === String(ronda.idRonda);
+}
+
+function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false }) {
     const filas = ordenarFilas(ronda);
     const visibles = podios ? filas.filter((fila) => Number.isFinite(fila.resultado)).slice(0, 3) : filas;
+    const avanzan = cantidadClasifican(ronda, rondas);
     const formato = String(ronda.formato || '').toUpperCase();
     const cantidad = Number(ronda.cantidadIntentos) || 0;
     const icono = iconoCategoria(ronda.categoria);
@@ -131,8 +157,18 @@ function TablaResultados({ ronda, podios = false }) {
                     <tbody>
                         {visibles.length ? visibles.map((fila, indice) => (
                             <tr key={fila.idUsuario}>
-                                <td className="resultados-publicos-puesto">
-                                    {podios && indice < 3 && <span aria-label={`Puesto ${indice + 1}`}>{['🥇', '🥈', '🥉'][indice]}</span>}
+                                <td className={[
+                                    'resultados-publicos-puesto',
+                                    !podios && !ultimaRonda && fila.resultado !== null && indice < avanzan
+                                        ? 'resultados-publicos-clasifica'
+                                        : '',
+                                    (podios || ultimaRonda) && Number.isFinite(fila.resultado) && indice < 3
+                                        ? `resultados-publicos-podio-${indice + 1}`
+                                        : '',
+                                ].filter(Boolean).join(' ')}>
+                                    {(podios || ultimaRonda) && Number.isFinite(fila.resultado) && indice < 3 && (
+                                        <span aria-label={`Puesto ${indice + 1}`}>{['🥇', '🥈', '🥉'][indice]}</span>
+                                    )}
                                     {indice + 1}
                                 </td>
                                 <td className="resultados-publicos-nombre">{fila.nombre}</td>
@@ -222,10 +258,17 @@ function ResultadosPublicosTorneo({ idTorneo, rondas = [] }) {
             {cargando ? <p className="resultados-publicos-mensaje" role="status">Cargando resultados…</p>
                 : error ? <p className="resultados-publicos-mensaje" role="alert">{error}</p>
                     : modo === 'podios' ? (
-                        podios.length ? podios.map((ronda) => <TablaResultados key={ronda.idRonda} ronda={ronda} podios />)
+                        podios.length ? podios.map((ronda) => <TablaResultados key={ronda.idRonda} ronda={ronda} rondas={resultados} podios />)
                             : <p className="resultados-publicos-mensaje">Todavía no hay resultados para mostrar en los podios.</p>
                     ) : (
-                        rondasVisibles.length ? rondasVisibles.map((ronda) => <TablaResultados key={ronda.idRonda} ronda={ronda} />)
+                        rondasVisibles.length ? rondasVisibles.map((ronda) => (
+                            <TablaResultados
+                                key={ronda.idRonda}
+                                ronda={ronda}
+                                rondas={resultados}
+                                ultimaRonda={esUltimaRonda(ronda, resultados)}
+                            />
+                        ))
                             : <p className="resultados-publicos-mensaje">Todavía no se cargaron resultados para estas categorías.</p>
                     )}
         </section>

@@ -199,7 +199,10 @@ router.get('/:idTorneo/resultados/publicos/completo', verificarToken, permitirRo
     if (!idTorneo) return res.status(400).json({ mensaje: 'El torneo indicado no es válido' });
     try {
         const [filas] = await db.execute(
-            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda,
+            `SELECT rct.idRonda, rct.idCategoria, c.categoria, r.ronda, r.porcentajeAvance,
+                    (SELECT COUNT(DISTINCT ci.idUsuario)
+                     FROM categorias_x_inscripcion ci
+                     WHERE ci.idTorneo = rct.idTorneo AND ci.idCategoria = rct.idCategoria) AS totalCompetidores,
                     f.formato, f.cantidad_Solves AS cantidadIntentos,
                     i.id AS idIntento, i.idUsuario, i.tiempo, i.penalizacion,
                     u.Nombre AS nombre, u.apellido, u.wcaid, p.pais
@@ -226,6 +229,8 @@ router.get('/:idTorneo/resultados/publicos/completo', verificarToken, permitirRo
                     idCategoria: fila.idCategoria,
                     categoria: fila.categoria,
                     ronda: fila.ronda,
+                    porcentajeAvance: fila.porcentajeAvance,
+                    totalCompetidores: Number(fila.totalCompetidores) || 0,
                     formato: fila.formato,
                     cantidadIntentos: fila.cantidadIntentos,
                     competidores: new Map()
