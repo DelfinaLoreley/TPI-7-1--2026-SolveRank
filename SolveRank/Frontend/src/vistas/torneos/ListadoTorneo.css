@@ -677,7 +677,7 @@
 
     .listado-filtro-busqueda {
         width: 100%;
-        height: 45px;
+        max-height: 45px !important;
         padding: 0 11px;
         margin: 0;
     }

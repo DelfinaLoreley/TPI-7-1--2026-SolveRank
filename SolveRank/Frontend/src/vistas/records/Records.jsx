@@ -13,6 +13,7 @@ import lineaDecorativaIzq from '/src/assets/icons/linea-izq-decorativa.svg';
 import lineaDecorativaDer from '/src/assets/icons/linea-der-decorativa.svg';
 import rankingIco from '/src/assets/icons/rankings-icon-azul.svg';
 import estadisticasIcon from '/src/assets/icons/estadisticas-icon.svg';
+import actualizarIcon from '/src/assets/icons/ult-actualizacion-icon.svg';
 
 const iconosEstadisticas = [
     { key: 'competidores', label: 'Competidores', icon: competidoresIcon, color: 'violeta' },
@@ -139,39 +140,39 @@ function Records() {
 
                     {cargandoCatalogos ? <p className="records-mensaje">Cargando filtros…</p> : (
                         <div className="records-layout">
-                            <section className="records-tabla-panel">
-                                <h2><span aria-hidden="true"><img src={rankingIco} alt="" /></span>Tabla de récords actuales</h2>
-                                {error && <p className="records-mensaje" role="alert">{error}</p>}
-                                {!error && cargando && <p className="records-mensaje" role="status">Cargando récords…</p>}
-                                {!error && !cargando && records.map((categoria) => {
-                                    const icono = obtenerIconoCategoria(categoria.categoria);
-                                    return (
-                                        <section className="records-categoria" key={categoria.idCategoria}>
-                                            <h3><span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaIzq}/></span>{icono && <img src={icono} alt="" />}{categoria.categoria}<span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaDer}/></span></h3>
-                                            <div className="records-tabla-scroll">
-                                                <table className="records-tabla">
-                                                    <thead><tr><th>Tipo</th><th>Nombre</th><th>Fecha</th><th>País representando</th><th>Resultado</th></tr></thead>
-                                                    <tbody>
-                                                        {['single', 'media'].map((tipo) => {
-                                                            const record = categoria[tipo];
-                                                            return <tr key={tipo}>
-                                                                <th scope="row">{tipo === 'single' ? 'Single' : 'Media'}</th>
-                                                                <td className="records-nombre">{record?.nombre || '—'}</td>
-                                                                <td>{formatearFecha(record?.fechaTorneo)}</td>
-                                                                <td>{record?.pais || '—'}</td>
-                                                                <td className="records-tiempo">{record ? formatearTiempo(record.valor) : '—'}</td>
-                                                            </tr>;
-                                                        })}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </section>
-                                    );
-                                })}
-                                {!error && !cargando && records.length === 0 && <p className="records-mensaje">No hay categorías para mostrar.</p>}
-                            </section>
+                            <div className="records-data-panel">
+                                <section className="records-tabla-panel">
+                                    <h2><span aria-hidden="true"><img src={rankingIco} alt="" /></span>Tabla de récords actuales</h2>
+                                    {error && <p className="records-mensaje" role="alert">{error}</p>}
+                                    {!error && cargando && <p className="records-mensaje" role="status">Cargando récords…</p>}
+                                    {!error && !cargando && records.map((categoria) => {
+                                        const icono = obtenerIconoCategoria(categoria.categoria);
+                                        return (
+                                            <section className="records-categoria" key={categoria.idCategoria}>
+                                                <h3><span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaIzq}/></span>{icono && <img className="categoria-icono" src={icono} alt="" />}{categoria.categoria}<span className="records-decoracion" aria-hidden="true"><img src={lineaDecorativaDer}/></span></h3>
+                                                <div className="records-tabla-scroll">
+                                                    <table className="records-tabla">
+                                                        <thead><tr><th>Tipo</th><th>Nombre</th><th>Fecha</th><th>País</th><th>Resultado</th></tr></thead>
+                                                        <tbody>
+                                                            {['single', 'media'].map((tipo) => {
+                                                                const record = categoria[tipo];
+                                                                return <tr key={tipo}>
+                                                                    <th scope="row">{tipo === 'single' ? 'Single' : 'Media'}</th>
+                                                                    <td className="records-nombre">{record?.nombre || '—'}</td>
+                                                                    <td>{formatearFecha(record?.fechaTorneo)}</td>
+                                                                    <td>{record?.pais || '—'}</td>
+                                                                    <td className="records-tiempo">{record ? formatearTiempo(record.valor) : '—'}</td>
+                                                                </tr>;
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </section>
+                                        );
+                                    })}
+                                    {!error && !cargando && records.length === 0 && <p className="records-mensaje">No hay categorías para mostrar.</p>}
+                                </section>
 
-                            <aside className="records-lateral">
                                 <section className="records-estadisticas">
                                     <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
                                     {iconosEstadisticas.map((item) => <article className="records-estadistica" key={item.key}>
@@ -179,8 +180,10 @@ function Records() {
                                         <div><strong>{Number(estadisticas[item.key] || 0).toLocaleString('es-AR')}</strong><span>{item.label}</span></div>
                                     </article>)}
                                 </section>
+                            </div>
+                            <aside className="records-lateral">
                                 <section className="records-actualizacion">
-                                    <h2><span aria-hidden="true">⟳</span>Última actualización:</h2>
+                                    <h2><span aria-hidden="true"><img src={actualizarIcon} /></span>Última actualización:</h2>
                                     <p>{actualizado ? actualizado.toLocaleString('es-AR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                                 </section>
                             </aside>

@@ -709,10 +709,12 @@
 
     .panel-resumen-card small {
         font-size: clamp(8px, 2.5vw, 10px);
+        margin-left: 10px;
     }
 
     .panel-resumen-card strong {
         font-size: 15px;
+        margin-left: 10px;
     }
 
     .panel-resumen-card img {
@@ -841,6 +843,7 @@
         right: 0;
         bottom: 0;
         width: 50%;
+        overflow: hidden;
     }
 
     .panel-cubo-img-cta2 img {

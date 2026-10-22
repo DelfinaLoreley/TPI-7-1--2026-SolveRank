@@ -10,7 +10,7 @@ import FiltrosTorneo from './listado/FiltrosTorneo.jsx';
 import TarjetaTorneo from './listado/TarjetaTorneo.jsx';
 import useTorneosFavoritos from '../../hooks/useTorneosFavoritos.js';
 
-const pestanas = ['Próximos', 'Recientes', 'Anteriores', 'En curso'];
+const pestanas = ['Próximos', 'Recientes', 'En curso'];
 const diasRecientes = 90;
 
 function fechaLocal(fecha) {
