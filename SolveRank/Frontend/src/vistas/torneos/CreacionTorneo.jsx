@@ -16,7 +16,7 @@ const pasos = [
     'Categorías',
     'Rondas',
     'Cronograma',
-    'Confirmar información'
+    'Confirmar'
 ];
 
 const formularioInicial = {
@@ -78,6 +78,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
     const [mensaje, setMensaje] = useState('');
     const [enviando, setEnviando] = useState(false);
     const [imagen, setImagen] = useState(null);
+    const [imagenVistaPrevia, setImagenVistaPrevia] = useState('');
     const [catalogos, setCatalogos] = useState({ paises: [], provincias: [], ciudades: [], categorias: [], formatos: [], jueces: [], delegados: [] });
     const [cargandoCatalogos, setCargandoCatalogos] = useState(true);
     const [errorCatalogos, setErrorCatalogos] = useState('');
@@ -121,6 +122,14 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
             return;
         }
         setImagen(archivo);
+        if (archivo) {
+            const lector = new FileReader();
+            lector.onload = () => setImagenVistaPrevia(String(lector.result || ''));
+            lector.onerror = () => setImagenVistaPrevia('');
+            lector.readAsDataURL(archivo);
+        } else {
+            setImagenVistaPrevia('');
+        }
         setMensaje('');
         setMensaje('');
     }
@@ -349,7 +358,13 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
                 return (
                     <section className="creacion-panel" aria-labelledby="creacion-paso-titulo">
                         <div id="creacion-paso-titulo">
-                        <PasoRevision formulario={formulario} cronograma={cronograma} catalogo={categoriasVista} />
+                        <PasoRevision
+                            formulario={formulario}
+                            cronograma={cronograma}
+                            catalogo={categoriasVista}
+                            catalogos={catalogos}
+                            imagenVistaPrevia={imagenVistaPrevia}
+                        />
                         </div>
                         {mensaje && <p className="creacion-mensaje" role="status">{mensaje}</p>}
                     </section>

@@ -1355,16 +1355,99 @@
     border-bottom: 0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
     .creacion-categorias {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 20px;
+    }
+
+    .creacion-categoria {
+        min-height: 136px;
+        gap: 16px;
+        padding: 16px 18px;
+        border-width: 2px;
+        border-radius: 24px;
+    }
+
+    .creacion-categoria-icono {
+        width: 62px;
+        height: 62px;
+        border-radius: 16px;
+    }
+
+    .creacion-categoria-icono img {
+        width: 34px;
+        height: 34px;
+    }
+
+    .creacion-categoria-texto strong {
+        font-size: 28px;
+    }
+
+    .creacion-categoria-switch {
+        flex-basis: 44px;
+        width: 44px;
+        height: 24px;
+    }
+
+    .creacion-categoria-switch::after {
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .creacion-categoria input:checked ~ .creacion-categoria-switch::after {
+        transform: translateX(20px);
     }
 
 }
 
 @media (max-width: 560px) {
     .creacion-categorias {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .creacion-categoria {
+        min-height: 92px;
+        gap: 7px;
+        padding: 9px;
+        border-radius: 16px;
+    }
+
+    .creacion-categoria-icono {
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .creacion-categoria-icono img {
+        width: 21px;
+        height: 21px;
+    }
+
+    .creacion-categoria-texto strong {
+        font-size: 15px;
+        line-height: 1.15;
+    }
+
+    .creacion-categoria-switch {
+        flex-basis: 26px;
+        width: 26px;
+        height: 15px;
+    }
+
+    .creacion-categoria-switch::after {
+        top: 2px;
+        left: 2px;
+        width: 11px;
+        height: 11px;
+    }
+
+    .creacion-categoria input:checked ~ .creacion-categoria-switch::after {
+        transform: translateX(11px);
     }
 
     .creacion-rondas-layout {
@@ -1378,5 +1461,385 @@
 
     .creacion-rondas-detalle {
         grid-template-columns: 1fr;
+    }
+}
+
+.creacion-revision-vista {
+    display: grid;
+    gap: 12px;
+}
+
+.creacion-revision-vista .creacion-seccion-intro {
+    margin-bottom: 4px;
+}
+
+.creacion-revision-vista .creacion-seccion-intro h2 img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.revision-resumen-superior {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(190px, .8fr);
+    gap: 12px;
+}
+
+.revision-resumen-torneo,
+.revision-estadisticas,
+.revision-seccion {
+    min-width: 0;
+    border: 1px solid #1c2c49;
+    border-radius: 10px;
+    background: #0b1730;
+}
+
+.revision-resumen-torneo {
+    display: grid;
+    grid-template-columns: minmax(150px, 38%) minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+}
+
+.revision-imagen-torneo {
+    display: block;
+    width: 100%;
+    height: 130px;
+    border-radius: 7px;
+    object-fit: cover;
+}
+
+.revision-identidad-torneo {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+}
+
+.revision-identidad-torneo h3 {
+    overflow-wrap: anywhere;
+    margin: 0 0 2px;
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+.revision-identidad-torneo p {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    margin: 0;
+    color: #d5dced;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.revision-identidad-torneo p img {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.revision-estadisticas {
+    display: grid;
+    align-content: center;
+    padding: 12px 16px;
+}
+
+.revision-estadisticas > div {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    align-items: center;
+    gap: 4px 10px;
+    padding: 8px 0;
+}
+
+.revision-estadisticas > div + div {
+    border-top: 1px solid #263957;
+}
+
+.revision-estadisticas img {
+    grid-row: span 2;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.revision-estadisticas span {
+    color: #dce4f4;
+    font-size: 13px;
+}
+
+.revision-estadisticas strong {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.revision-seccion {
+    padding: 14px 16px;
+}
+
+.revision-seccion > h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    color: #f4f6fc;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.revision-seccion > h3 img {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.revision-datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+}
+
+.revision-dato {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #1d2d4b;
+    border-radius: 7px;
+    background: #0a1429;
+}
+
+.revision-dato > img {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.revision-dato div {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.revision-dato span {
+    color: #a6b1c8;
+    font-size: 11px;
+}
+
+.revision-dato strong {
+    overflow-wrap: anywhere;
+    color: #f0f3fa;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.revision-descripcion,
+.revision-personas p,
+.revision-lugar-nombre,
+.revision-direccion,
+.revision-vacio {
+    margin: 10px 0 0;
+    color: #c8d2e5;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.revision-categorias {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.revision-categoria {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #263a5c;
+    border-radius: 7px;
+    background: #12213d;
+}
+
+.revision-categoria-icono {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 50%;
+    background: #0b1730;
+}
+
+.revision-categoria-icono img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+}
+
+.revision-categoria > div {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.revision-categoria strong {
+    overflow-wrap: anywhere;
+    margin-bottom: 1px;
+    font-size: 13px;
+}
+
+.revision-categoria > div span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #c3cee2;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.revision-categoria > div span img {
+    flex: 0 0 13px;
+    width: 13px;
+    height: 13px;
+    object-fit: contain;
+}
+
+.revision-mostrar-categorias {
+    display: block;
+    margin: 10px 0 0 auto;
+    padding: 2px 4px;
+    border: 0;
+    background: transparent;
+    color: #4387f5;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.revision-personas p {
+    margin-top: 0;
+    color: #9fc0fa;
+}
+
+.revision-lugar-nombre {
+    margin-top: 0;
+    color: #f2f5fc;
+}
+
+.revision-direccion {
+    margin-top: 3px;
+    color: #aebbd1;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.revision-tabla-contenedor {
+    overflow-x: auto;
+    border: 1px solid #1c3153;
+    border-radius: 7px;
+}
+
+.revision-tabla-contenedor table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #101d34;
+    color: #f1f4fa;
+    font-size: 12px;
+    text-align: center;
+}
+
+.revision-tabla-contenedor th,
+.revision-tabla-contenedor td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #203454;
+}
+
+.revision-tabla-contenedor th {
+    background: #0d2047;
+    color: #d8e1f3;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.revision-tabla-contenedor td:last-child {
+    min-width: 200px;
+}
+
+.revision-tabla-contenedor td img {
+    width: 17px;
+    height: 17px;
+    margin-right: 9px;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+.revision-tabla-contenedor tr:last-child td {
+    border-bottom: 0;
+}
+
+@media (max-width: 760px) {
+    .revision-resumen-superior {
+        grid-template-columns: 1fr;
+    }
+
+    .revision-estadisticas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 8px 14px;
+    }
+
+    .revision-estadisticas > div + div {
+        border-top: 0;
+        border-left: 1px solid #263957;
+        padding-left: 14px;
+    }
+
+    .revision-categorias {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .revision-resumen-torneo {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .revision-imagen-torneo {
+        height: 170px;
+    }
+
+    .revision-identidad-torneo h3 {
+        font-size: 18px;
+    }
+
+    .revision-estadisticas {
+        grid-template-columns: 1fr;
+    }
+
+    .revision-estadisticas > div + div {
+        border-top: 1px solid #263957;
+        border-left: 0;
+        padding-left: 0;
+    }
+
+    .revision-datos-grid,
+    .revision-categorias {
+        grid-template-columns: 1fr;
+    }
+
+    .revision-seccion {
+        padding: 12px;
+    }
+
+    .revision-tabla-contenedor table {
+        min-width: 520px;
     }
 }
