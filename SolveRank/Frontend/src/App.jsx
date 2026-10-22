@@ -25,6 +25,7 @@ function App() {
   const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : 'home')
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
+  const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
   const [volverDetalleA, setVolverDetalleA] = useState('home')
   const [cargandoSesion, setCargandoSesion] = useState(true)
 
@@ -116,7 +117,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -146,6 +147,11 @@ function App() {
           }}
           onMiPerfil={() => {
             if (usuario) setVista('mi-perfil')
+          }}
+          onBuscarTorneo={(torneo) => abrirDetalleTorneo(torneo, 'home')}
+          onBuscarCompetidor={(competidor) => {
+            setPerfilSeleccionadoId(competidor.idUsuario)
+            setVista('perfil-publico')
           }}
           onIniciarSesion={() => setVista('login')}
           onCerrarSesion={manejarLogout}
@@ -183,6 +189,8 @@ function App() {
               setUsuario(data.usuario ?? null)
             }} />
           : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} />
+        : vista === 'perfil-publico'
+        ? <MiPerfil idUsuario={perfilSeleccionadoId} publico onVolver={() => setVista('home')} />
         : vista === 'detalle-torneo'
         ? <TorneoDetalle
             idTorneo={torneoSeleccionado?.idTorneo}

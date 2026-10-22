@@ -184,6 +184,7 @@
 
 /* ---------- Acciones derecha ---------- */
 .site-navbar-actions {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 22px;
@@ -197,13 +198,19 @@
 
 .site-navbar-search {
     position: relative;
-    width: 17px;
-    height: 17px;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
     padding: 0;
     border: 0;
+    border-radius: 50%;
     background: transparent;
     cursor: pointer;
 }
+
+.site-navbar-search:hover,
+.site-navbar-search.activo { background: #102142; }
 
 .site-navbar-search img {
     display: block;

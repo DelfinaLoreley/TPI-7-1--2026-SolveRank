@@ -44,7 +44,7 @@ const formularioInicial = (perfil) => ({
     wcaid: perfil?.wcaid || '',
 });
 
-export default function MiPerfil({ onVolver, onPerfilActualizado }) {
+export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfilActualizado }) {
     const [datos, setDatos] = useState(null);
     const [paises, setPaises] = useState([]);
     const [generos, setGeneros] = useState([]);
@@ -56,20 +56,22 @@ export default function MiPerfil({ onVolver, onPerfilActualizado }) {
     const [mensaje, setMensaje] = useState('');
     const [modalAbierto, setModalAbierto] = useState(false);
 
+    const rutaPerfil = publico ? `/usuarios/perfil/${idUsuario}` : '/usuarios/mi-perfil';
+
     const cargarPerfil = useCallback(async () => {
-        const { data } = await axios.get('/usuarios/mi-perfil');
+        const { data } = await axios.get(rutaPerfil);
         setDatos(data);
         return data;
-    }, []);
+    }, [rutaPerfil]);
 
     useEffect(() => {
         let activo = true;
-        axios.get('/usuarios/mi-perfil')
+        axios.get(rutaPerfil)
             .then(({ data }) => { if (activo) setDatos(data); })
             .catch((err) => { if (activo) setError(err?.response?.data?.mensaje || 'No se pudo cargar tu perfil.'); })
             .finally(() => { if (activo) setCargando(false); });
         return () => { activo = false; };
-    }, []);
+    }, [rutaPerfil]);
 
     async function abrirEdicion() {
         setFormulario(formularioInicial(datos?.perfil));
@@ -138,7 +140,7 @@ export default function MiPerfil({ onVolver, onPerfilActualizado }) {
                                 <p>WCA ID: {perfil.wcaid || 'No informado'}</p>
                                 <span className="mi-perfil-rol">{perfil.rol}</span>
                             </div>
-                            <button className="mi-perfil-editar" type="button" onClick={abrirEdicion}>✎ <span>Editar perfil</span></button>
+                            {!publico && <button className="mi-perfil-editar" type="button" onClick={abrirEdicion}>✎ <span>Editar perfil</span></button>}
                         </article>
 
                         <div className="mi-perfil-estadisticas">
@@ -185,8 +187,7 @@ export default function MiPerfil({ onVolver, onPerfilActualizado }) {
                         <section className="mi-perfil-datos">
                             <h2>País representado</h2>
                             <p>{perfil.pais || 'No informado'}</p>
-                            <h2>Fecha de nacimiento</h2>
-                            <p>{fechaVisible(perfil.fecha_Nacimiento)}</p>
+                            {!publico && <><h2>Fecha de nacimiento</h2><p>{fechaVisible(perfil.fecha_Nacimiento)}</p></>}
                             <h2>Categorías con resultados</h2>
                             <div className="mi-perfil-categorias" aria-label="Categorías donde tiene resultados">
                                 {categorias.length ? categorias.map((categoria) => {
