@@ -1,4 +1,4 @@
-import '/src/vistas/login/Login.css';
+import '/src/vistas/login/login.css';
 
 import logo from '/src/assets/login/logo.svg';
 import mailicon from '/src/assets/login/iconos/Mail.svg';

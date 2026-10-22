@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import '/src/vistas/login/Login.css';
+import '/src/vistas/login/login.css';
 import logo from '/src/assets/login/logo.svg';
 import paisIcon from '/src/assets/registro/pais-icon.svg';
 import generoIcon from '/src/assets/registro/genero-icon.png';
