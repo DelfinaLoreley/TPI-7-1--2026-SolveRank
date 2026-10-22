@@ -686,6 +686,10 @@ router.get('/ranking/:idCategoria', async (req, res) => {
     if (!Number.isSafeInteger(idCategoria) || idCategoria <= 0) {
         return res.status(400).json({ mensaje: 'La categoría indicada no es válida' });
     }
+    const limite = req.query.limite === undefined ? 10 : Number(req.query.limite);
+    if (!Number.isSafeInteger(limite) || limite < 1 || limite > 100) {
+        return res.status(400).json({ mensaje: 'El límite indicado no es válido' });
+    }
     try {
         const [resultados] = await db.execute(
             `SELECT u.idUsuario, u.Nombre AS nombre, u.apellido, u.avatar_url,
@@ -705,8 +709,8 @@ router.get('/ranking/:idCategoria', async (req, res) => {
              GROUP BY u.idUsuario, u.Nombre, u.apellido, u.avatar_url, p.pais
              HAVING mejorTiempo IS NOT NULL
              ORDER BY mejorTiempo ASC, u.Nombre ASC, u.apellido ASC
-             LIMIT 10`,
-            [idCategoria]
+             LIMIT ?`,
+            [idCategoria, limite]
         );
         return res.json({ resultados });
     } catch (error) {

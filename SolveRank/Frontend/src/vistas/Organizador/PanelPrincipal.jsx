@@ -188,8 +188,8 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                     </div>
                 </section>
         
-                <section className="home-panel home-torneos" id="torneos">
-                    <div className="home-section-heading">
+                <section className="home-panel home-torneos2" id="torneos">
+                    <div className="home-section-heading2">
                         <h2><img src={calendarIcon}/> Mis torneos</h2>
                         <a href="#torneos">Ver todos ⟶</a>
                     </div>

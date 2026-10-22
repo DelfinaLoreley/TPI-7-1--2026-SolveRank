@@ -77,9 +77,9 @@
 }
 
 .home-hero-texto > p {
-    margin: 0 0 16px;
+    margin: 23px 0 28px;
     color: #e0e6f1;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 600;
     line-height: 1.25;
     font-family: var(--font2);
@@ -217,7 +217,7 @@
 }
 
 .home-torneos {
-    padding: 18px 10px 13px;
+    padding: 22px 22px 13px;
 }
 
 .home-section-heading {
@@ -225,7 +225,7 @@
     align-items: center;
     justify-content: space-between;
     min-height: 22px;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     margin-left: 10px;
     padding: 0 5px;
 }
@@ -467,7 +467,7 @@
 .home-estadisticas {
     min-width: 0;
     border: 2px solid;
-    padding: 18px 12px 10px;
+    padding: 28px 22px 10px;
 }
 
 /*Rankings section--------------------------------------------------------*/
@@ -485,7 +485,7 @@
 
 .home-ranking .home-section-heading,
 .home-estadisticas .home-section-heading {
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     font-family: var(--font2);
 }
 

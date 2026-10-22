@@ -120,7 +120,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
         let activo = true;
         setCargandoRanking(true);
         setErrorRanking('');
-        axios.get(`/torneos/ranking/${categoriaRanking}`)
+        axios.get(`/torneos/ranking/${categoriaRanking}?limite=5`)
             .then(({ data }) => { if (activo) setResultadosRanking(data.resultados ?? []); })
             .catch((error) => {
                 if (activo) setErrorRanking(error?.response?.data?.mensaje || 'No se pudo cargar este ranking.');

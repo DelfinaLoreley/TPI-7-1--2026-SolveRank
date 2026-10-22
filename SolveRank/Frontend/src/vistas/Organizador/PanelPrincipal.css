@@ -261,7 +261,7 @@
     background: #09152b;
 }
 
-.home-torneos {
+.home-torneos2 {
     padding: 18px 10px 13px;
 }
 
@@ -273,7 +273,7 @@
     font-family: var(--font2);
 }
 
-.home-section-heading {
+.home-section-heading2 {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -283,7 +283,7 @@
     padding: 0 5px;
 }
 
-.home-section-heading h2 {
+.home-section-heading2 h2 {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -294,7 +294,7 @@
     text-transform: uppercase;
 }
 
-.home-section-heading a {
+.home-section-heading2 a {
     color: #4385ff;
     font-size: 15px;
     white-space: nowrap;
