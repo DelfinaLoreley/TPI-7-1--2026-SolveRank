@@ -33,6 +33,7 @@ function Navbar({
     onRecords,
     onPanelOrganizador,
     onGestionRoles,
+    onMiPerfil,
     onIniciarSesion,
     onCerrarSesion,
 }) {
@@ -188,7 +189,11 @@ function Navbar({
                                 </label>
                                 <hr className="site-navbar-dropdown-separator" />
 
-                                <a href="#perfil" onClick={cerrarMenu}>
+                                <a href="#perfil" onClick={(evento) => {
+                                    evento.preventDefault();
+                                    cerrarMenu();
+                                    onMiPerfil?.();
+                                }}>
                                     <img src={userNotLogged} alt="" />
                                     Mi Perfil
                                 </a>

@@ -1,6 +1,11 @@
 const router = require('express').Router();
 const db = require('../../config/db/conexion')
 const bcrypt = require('bcrypt');
+const verificarToken = require('../../middleware/authMiddleware');
+const perfilController = require('../../controladores/perfilController');
+
+router.get('/mi-perfil', verificarToken, perfilController.obtenerMiPerfil);
+router.put('/mi-perfil', verificarToken, perfilController.actualizarMiPerfil);
 
 
 //endpoint para obtener todos los usuarios

@@ -1,0 +1,257 @@
+.mi-perfil-pagina {
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding: clamp(24px, 3.2vw, 62px) clamp(18px, 2.5vw, 52px) 70px;
+    color: #f5f7fc;
+    background: #030d22;
+}
+
+.mi-perfil-contenedor { max-width: 1840px; margin: 0 auto; }
+
+.mi-perfil-columnas {
+    display: grid;
+    grid-template-columns: minmax(0, 2.05fr) minmax(290px, .9fr);
+    align-items: start;
+    gap: clamp(22px, 4.3vw, 82px);
+}
+
+.mi-perfil-principal { min-width: 0; }
+
+.mi-perfil-identidad,
+.mi-perfil-datos,
+.mi-perfil-medallero,
+.mi-perfil-tabla-scroll {
+    border: 1px solid #142440;
+    border-radius: 22px;
+    background: #0a1429;
+    box-shadow: 0 8px 26px rgb(0 0 0 / 12%);
+}
+
+.mi-perfil-identidad {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: clamp(20px, 3.5vw, 68px);
+    min-height: 340px;
+    padding: clamp(24px, 2.6vw, 48px);
+}
+
+.mi-perfil-avatar {
+    width: clamp(108px, 11vw, 212px);
+    aspect-ratio: 1;
+    border: 3px solid #8296b8;
+    border-radius: 50%;
+    background: #e8edf5;
+    object-fit: cover;
+}
+
+.mi-perfil-identidad-datos h1 {
+    margin: 0 0 18px;
+    font-size: clamp(25px, 2.2vw, 42px);
+    line-height: 1.16;
+}
+
+.mi-perfil-identidad-datos p {
+    margin: 0 0 28px;
+    color: #cad2e2;
+    font-size: clamp(16px, 1.45vw, 28px);
+}
+
+.mi-perfil-rol {
+    display: inline-flex;
+    padding: 7px 16px;
+    border: 1px solid #35517e;
+    border-radius: 8px;
+    color: #dce8fa;
+    font-size: clamp(14px, 1.15vw, 22px);
+}
+
+.mi-perfil-editar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border: 1px solid #20375f;
+    border-radius: 13px;
+    background: #102044;
+    color: #edf3ff;
+    font: inherit;
+    font-size: clamp(14px, 1.15vw, 22px);
+    cursor: pointer;
+}
+
+.mi-perfil-editar:hover { background: #172d55; }
+
+.mi-perfil-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 24px clamp(12px, 2vw, 40px) 46px;
+}
+
+.mi-perfil-estadisticas article {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: center;
+    align-items: center;
+    column-gap: clamp(12px, 1.5vw, 28px);
+    min-height: 140px;
+    padding: 18px;
+    border: 1px solid #142440;
+    border-radius: 20px;
+    background: #091328;
+}
+
+.mi-perfil-estadistica-icono {
+    grid-row: span 2;
+    font-size: clamp(34px, 4vw, 72px);
+    line-height: 1;
+}
+
+.mi-perfil-estadistica-icono.oro { color: #eddf00; }
+.mi-perfil-estadistica-icono.azul { color: #3989ff; }
+.mi-perfil-estadistica-icono.violeta { color: #8355ed; }
+
+.mi-perfil-estadisticas strong {
+    font-size: clamp(27px, 2.7vw, 50px);
+    line-height: 1.05;
+}
+
+.mi-perfil-estadisticas article > span:last-child {
+    color: #dfe5f1;
+    font-size: clamp(15px, 1.35vw, 25px);
+    line-height: 1.2;
+}
+
+.mi-perfil-records h2 {
+    margin: 0 0 22px;
+    text-align: center;
+    font-size: clamp(24px, 1.9vw, 38px);
+}
+
+.mi-perfil-tabla-scroll { overflow-x: auto; padding: 14px; }
+
+.mi-perfil-tabla {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: clamp(13px, 1.1vw, 21px);
+    white-space: nowrap;
+}
+
+.mi-perfil-tabla th,
+.mi-perfil-tabla td {
+    padding: clamp(11px, 1.05vw, 20px) 12px;
+    border-bottom: 1px solid #1c3154;
+    text-align: center;
+}
+
+.mi-perfil-tabla thead th {
+    background: #10224a;
+    color: #f5f7fc;
+    font-weight: 600;
+}
+
+.mi-perfil-tabla thead th:first-child { border-radius: 12px 0 0 0; text-align: left; }
+.mi-perfil-tabla thead th:last-child { border-radius: 0 12px 0 0; }
+.mi-perfil-tabla tbody tr:last-child th,
+.mi-perfil-tabla tbody tr:last-child td { border-bottom: 0; }
+
+.mi-perfil-categoria {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #edf2fc;
+    font-weight: 500;
+    text-align: left !important;
+}
+
+.mi-perfil-categoria img { width: 22px; height: 22px; object-fit: contain; }
+.mi-perfil-tiempo { color: #3988ff; font-weight: 700; }
+.mi-perfil-vacio { padding: 24px !important; color: #aab5c9; white-space: normal; }
+.mi-perfil-estado { max-width: 1000px; margin: 60px auto; color: #c5d0e1; }
+.mi-perfil-error, .mi-perfil-exito { margin: 12px 0; text-align: center; }
+.mi-perfil-error { color: #ff9999; }
+.mi-perfil-exito { color: #7be0a0; }
+
+.mi-perfil-lateral { display: grid; gap: 22px; }
+
+.mi-perfil-datos { padding: clamp(24px, 2.4vw, 44px); }
+.mi-perfil-datos h2 { margin: 0 0 12px; font-size: clamp(20px, 1.75vw, 34px); }
+.mi-perfil-datos p { margin: 0 0 22px; color: #d0d6e3; font-size: clamp(17px, 1.55vw, 30px); overflow-wrap: anywhere; }
+.mi-perfil-datos p:last-child { margin-bottom: 0; }
+
+.mi-perfil-categorias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 22px;
+}
+
+.mi-perfil-categorias span { display: inline-flex; align-items: center; color: #d7dfef; }
+.mi-perfil-categorias img { width: 34px; height: 34px; object-fit: contain; }
+.mi-perfil-categorias small { color: #aab5c9; }
+
+.mi-perfil-medallero { padding: 20px 26px 24px; text-align: center; }
+.mi-perfil-medallero h2 { margin: 0 0 18px; font-size: clamp(22px, 1.8vw, 36px); }
+.mi-perfil-medallero p { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 10px 0; font-size: clamp(18px, 1.65vw, 31px); font-weight: 650; }
+.mi-perfil-medallero p span { font-size: 1.25em; }
+.mi-perfil-medallero .oro { color: #f1e400; }
+.mi-perfil-medallero .plata { color: #aeb8cb; }
+.mi-perfil-medallero .bronce { color: #ce9131; }
+.mi-perfil-medallero strong { font-weight: 750; }
+
+.mi-perfil-volver { margin-top: 26px; border: 0; background: transparent; color: #3986ff; font: inherit; cursor: pointer; }
+
+.mi-perfil-modal-fondo {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgb(0 7 20 / 78%);
+}
+
+.mi-perfil-modal {
+    position: relative;
+    width: min(620px, 100%);
+    max-height: min(90vh, 900px);
+    overflow-y: auto;
+    padding: 30px;
+    border: 1px solid #20375f;
+    border-radius: 20px;
+    background: #0a1429;
+    box-shadow: 0 25px 70px rgb(0 0 0 / 45%);
+}
+
+.mi-perfil-modal h2 { margin: 0 36px 8px 0; font-size: 28px; }
+.mi-perfil-modal > p:not(.mi-perfil-error) { color: #b9c5d9; line-height: 1.45; }
+.mi-perfil-modal-cerrar { position: absolute; top: 14px; right: 18px; border: 0; background: transparent; color: #d8e2f3; font-size: 32px; cursor: pointer; }
+.mi-perfil-modal form { display: grid; gap: 14px; margin-top: 20px; }
+.mi-perfil-modal label { display: grid; gap: 6px; color: #dce5f5; }
+.mi-perfil-modal input,
+.mi-perfil-modal select { min-height: 44px; padding: 9px 12px; border: 1px solid #29436e; border-radius: 9px; background: #0d1a32; color: #f5f7fc; font: inherit; }
+.mi-perfil-modal-acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; }
+.mi-perfil-modal-acciones button { padding: 11px 16px; border: 1px solid #31578e; border-radius: 10px; background: #10234a; color: #fff; font: inherit; cursor: pointer; }
+.mi-perfil-modal-acciones button:last-child { background: #2366d1; }
+.mi-perfil-modal-acciones button:disabled { opacity: .6; cursor: wait; }
+
+@media (max-width: 900px) {
+    .mi-perfil-columnas { grid-template-columns: 1fr; }
+    .mi-perfil-lateral { grid-template-columns: minmax(0, 1fr) minmax(240px, .8fr); align-items: start; }
+    .mi-perfil-identidad { min-height: 0; }
+}
+
+@media (max-width: 580px) {
+    .mi-perfil-pagina { padding-inline: 12px; }
+    .mi-perfil-identidad { grid-template-columns: auto 1fr; gap: 14px; padding: 20px; }
+    .mi-perfil-avatar { width: 82px; }
+    .mi-perfil-identidad-datos h1 { font-size: 23px; }
+    .mi-perfil-identidad-datos p { margin-bottom: 14px; font-size: 14px; }
+    .mi-perfil-editar { grid-column: 1 / -1; justify-content: center; }
+    .mi-perfil-estadisticas { grid-template-columns: 1fr; margin: 16px 0 34px; }
+    .mi-perfil-estadisticas article { min-height: 90px; }
+    .mi-perfil-lateral { grid-template-columns: 1fr; }
+    .mi-perfil-tabla-scroll { padding: 6px; }
+    .mi-perfil-tabla th, .mi-perfil-tabla td { padding: 10px 8px; }
+}
