@@ -13,6 +13,7 @@ import Rankings from './vistas/rankings/Rankings.jsx'
 import Records from './vistas/records/Records.jsx'
 import MisTorneos from './vistas/torneos/MisTorneos.jsx'
 import GestionRoles from './vistas/admin/GestionRoles.jsx'
+import MiPerfil from './vistas/perfil/MiPerfil.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
@@ -115,7 +116,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -142,6 +143,9 @@ function App() {
           }}
           onGestionRoles={() => {
             if (usuario?.rol === 'Administrador') setVista('gestion-roles')
+          }}
+          onMiPerfil={() => {
+            if (usuario) setVista('mi-perfil')
           }}
           onIniciarSesion={() => setVista('login')}
           onCerrarSesion={manejarLogout}
@@ -171,6 +175,13 @@ function App() {
         : vista === 'gestion-roles'
         ? usuario?.rol === 'Administrador'
           ? <GestionRoles usuario={usuario} onVolver={() => setVista('home')} />
+          : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} />
+        : vista === 'mi-perfil'
+        ? usuario
+          ? <MiPerfil onVolver={() => setVista('home')} onPerfilActualizado={async () => {
+              const { data } = await axios.get('/auth/miusuario')
+              setUsuario(data.usuario ?? null)
+            }} />
           : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} />
         : vista === 'detalle-torneo'
         ? <TorneoDetalle
