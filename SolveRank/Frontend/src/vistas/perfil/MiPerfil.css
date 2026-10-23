@@ -519,6 +519,8 @@
         overflow-wrap: normal;
     }
 
+    .mi-perfil-modal p { font-size: 13px; }
+
     .mi-perfil-lateral { gap: 10px; }
     .mi-perfil-datos { padding: 18px 12px; }
     .mi-perfil-datos h2 { font-size: 17px; }

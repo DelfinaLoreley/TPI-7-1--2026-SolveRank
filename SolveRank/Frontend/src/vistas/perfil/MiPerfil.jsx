@@ -223,7 +223,7 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
                 <section className="mi-perfil-modal" role="dialog" aria-modal="true" aria-labelledby="mi-perfil-modal-titulo">
                     <button className="mi-perfil-modal-cerrar" type="button" onClick={() => setModalAbierto(false)} aria-label="Cerrar">×</button>
                     <h2 id="mi-perfil-modal-titulo">Editar perfil</h2>
-                    <p>Actualizá tus datos personales. El correo y el rol solo pueden modificarse desde sus opciones correspondientes.</p>
+                    <p>Actualizá tus datos personales.</p>
                     {error && <p className="mi-perfil-error" role="alert">{error}</p>}
                     {cargandoCatalogos ? <p>Cargando opciones…</p> : <form onSubmit={guardarPerfil}>
                         <label>Nombre<input name="nombre" value={formulario.nombre || ''} onChange={cambiarCampo} maxLength="50" required /></label>
@@ -231,7 +231,7 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
                         <label>País<select name="idPais" value={formulario.idPais || ''} onChange={cambiarCampo} required><option value="">Seleccioná tu país</option>{paises.map((pais) => <option key={pais.idPais} value={pais.idPais}>{pais.pais}</option>)}</select></label>
                         <label>Género<select name="idGenero" value={formulario.idGenero || ''} onChange={cambiarCampo} required><option value="">Seleccioná tu género</option>{generos.map((genero) => <option key={genero.id} value={genero.id}>{genero.genero}</option>)}</select></label>
                         <label>Fecha de nacimiento<input type="date" name="fechaNacimiento" value={formulario.fechaNacimiento || ''} onChange={cambiarCampo} max={new Date().toISOString().slice(0, 10)} /></label>
-                        <label>WCA ID<input name="wcaid" value={formulario.wcaid || ''} onChange={cambiarCampo} maxLength="10" placeholder="2019WANY36" /></label>
+                        <label>WCA ID<input name="wcaid" value={formulario.wcaid || ''} onChange={cambiarCampo} maxLength="10" placeholder="YYYYNAME00" /></label>
                         <div className="mi-perfil-modal-acciones"><button type="button" onClick={() => setModalAbierto(false)}>Cancelar</button><button type="submit" disabled={guardando}>{guardando ? 'Guardando…' : 'Guardar cambios'}</button></div>
                     </form>}
                 </section>
