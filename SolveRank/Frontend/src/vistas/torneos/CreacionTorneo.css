@@ -1787,18 +1787,19 @@
 
 @media (max-width: 760px) {
     .revision-resumen-superior {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, .8fr);
+        gap: 8px;
     }
 
     .revision-estadisticas {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        padding: 8px 14px;
+        grid-template-columns: 1fr;
+        padding: 8px 10px;
     }
 
     .revision-estadisticas > div + div {
-        border-top: 0;
-        border-left: 1px solid #263957;
-        padding-left: 14px;
+        border-top: 1px solid #263957;
+        border-left: 0;
+        padding-left: 0;
     }
 
     .revision-categorias {
@@ -1808,20 +1809,32 @@
 
 @media (max-width: 560px) {
     .revision-resumen-torneo {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        gap: 7px;
+        padding: 8px;
     }
 
     .revision-imagen-torneo {
-        height: 170px;
+        height: 84px;
     }
 
     .revision-identidad-torneo h3 {
-        font-size: 18px;
+        font-size: 13px;
+    }
+
+    .revision-identidad-torneo p {
+        gap: 4px;
+        font-size: 9px;
+    }
+
+    .revision-identidad-torneo p img {
+        flex-basis: 13px;
+        width: 13px;
+        height: 13px;
     }
 
     .revision-estadisticas {
-        grid-template-columns: 1fr;
+        padding: 6px 7px;
     }
 
     .revision-estadisticas > div + div {
@@ -1830,16 +1843,103 @@
         padding-left: 0;
     }
 
+    .revision-estadisticas > div {
+        grid-template-columns: 22px minmax(0, 1fr);
+        gap: 3px 6px;
+        padding: 6px 0;
+    }
+
+    .revision-estadisticas img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .revision-estadisticas span {
+        font-size: 9px;
+    }
+
+    .revision-estadisticas strong {
+        font-size: 15px;
+    }
+
     .revision-datos-grid,
     .revision-categorias {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
     }
 
     .revision-seccion {
-        padding: 12px;
+        padding: 10px;
+    }
+
+    .revision-dato {
+        gap: 6px;
+        padding: 7px;
+    }
+
+    .revision-dato > img {
+        flex-basis: 17px;
+        width: 17px;
+        height: 17px;
+    }
+
+    .revision-dato span,
+    .revision-dato strong {
+        font-size: 9px;
+    }
+
+    .revision-categoria {
+        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 6px;
+        padding: 7px;
+    }
+
+    .revision-categoria-icono {
+        width: 30px;
+        height: 30px;
+    }
+
+    .revision-categoria-icono img {
+        width: 19px;
+        height: 19px;
+    }
+
+    .revision-categoria strong {
+        font-size: 10px;
+    }
+
+    .revision-categoria > div span {
+        gap: 3px;
+        font-size: 8px;
+    }
+
+    .revision-categoria > div span img {
+        flex-basis: 10px;
+        width: 10px;
+        height: 10px;
     }
 
     .revision-tabla-contenedor table {
-        min-width: 520px;
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 9px;
+    }
+
+    .revision-tabla-contenedor th,
+    .revision-tabla-contenedor td {
+        padding: 6px 4px;
+        overflow-wrap: anywhere;
+    }
+
+    .revision-tabla-contenedor td:last-child {
+        width: 58%;
+        min-width: 0;
+    }
+
+    .revision-tabla-contenedor td img {
+        width: 12px;
+        height: 12px;
+        margin-right: 3px;
     }
 }

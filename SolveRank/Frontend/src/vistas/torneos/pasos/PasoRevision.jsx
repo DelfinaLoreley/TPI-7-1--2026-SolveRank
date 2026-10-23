@@ -145,9 +145,9 @@ export function PasoRevision({ formulario, cronograma, catalogo = [], catalogos 
                                         <span className="revision-categoria-icono"><img src={icono || categoriasIcon} alt="" /></span>
                                         <div>
                                             <strong>{etiqueta}</strong>
-                                            <span><img src={iconoFormato} alt="" /> Formato: {configuracion.formato || 'Ao5'}</span>
-                                            <span><img src={iconoRondas} alt="" /> Rondas: {cantidad} + Final</span>
-                                            <span><img src={iconoInscripcion} alt="" /> Tiempo límite: {limite}</span>
+                                            <span> Formato: {configuracion.formato || 'Ao5'}</span>
+                                            <span> Rondas: {cantidad} + Final</span>
+                                            <span> Tiempo límite: {limite}</span>
                                         </div>
                                     </article>
                                 );
