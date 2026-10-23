@@ -1,6 +1,6 @@
 .gestion-roles-pagina {
     min-height: calc(100vh - var(--navbar-height, 70px));
-    padding: clamp(24px, 4vw, 64px) clamp(18px, 5.8vw, 120px) 72px;
+    padding: clamp(20px, 4vw, 64px) clamp(18px, 5.8vw, 120px) 72px;
     color: #f4f7ff;
     background: #030d22 url('../../assets/img-cubo-banner.png') no-repeat right 30px top 0;
     background-size: min(52vw, 900px) auto;
@@ -23,15 +23,16 @@
 
 .gestion-roles-cabecera h1 {
     margin: 24px 0 0;
-    font-size: clamp(30px, 3vw, 54px);
+    font-size: 45px;
     font-weight: 750;
+    font-family: 'Instrument Sans';
 }
 
 .gestion-roles-panel {
     position: relative;
     max-width: 1800px;
     margin: 0 auto;
-    padding: clamp(24px, 2.5vw, 48px);
+    padding: clamp(14px, 2.5vw, 48px);
     border: 1px solid #172644;
     border-radius: 24px;
     background: #0a1429;
@@ -48,18 +49,19 @@
     margin: 0;
     font-size: clamp(26px, 2.4vw, 46px);
     line-height: 1.15;
+    font-family: 'Inclusive Sans';
 }
 
-.gestion-roles-icono {
-    color: #3181ff;
-    font-size: clamp(32px, 3vw, 54px);
-    line-height: 1;
+.gestion-roles-icono img {
+    width: 45px;
+    height: 45px;
 }
 
 .gestion-roles-descripcion {
     margin: 28px 0 30px;
     color: #c3cad8;
     font-size: clamp(17px, 1.45vw, 29px);
+    font-family: 'Inclusive Sans';
 }
 
 .gestion-roles-campo {
@@ -73,6 +75,7 @@
     color: #f4f7ff;
     font-size: clamp(17px, 1.45vw, 28px);
     font-weight: 600;
+    font-family: 'Inclusive Sans';
 }
 
 .gestion-roles-input-con-icono {
@@ -92,7 +95,7 @@
 .gestion-roles-input-con-icono input,
 .gestion-roles-campo select {
     width: 100%;
-    min-height: clamp(54px, 4vw, 88px);
+    min-height: clamp(45px, 4vw, 88px);
     padding: 14px 20px;
     border: 2px solid #20375f;
     border-radius: 16px;
@@ -100,11 +103,17 @@
     background: #0b152b;
     color: #f4f7ff;
     font: inherit;
-    font-size: clamp(17px, 1.5vw, 29px);
+    font-size: clamp(14px, 1.5vw, 25px);
 }
 
 .gestion-roles-input-con-icono input {
     padding-left: 64px;
+    font-family: 'Instrument Sans';
+}
+
+.gestion-roles-input-con-icono img {
+    width: 32px;
+    height: 30px;
 }
 
 .gestion-roles-input-con-icono input::placeholder {
@@ -184,6 +193,7 @@
     background-repeat: no-repeat;
     background-position: right 20px center;
     background-size: 20px;
+    font-family: 'Inclusive Sans';
 }
 
 .gestion-roles-campo select:disabled {
@@ -227,8 +237,38 @@
         background-position: right top;
     }
 
-    .gestion-roles-panel { border-radius: 18px; }
-    .gestion-roles-descripcion { margin: 20px 0; }
+    .gestion-roles-panel { 
+        border-radius: 18px; 
+    }
+
+    .gestion-roles-cabecera h1 { font-size: 24px; margin-top: 5px;}
+
+    .gestion-roles-titulo h2 { font-size: 18px;}
+
+    .gestion-roles-titulo { gap: 5px; }
+
+    .gestion-roles-icono img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .gestion-roles-descripcion { margin: 10px 0; font-size: 12px; }
+
+    .gestion-roles-campo label { font-size: 16px; }
+
+    .gestion-roles-input-con-icono input, .gestion-roles-campo select {
+        font-size: 14px;
+        border-radius: 14px;
+    }
+
+    .gestion-roles-input-con-icono span img {
+        width: 22px;    
+        height: 20px;
+        align-self: center;
+    }
+
+    .gestion-roles-input-con-icono input { padding-left: 52px; }
+
     .gestion-roles-campo { margin-top: 20px; }
-    .gestion-roles-confirmar { width: 100%; min-height: 58px; margin-top: 28px; }
+    .gestion-roles-confirmar { width: 50% !important; min-height: 58px; margin-top: 28px; }
 }

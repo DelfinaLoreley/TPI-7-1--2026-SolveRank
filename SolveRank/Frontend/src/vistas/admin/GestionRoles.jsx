@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import axios from '../../axiosApi';
 import './GestionRoles.css';
 
+import lupaIcon from '/src/assets/icons/search-icon.png';
+import gestionIcon from '/src/assets/torneos/documentacion-azul-icon.svg';
+
 function nombreCompleto(usuario) {
     return [usuario.nombre, usuario.apellido].filter(Boolean).join(' ');
 }
@@ -112,7 +115,7 @@ export default function GestionRoles({ usuario, onVolver }) {
 
             <form className="gestion-roles-panel" onSubmit={confirmarCambio}>
                 <div className="gestion-roles-titulo">
-                    <span className="gestion-roles-icono" aria-hidden="true">▤</span>
+                    <span className="gestion-roles-icono" aria-hidden="true"><img src={gestionIcon}/></span>
                     <h2>Gestión de roles</h2>
                 </div>
                 <p className="gestion-roles-descripcion">Ingresá el nombre del usuario y luego seleccioná su rol.</p>
@@ -120,7 +123,7 @@ export default function GestionRoles({ usuario, onVolver }) {
                 <div className="gestion-roles-campo gestion-roles-busqueda">
                     <label htmlFor="buscar-usuario">Usuario</label>
                     <div className="gestion-roles-input-con-icono">
-                        <span aria-hidden="true">⌕</span>
+                        <span aria-hidden="true"><img src={lupaIcon}/></span>
                         <input
                             id="buscar-usuario"
                             type="search"
