@@ -41,8 +41,10 @@ function InfoExtraTorneo() {
                                 <img src={youtubeIcon} alt="" />
                                 Click aquí para un video con reglas básicas sobre cómo competir.
                             </a>
-                            <a href="https://documents.worldcubeassociation.org/edudoc/competitor-tutorial/es/tutorial.pdf" target="_blank" rel="noreferrer">Manual de la WCA para COMPETIDORES</a>
-                            <a href="https://documents.worldcubeassociation.org/edudoc/judge-tutorial/judge-tutorial-es.pdf" target="_blank" rel="noreferrer">Manual de la WCA para JUECES NOVATOS</a>
+                            <ul>
+                                <li><a href="https://documents.worldcubeassociation.org/edudoc/competitor-tutorial/es/tutorial.pdf" target="_blank" rel="noreferrer">Manual de la WCA para COMPETIDORES</a></li>
+                                <li><a href="https://documents.worldcubeassociation.org/edudoc/judge-tutorial/judge-tutorial-es.pdf" target="_blank" rel="noreferrer">Manual de la WCA para JUECES NOVATOS</a></li>
+                            </ul>
                         </div>
                     </section>
 

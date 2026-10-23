@@ -140,11 +140,11 @@
 
     .info-extra-hero h1 {
         max-width: 58%;
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .info-extra-panel {
-        padding: 10px 16px 20px;
+        padding: 10px 16px 10px;
         font-size: 14px;
     }
 
@@ -156,8 +156,15 @@
         margin-bottom: 26px;
     }
 
+    .info-extra-seccion p, .info-extra-seccion li, .info-extra-seccion a {
+        font-size: 12px;
+    }
+
     .info-extra-seccion h3 {
         gap: 8px;
         margin-bottom: 14px;
+        font-size: 15px;
     }
+
+
 }
