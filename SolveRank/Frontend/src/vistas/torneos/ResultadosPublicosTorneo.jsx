@@ -1,6 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../../axiosApi';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
+import lineaDecorativaIzq from '/src/assets/icons/linea-izq-decorativa.svg';
+import lineaDecorativaDer from '/src/assets/icons/linea-der-decorativa.svg';
+import oroIcon from '/src/assets/miPerfil/medalla-de-oro-icon.png';
+import plataIcon from '/src/assets/miPerfil/medalla-de-plata-icon.png';
+import bronceIcon from '/src/assets/miPerfil/medalla-de-bronce-icon.png';
+
 import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
 import './ResultadosPublicosTorneo.css';
 
@@ -132,17 +138,48 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
     const formato = String(ronda.formato || '').toUpperCase();
     const cantidad = Number(ronda.cantidadIntentos) || 0;
     const icono = iconoCategoria(ronda.categoria);
+    const tablaContenedorRef = useRef(null);
+    const [scrollTabla, setScrollTabla] = useState({ max: 0, actual: 0 });
+
+    useEffect(() => {
+        const contenedor = tablaContenedorRef.current;
+        const tabla = contenedor?.querySelector('table');
+        if (!contenedor || !tabla) return undefined;
+
+        const actualizarLimite = () => {
+            const max = Math.max(0, contenedor.scrollWidth - contenedor.clientWidth);
+            setScrollTabla({ max, actual: Math.min(contenedor.scrollLeft, max) });
+        };
+
+        const observador = new ResizeObserver(actualizarLimite);
+        observador.observe(contenedor);
+        observador.observe(tabla);
+        return () => observador.disconnect();
+    }, []);
+
+    function desplazarTabla(evento) {
+        const actual = Number(evento.target.value);
+        if (tablaContenedorRef.current) tablaContenedorRef.current.scrollLeft = actual;
+        setScrollTabla((estado) => ({ ...estado, actual }));
+    }
 
     return (
         <section className={`resultados-publicos-bloque${podios ? ' podios' : ''}`}>
             <h3 className="resultados-publicos-categoria">
-                <span aria-hidden="true">⟵</span>
-                {icono && <img src={icono} alt="" />}
+                <span aria-hidden="true"><img src={lineaDecorativaIzq}/></span>
                 <span>{ronda.categoria}</span>
-                <span aria-hidden="true">⟶</span>
+                {icono && <img src={icono} alt="" />}
+                <span aria-hidden="true"><img src={lineaDecorativaDer}/></span>
             </h3>
             {!podios && <p className="resultados-publicos-ronda">{ronda.ronda}</p>}
-            <div className="resultados-publicos-tabla-contenedor">
+            <div
+                className="resultados-publicos-tabla-contenedor"
+                ref={tablaContenedorRef}
+                onScroll={(evento) => {
+                    const actual = evento.currentTarget.scrollLeft;
+                    setScrollTabla((estado) => ({ ...estado, actual }));
+                }}
+            >
                 <table className="resultados-publicos-tabla">
                     <thead>
                         <tr>
@@ -167,7 +204,7 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                                         : '',
                                 ].filter(Boolean).join(' ')}>
                                     {(podios || ultimaRonda) && Number.isFinite(fila.resultado) && indice < 3 && (
-                                        <span aria-label={`Puesto ${indice + 1}`}>{['🥇', '🥈', '🥉'][indice]}</span>
+                                        <span aria-label={`Puesto ${indice + 1}`}>{[<img src={oroIcon} alt="Oro" />, <img src={plataIcon} alt="Plata" />, <img src={bronceIcon} alt="Bronce" />][indice]}</span>
                                     )}
                                     {indice + 1}
                                 </td>
@@ -189,6 +226,18 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                     </tbody>
                 </table>
             </div>
+            {scrollTabla.max > 0 && (
+                <input
+                    className="resultados-publicos-desplazamiento"
+                    type="range"
+                    min="0"
+                    max={scrollTabla.max}
+                    step="1"
+                    value={Math.min(scrollTabla.actual, scrollTabla.max)}
+                    onChange={desplazarTabla}
+                    aria-label={`Desplazar horizontalmente la tabla de ${ronda.categoria}`}
+                />
+            )}
         </section>
     );
 }

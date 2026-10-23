@@ -44,7 +44,7 @@ function MezclasTorneo({ idTorneo }) {
     return (
         <section className="mezclas-torneo" aria-labelledby="mezclas-torneo-titulo">
             <header className="mezclas-torneo-encabezado">
-                <h2 id="mezclas-torneo-titulo">Mezclas por categoría</h2>
+                <h2 id="mezclas-torneo-titulo">MEZCLAS</h2>
                 <p>Mezclas generadas con un port no oficial de TNoodle.</p>
             </header>
             {[...grupos.values()].map((grupo) => (
