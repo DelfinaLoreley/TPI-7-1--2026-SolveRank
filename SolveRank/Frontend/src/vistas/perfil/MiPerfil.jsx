@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
+
 import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
+import editIcon from '/src/assets/miPerfil/edit-icon.png';
+import torneosIcon from '/src/assets/miPerfil/torneos-amarillo-icon-perfil.png';
+import solvesIcon from '/src/assets/miPerfil/solves-icon-perfil.png';
+import podiosIcon from '/src/assets/miPerfil/estrella-icon.png';
+import oroIcon from '/src/assets/miPerfil/medalla-de-oro-icon.png';
+import plataIcon from '/src/assets/miPerfil/medalla-de-plata-icon.png';
+import bronceIcon from '/src/assets/miPerfil/medalla-de-bronce-icon.png';
+
 import './MiPerfil.css';
 
 function formatearTiempo(valor) {
@@ -138,16 +147,16 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
                             <div className="mi-perfil-identidad-datos">
                                 <h1>{perfil.nombre} {perfil.apellido}</h1>
                                 <p>WCA ID: {perfil.wcaid || 'No informado'}</p>
-                                <span className="mi-perfil-rol">{perfil.rol}</span>
+                                <span className="mi-perfil-rol" data-rol={perfil.rol}>{perfil.rol}</span>
                             </div>
-                            {!publico && <button className="mi-perfil-editar" type="button" onClick={abrirEdicion}>✎ <span>Editar perfil</span></button>}
-                        </article>
+                            {!publico && <button className="mi-perfil-editar" type="button" onClick={abrirEdicion}> <span>Editar perfil<img src={editIcon} alt="Editar" /></span></button>}
 
-                        <div className="mi-perfil-estadisticas">
-                            <article><span className="mi-perfil-estadistica-icono oro" aria-hidden="true">♜</span><strong>{estadisticas.torneos}</strong><span>Torneos</span></article>
-                            <article><span className="mi-perfil-estadistica-icono azul" aria-hidden="true">⬡</span><strong>{estadisticas.soluciones}</strong><span>Soluciones completadas</span></article>
-                            <article><span className="mi-perfil-estadistica-icono violeta" aria-hidden="true">☆</span><strong>{estadisticas.podios}</strong><span>Veces en el podio</span></article>
-                        </div>
+                            <div className="mi-perfil-estadisticas">
+                                <article><img src={torneosIcon} className="mi-perfil-estadistica-icono" alt="" /><strong>{estadisticas.torneos}</strong><span>Torneos</span></article>
+                                <article><img src={solvesIcon} className="mi-perfil-estadistica-icono" alt="" /><strong>{estadisticas.soluciones}</strong><span>Soluciones completadas</span></article>
+                                <article><img src={podiosIcon} className="mi-perfil-estadistica-icono" alt="" /><strong>{estadisticas.podios}</strong><span>Veces en el podio</span></article>
+                            </div>
+                        </article>
 
                         <section className="mi-perfil-records">
                             <h2>Récords personales actuales</h2>
@@ -201,9 +210,9 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
 
                         <section className="mi-perfil-medallero">
                             <h2>Medallero</h2>
-                            <p className="oro"><span aria-hidden="true">♙</span> Oro: <strong>{medallero.oro}</strong></p>
-                            <p className="plata"><span aria-hidden="true">♙</span> Plata: <strong>{medallero.plata}</strong></p>
-                            <p className="bronce"><span aria-hidden="true">♙</span> Bronce: <strong>{medallero.bronce}</strong></p>
+                            <p className="oro"><span aria-hidden="true"><img src={oroIcon} alt="Oro" /></span> Oro: <strong>{medallero.oro}</strong></p>
+                            <p className="plata"><span aria-hidden="true"><img src={plataIcon} alt="Plata" /></span> Plata: <strong>{medallero.plata}</strong></p>
+                            <p className="bronce"><span aria-hidden="true"><img src={bronceIcon} alt="Bronce" /></span> Bronce: <strong>{medallero.bronce}</strong></p>
                         </section>
                     </aside>
                 </div>
