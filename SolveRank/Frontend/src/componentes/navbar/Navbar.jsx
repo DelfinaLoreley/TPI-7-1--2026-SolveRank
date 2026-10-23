@@ -22,6 +22,7 @@ import userPfp from '/src/assets/home/iconos/user-pfp-icon.png';
 import logoutIcon from '/src/assets/home/iconos/logout-icon.png';
 import menuCelu from '/src/assets/home/iconos/Menu.png';
 import organizadorIcon from '/src/assets/home/iconos/panel-principal-icon.png';
+import adminIcon from '/src/assets/home/iconos/admin-icon.png';
 import BusquedaGlobal from './BusquedaGlobal.jsx';
 
 function Navbar({
@@ -249,9 +250,9 @@ function Navbar({
                                             onGestionRoles?.();
                                         }}
                                     >
-                                        <img src={organizadorIcon} alt="" />
-                                        Gestión de roles
-                                    </a>
+                                        <button className="site-navbar-admin"><img src={adminIcon} alt="" />
+                                        Gestión de roles</button>
+                                    </a> 
                                 )}
 
                                 <hr className="site-navbar-dropdown-separator" />
