@@ -410,12 +410,55 @@
 }
 
 @media (max-width: 430px) {
-    .torneo-general-categorias {
-        grid-template-columns: minmax(0, 1fr);
+    .torneo-general-datos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
     }
 
-    .torneo-general-datos {
-        grid-template-columns: 1fr;
+    .torneo-general-dato {
+        gap: 6px;
+        min-height: 68px;
+        padding: 8px;
+    }
+
+    .torneo-general-dato > img {
+        width: 17px;
+        height: 17px;
+    }
+
+    .torneo-general-dato span,
+    .torneo-general-dato strong {
+        font-size: 10px;
+    }
+
+    .torneo-general-categorias {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .torneo-general-categorias li {
+        gap: 7px;
+        min-height: 82px;
+        padding: 8px;
+    }
+
+    .torneo-general-categoria-icono {
+        width: 38px;
+        height: 38px;
+    }
+
+    .torneo-general-categorias img {
+        width: 34px;
+        height: 34px;
+        padding: 7px;
+    }
+
+    .torneo-general-categorias strong {
+        font-size: 12px;
+    }
+
+    .torneo-general-categoria-detalle > span {
+        font-size: 10px;
     }
 
     .torneo-general-cupos {

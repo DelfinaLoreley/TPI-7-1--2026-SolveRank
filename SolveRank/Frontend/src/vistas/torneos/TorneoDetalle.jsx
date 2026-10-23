@@ -269,7 +269,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                                 )}
                             </div>
                             <img
-                                className="torneo-detalle-hero-imagen"
+                                className={`torneo-detalle-hero-imagen${torneo.pathImagen ? '' : ' torneo-detalle-hero-imagen-placeholder'}`}
                                 src={torneo.pathImagen ? `${axios.defaults.baseURL.replace(/\/api\/?$/, '')}${torneo.pathImagen}` : cuboBanner}
                                 alt={torneo.pathImagen ? `Imagen del torneo ${torneo.nombre}` : ''}
                                 aria-hidden={!torneo.pathImagen}
