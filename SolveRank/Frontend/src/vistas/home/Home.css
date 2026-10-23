@@ -1060,12 +1060,12 @@
 
     .home-resumen > div {
         grid-template-columns: 23px auto;
-        column-gap: 4px;
+        column-gap: 5px;
     }
 
-    .home-resumen img {
-        width: 22px;
-        height: 22px;
+    .home-resumen .resumen-icono img {
+        width: 20px !important;
+        height: 20px !important;
     }
 
     .home-resumen small {
@@ -1088,8 +1088,14 @@
         font-size: 16px;
     }
 
-    /* ← Home.css: refinar aún más el texto secundario en pantallas mínimas */
     .home-estadistica small {
         font-size: 7px;
+    }
+
+    .cubo-img-cta {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 40%;
     }
 }
