@@ -1,0 +1,115 @@
+.pagina-no-encontrada {
+    display: flex;
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 24px 56px;
+    overflow: hidden;
+    background-color: #000A23;
+    color: #f5f7ff;
+    text-align: center;
+}
+
+.pagina-no-encontrada-hero {
+    display: block;
+    width: min(100%, 980px);
+    /* height: clamp(220px, 24vw, 310px); */
+    height: 410px;
+    margin: -4px auto 4px;
+    object-fit: cover;
+    object-position: center 46%;
+}
+
+.pagina-no-encontrada h1 {
+    margin: 0 0 18px;
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.15;
+    margin-top: -70px;
+}
+
+.pagina-no-encontrada h1 span {
+    color: #7651e8;
+}
+
+.pagina-no-encontrada p {
+    max-width: 570px;
+    margin: 0 0 38px;
+    font-size: clamp(16px, 2vw, 23px);
+    line-height: 1.35;
+}
+
+.pagina-no-encontrada button {
+    display: inline-flex;
+    min-height: 70px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 38px;
+    border: 2px solid #3b64f4;
+    border-radius: 15px;
+    background: linear-gradient(110deg, #343bfa, #3412a9);
+    color: #fff;
+    font: inherit;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pagina-no-encontrada button:hover {
+    filter: brightness(1.12);
+}
+
+.pagina-no-encontrada button:focus-visible {
+    outline: 3px solid #9ab8ff;
+    outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+    .pagina-no-encontrada {
+        min-height: calc(100svh - var(--navbar-height, 72px));
+        padding: 28px 18px 42px;
+    }
+
+    .pagina-no-encontrada-hero {
+        width: min(100%, 560px);
+        height: clamp(200px, 55vw, 280px);
+        margin: 0 auto 10px;
+    }
+
+    .pagina-no-encontrada h1 {
+        margin-bottom: 12px;
+        font-size: 32px;
+    }
+
+    .pagina-no-encontrada p {
+        max-width: 420px;
+        margin-bottom: 28px;
+        font-size: 18px;
+    }
+
+    .pagina-no-encontrada button {
+        min-height: 56px;
+        gap: 8px;
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-size: 21px;
+    }
+}
+
+@media (max-width: 380px) {
+    .pagina-no-encontrada {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .pagina-no-encontrada p { font-size: 16px; width: 80%; }
+
+    .pagina-no-encontrada h1 {
+        font-size: 28px;
+        margin-top: -40px;
+    }
+
+    .pagina-no-encontrada button {
+        font-size: 18px;
+    }
+}

@@ -15,14 +15,17 @@ import MisTorneos from './vistas/torneos/MisTorneos.jsx'
 import GestionRoles from './vistas/admin/GestionRoles.jsx'
 import MiPerfil from './vistas/perfil/MiPerfil.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
+import PaginaNoEncontrada from './vistas/error404/PaginaNoEncontrada.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
 
 function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
-  const esVistaInfoExtra = new URLSearchParams(window.location.search).get('vista') === 'info-extra-torneo'
-  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : 'home')
+  const rutaInicial = window.location.pathname.replace(/\/+$/, '') || '/'
+  const rutaConocida = rutaInicial === '/' || rutaInicial === '/index.html'
+  const esVistaInfoExtra = rutaConocida && new URLSearchParams(window.location.search).get('vista') === 'info-extra-torneo'
+  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : rutaConocida ? 'home' : 'pagina-no-encontrada')
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
@@ -43,7 +46,7 @@ function App() {
       .then(({ data }) => {
         if (activo) {
           setUsuario(data.usuario ?? null)
-          if (!esVistaInfoExtra) {
+          if (!esVistaInfoExtra && rutaConocida) {
             if (data.usuario?.perfilCompleto === false) {
               setVista('completar-registro-google')
             } else if (data.usuario?.rol === 'Organizador') {
@@ -117,7 +120,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'pagina-no-encontrada'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -214,14 +217,20 @@ function App() {
                 onRegistroExitoso={manejarLogin}
                 onVolverLogin={() => setVista('login')}
             />
-        ) : (
+        )
+        : vista === 'pagina-no-encontrada'
+        ? <PaginaNoEncontrada onVolverInicio={() => {
+            window.history.replaceState({}, document.title, '/')
+            setVista('home')
+          }} />
+        : (
             <Login
               onRegister={() => setVista('registro')}
               onLogin={manejarLogin}
             />
           )}
 
-      {mostrarSitio && <Footer />}
+      {mostrarSitio && vista !== 'pagina-no-encontrada' && <Footer />}
     </div>
   )
 }
