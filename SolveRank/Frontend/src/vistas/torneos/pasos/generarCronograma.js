@@ -6,11 +6,9 @@ import icon4x4Blind from '/src/assets/categorias/4x4-blind-icon.svg';
 import icon5x5 from '/src/assets/categorias/5x5-icon.svg';
 import icon6x6 from '/src/assets/categorias/6x6-icon.svg';
 import icon7x7 from '/src/assets/categorias/7x7-icon.svg';
-import iconClock from '/src/assets/categorias/clock-icon.svg';
 import iconMegaminx from '/src/assets/categorias/megaminx-icon.svg';
 import iconPyraminx from '/src/assets/categorias/pyraminx icon.svg';
 import iconSkewb from '/src/assets/categorias/skewb-icon.svg';
-import iconSquare1 from '/src/assets/categorias/square-1-icon.svg';
 import iconPremiacion from '/src/assets/torneos/premiacion-icon.svg'
 import { etiquetaCategoria } from './datosCategorias';
 
@@ -23,14 +21,11 @@ const iconosCategoria = {
     '7x7x7': icon7x7,
     '3x3x3 a ciegas': icon3x3Blind,
     '3x3x3 Una mano': icon3x3,
-    Clock: iconClock,
     Megaminx: iconMegaminx,
     Pyraminx: iconPyraminx,
     Skewb: iconSkewb,
-    'Square-1': iconSquare1,
     '4x4x4 a ciegas': icon4x4Blind,
     '5x5x5 a ciegas': icon5x5,
-    FTO: iconMegaminx
 };
 
 function formatearHora(fecha) {

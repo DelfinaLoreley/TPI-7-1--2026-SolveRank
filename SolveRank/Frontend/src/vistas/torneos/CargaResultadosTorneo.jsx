@@ -1,21 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
-import rondaIcon from '/src/assets/torneos/rondas-blanco-icon.svg';
+import rondaIcon from '/src/assets/torneos/rondas-icon.svg';
 import formatoIcon from '/src/assets/torneos/formato-icon.svg';
 import tiempoIcon from '/src/assets/torneos/tiempo-limite-icon.svg';
+import mediaIcon from '/src/assets/icons/promedio-icon.png';
+import userPfpIcon from '/src/assets/home/iconos/user-pfp-icon.png';
 import competidoresIcon from '/src/assets/torneos/competidores-blanco-icon.svg';
-import './CargaResultadosTorneo.css';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
+import compIcon from '/src/assets/icons/organizador-azul-icon.svg';
 import formIcon from '/src/assets/torneos/info-general-icon.svg';
+import starIcon from '/src/assets/torneos/estrella-icon-responsive.png';
+import rondaIcon2 from '/src/assets/torneos/rondas-blanco-icon.svg';
+
+import './CargaResultadosTorneo.css';
 import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
 
-function iconoCategoria(nombre) {
+function iconoCategoria(nombre, seleccionado = false) {
     const normalizado = String(nombre || '').trim().toLocaleLowerCase('es');
-    return catalogoCategorias.find(({ id, etiqueta }) =>
+    const categoria = catalogoCategorias.find(({ id, etiqueta }) =>
         String(id).toLocaleLowerCase('es') === normalizado
         || String(etiqueta).toLocaleLowerCase('es') === normalizado
-    )?.icono;
+    );
+    return seleccionado ? (categoria?.iconoSeleccionado || categoria?.icono) : categoria?.icono;
 }
 
 function fechaLegible(fecha) {
@@ -130,6 +137,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState('');
     const [mensaje, setMensaje] = useState('');
+    const [competidorSeleccionadoModal, setCompetidorSeleccionadoModal] = useState(null);
 
     const idRondaActiva = idRonda;
 
@@ -172,8 +180,34 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
         };
     }, [idTorneo, idRondaActiva]);
 
+    useEffect(() => {
+        if (!competidorSeleccionadoModal) return undefined;
+        const vistaCelular = window.matchMedia('(max-width: 560px)');
+        if (!vistaCelular.matches) return undefined;
+
+        const elementoActivo = document.activeElement;
+        const overflowAnterior = document.body.style.overflow;
+        const cerrarConEscape = (evento) => {
+            if (evento.key === 'Escape') setCompetidorSeleccionadoModal(null);
+        };
+        const cerrarEnPantallaGrande = (evento) => {
+            if (!evento.matches) setCompetidorSeleccionadoModal(null);
+        };
+
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', cerrarConEscape);
+        vistaCelular.addEventListener('change', cerrarEnPantallaGrande);
+        return () => {
+            document.body.style.overflow = overflowAnterior;
+            document.removeEventListener('keydown', cerrarConEscape);
+            vistaCelular.removeEventListener('change', cerrarEnPantallaGrande);
+            if (elementoActivo instanceof HTMLElement) elementoActivo.focus();
+        };
+    }, [competidorSeleccionadoModal]);
+
     const rondaActiva = rondas.find((ronda) => String(ronda.idRonda) === idRondaActiva);
     const iconoCategoriaActiva = iconoCategoria(rondaActiva?.categoria);
+    const iconoCategoriaActivaSeleccionado = iconoCategoria(rondaActiva?.categoria, true);
     const cantidadIntentos = Number(rondaActiva?.cantidadIntentos) || 0;
     const rondasCategoria = rondas
         .filter((ronda) => String(ronda.idCategoria) === String(rondaActiva?.idCategoria))
@@ -225,6 +259,19 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
 
     function cambiarTiempo(indice, valor) {
         setIntentos((actuales) => actuales.map((actual, posicion) => posicion === indice ? formatearEntradaTiempo(valor) : actual));
+    }
+
+    function abrirDetalleCompetidor(competidor, indice) {
+        if (!window.matchMedia('(max-width: 560px)').matches) return;
+        setCompetidorSeleccionadoModal({
+            competidor,
+            posicion: competidor.resultado !== null ? indice + 1 : '—',
+        });
+    }
+
+    function verTodosLosResultados() {
+        setCompetidorSeleccionadoModal(null);
+        document.querySelector('.carga-resultados-en-vivo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     async function confirmarResultados(evento) {
@@ -283,7 +330,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
             <section className="carga-resultados-resumen" aria-label="Información de la ronda">
                 <div><span className="carga-resultados-icono">{iconoCategoriaActiva && <img src={iconoCategoriaActiva} alt="" />}</span><span><small>Categoría</small><strong>{rondaActiva?.categoria}</strong></span></div>
                 <hr className="carga-resultados-separador" aria-hidden="true" />
-                <div><span className="carga-resultados-icono"><img src={rondaIcon}/></span><span><small>Ronda</small><strong>{rondaActiva?.ronda}</strong></span></div>
+                <div><span className="carga-resultados-icono"><img src={rondaIcon2}/></span><span><small>Ronda</small><strong>{rondaActiva?.ronda}</strong></span></div>
                 <hr className="carga-resultados-separador" aria-hidden="true" />
                 <div><span className="carga-resultados-icono"><img src={formatoIcon}/></span><span><small>Formato</small><strong>{rondaActiva?.formato || 'Formato no configurado'}</strong></span></div>
                 <hr className="carga-resultados-separador" aria-hidden="true" />
@@ -404,7 +451,11 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                         >
                                             {competidor.resultado !== null ? indice + 1 : '—'}
                                         </td>
-                                        <td>{competidor.nombre}</td>
+                                        <td>
+                                            <button className="carga-resultados-nombre-competidor" type="button" onClick={() => abrirDetalleCompetidor(competidor, indice)}>
+                                                {competidor.nombre}
+                                            </button>
+                                        </td>
                                         <td>{competidor.pais || '—'}</td>
                                         <td>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</td>
                                         <td>{competidor.resultado === null ? '—' : (
@@ -424,6 +475,54 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                     </div>
                 </section>
             </div>
+
+            {competidorSeleccionadoModal && (() => {
+                const { competidor, posicion } = competidorSeleccionadoModal;
+                const promedio = String(rondaActiva?.formato).toUpperCase().startsWith('BO')
+                    ? (competidor.resultado === null ? '—' : tiempoLegible(competidor.resultado))
+                    : (competidor.promedioSuma === null
+                        ? (competidor.completo ? 'DNF' : '—')
+                        : tiempoPromedioLegible(competidor.promedioSuma, competidor.promedioCantidad));
+                const etiquetaPromedio = String(rondaActiva?.formato).toUpperCase().startsWith('BO') ? 'Resultado' : 'Promedio';
+                const mejor = competidor.mejor === null
+                    ? (competidor.completo ? 'DNF' : '—')
+                    : tiempoLegible(competidor.mejor);
+
+                return <div className="carga-resultados-modal-fondo" onMouseDown={(evento) => evento.target === evento.currentTarget && setCompetidorSeleccionadoModal(null)}>
+                    <section className="carga-resultados-modal" role="dialog" aria-modal="true" aria-labelledby="carga-resultados-modal-titulo" tabIndex="-1">
+                        <header className="carga-resultados-modal-perfil">
+                            <img src={userPfpIcon} alt="" />
+                            <div>
+                                <h2 id="carga-resultados-modal-titulo">{competidor.nombre} <strong>#{posicion}</strong></h2>
+                                <p>{competidor.pais || 'País no informado'}</p>
+                            </div>
+                        </header>
+
+                        <div className="carga-resultados-modal-datos">
+                            <div><span className="carga-resultados-modal-icono"><img src={compIcon} alt="" /></span><span>Competidor<strong>ID: {competidor.idUsuario}</strong></span></div>
+                            <div><span className="carga-resultados-modal-icono categoria">{iconoCategoriaActivaSeleccionado ? <img src={iconoCategoriaActivaSeleccionado} alt="" /> : '◇'}</span><span>Categoría<strong>{rondaActiva?.categoria}</strong></span></div>
+                            <div><span className="carga-resultados-modal-icono"><img src={rondaIcon} alt="" /></span><span>Ronda<strong>{rondaActiva?.ronda}</strong></span></div>
+                        </div>
+
+                        <h3 className="carga-resultados-modal-intentos-titulo">Intentos</h3>
+                        <div className="carga-resultados-modal-intentos">
+                            {Array.from({ length: cantidadIntentos }, (_, intento) => (
+                                <div key={intento}><strong>{intento + 1}</strong><span>{intentoLegible(competidor.intentos?.[intento])}</span></div>
+                            ))}
+                        </div>
+
+                        <div className="carga-resultados-modal-estadisticas">
+                            <div><span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span><span>{etiquetaPromedio}<strong>{promedio}</strong></span></div>
+                            <div><span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span><span>Mejor<strong>{mejor}</strong></span></div>
+                        </div>
+
+                        <footer className="carga-resultados-modal-acciones">
+                            <button type="button" onClick={verTodosLosResultados}>Ver todos los resultados</button>
+                            <button type="button" onClick={() => setCompetidorSeleccionadoModal(null)}>Cerrar</button>
+                        </footer>
+                    </section>
+                </div>;
+            })()}
         </main>
     );
 }
