@@ -364,7 +364,7 @@ function Inscripcion({ torneo, categoriasTorneo = [], inscripcionAbierta = true 
                                         onClick={confirmarInscripcion}
                                         disabled={procesando || !inscripcionAbierta}
                                     >
-                                        {procesando ? 'Guardando...' : 'Confirmar inscripción'}
+                                        {procesando ? 'Guardando...' : 'Confirmar'}
                                     </button>
                                 </div>
                             )

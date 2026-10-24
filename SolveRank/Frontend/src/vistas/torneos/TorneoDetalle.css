@@ -875,7 +875,7 @@
 
 .inscripcion-eliminar {
     min-height: 48px;
-    border: 1px solid #3980ff;
+    border: 2px solid #3980ff;
     border-radius: 12px;
     color: #fff;
     font: inherit;
@@ -886,7 +886,7 @@
 
 .inscripcion-eliminar {
     border-color: #d42a3a;
-    background: linear-gradient(110deg, #b91829, #7b101b);
+    background: linear-gradient(to bottom, #b91829, #7b101b);
 }
 
 .inscripcion-aceptacion {
@@ -942,6 +942,106 @@
 }
 
 @media (max-width: 760px) {
+    .inscripcion-categorias-registradas {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .inscripcion-categorias-registradas .torneo-general-tarjeta-encabezado {
+        margin-bottom: 14px;
+    }
+
+    .inscripcion-categorias-registradas .torneo-general-tarjeta-encabezado h2 {
+        gap: 8px;
+        font-size: clamp(14px, 3.3vw, 24px);
+        line-height: 1.25;
+    }
+
+    .inscripcion-categorias-registradas .torneo-general-tarjeta-encabezado h2 img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .torneo-general-categorias-inscripcion {
+        gap: 8px;
+    }
+
+    .torneo-general-categorias-inscripcion li {
+        gap: clamp(7px, 1.7vw, 12px);
+        min-height: clamp(86px, 16vw, 116px);
+        padding: clamp(7px, 1.7vw, 12px);
+        border-width: 2px;
+        border-radius: 20px;
+    }
+
+    .torneo-general-categoria-inscripcion-icono {
+        width: clamp(42px, 8.3vw, 60px);
+        height: clamp(42px, 8.3vw, 60px);
+    }
+
+    .torneo-general-categorias-inscripcion img {
+        width: clamp(34px, 6.2vw, 45px);
+        height: clamp(34px, 6.2vw, 45px);
+        padding: clamp(6px, 1.4vw, 10px);
+    }
+
+    .torneo-general-categorias-inscripcion strong {
+        font-size: clamp(14px, 2.8vw, 20px) !important;
+        line-height: 1.3;
+    }
+
+    .inscripcion-pasos {
+        --paso-punta: clamp(12px, 1.8vw, 18px);
+        min-height: clamp(76px, 14.8vw, 114px);
+        border-radius: 14px;
+    }
+
+    .inscripcion-pasos li {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: clamp(5px, 1vw, 10px);
+        min-height: clamp(76px, 14.8vw, 114px);
+        padding-top: 8px;
+        padding-bottom: 8px;
+        text-align: left;
+    }
+
+    .inscripcion-pasos li.paso-1 {
+        padding-left: clamp(9px, 2vw, 20px);
+        padding-right: clamp(12px, 2.5vw, 24px);
+    }
+
+    .inscripcion-pasos li.paso-2,
+    .inscripcion-pasos li.paso-3 {
+        padding-left: clamp(20px, 3.2vw, 34px);
+        padding-right: clamp(8px, 1.8vw, 18px);
+    }
+
+    .inscripcion-pasos li > strong {
+        font-size: clamp(30px, 6.8vw, 52px);
+    }
+
+    .inscripcion-paso-check,
+    .inscripcion-pasos li .inscripcion-paso-check {
+        width: clamp(24px, 4vw, 32px);
+        font-size: clamp(24px, 4vw, 32px);
+    }
+
+    .inscripcion-paso-check img {
+        width: clamp(24px, 4vw, 30px);
+        height: clamp(24px, 4vw, 30px);
+    }
+
+    .inscripcion-pasos li b {
+        font-size: clamp(11px, 2.4vw, 18px);
+        line-height: 1.15;
+    }
+
+    .inscripcion-pasos li div > span {
+        font-size: clamp(8px, 1.6vw, 12px);
+        line-height: 1.2;
+    }
+
     .torneo-detalle-page {
         padding: 24px 16px 36px;
     }
@@ -1087,6 +1187,10 @@
         padding: 10px 12px 22px;
     }
 
+    .torneo-general-categorias-inscripcion {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
     .inscripcion-resumen {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -1097,24 +1201,29 @@
     }
 
     .inscripcion-estadisticas {
-        grid-template-columns: 1fr 1fr;
-        justify-items: center;
-        gap: 16px 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: clamp(8px, 2vw, 16px);
         padding: 18px 0 0;
     }
 
     .inscripcion-dona {
-        grid-column: 1 / -1;
-        width: 118px;
+        flex: 0 0 clamp(88px, 18.5vw, 118px);
+        width: clamp(88px, 18.5vw, 118px);
     }
 
     .inscripcion-cifra {
+        flex: 1 1 0;
+        min-width: 0;
         align-items: center;
-        padding-left: 10px;
+        padding-left: clamp(8px, 2vw, 12px);
+        border: none;
     }
 
+    .inscripcion-cifra:last-child { border-left: 1px solid #a6b1c8; }
+
     .inscripcion-cifra span {
-        font-size: 14px;
+        font-size: 10px;
         text-align: center;
     }
 
@@ -1122,57 +1231,19 @@
         margin-bottom: 18px;
     }
 
+    .inscripcion-proceso p { margin-bottom: 30px;}
+
     .inscripcion-pasos {
-        --paso-punta: 14px;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        min-height: 72px;
         margin-bottom: 18px;
     }
 
-    .inscripcion-pasos li {
-        flex-direction: column;
-        justify-content: center;
-        min-height: 110px;
-        gap: 5px;
-        padding: 7px 8px;
-        text-align: center;
-    }
+    .inscripcion-confirmacion h4 { font-size: 16px; }
+    .inscripcion-confirmacion p { font-size: 12px; margin: 0%; }
 
-    .inscripcion-pasos li.paso-1 {
-        padding-left: 9px;
-        padding-right: 11px;
-    }
+    .inscripcion-eventos h4 { font-size: 16px; }
+    #inscripcion-eventos-titulo { gap: 5px; }
 
-    .inscripcion-pasos li.paso-2 {
-        padding-left: 20px;
-        padding-right: 11px;
-    }
-
-    .inscripcion-pasos li.paso-3 {
-        padding-left: 20px;
-        padding-right: 7px;
-    }
-
-    .inscripcion-pasos li > strong {
-        font-size: 21px;
-    }
-
-    .inscripcion-paso-check {
-        font-size: 22px;
-    }
-
-    .inscripcion-pasos li b {
-        font-size: 11px;
-        overflow-wrap: anywhere;
-    }
-
-    .inscripcion-pasos li div > span {
-        font-size: 8px;
-    }
-
-    .inscripcion-pasos li .inscripcion-paso-check {
-        font-size: 22px;
-    }
+    .inscripcion-eventos-lista { gap: 24px; }
 
     .inscripcion-categorias {
         grid-template-columns: repeat(4, minmax(42px, 1fr));
@@ -1192,11 +1263,15 @@
 
     .inscripcion-confirmar,
     .inscripcion-eliminar {
-        padding: 8px;
+        padding: 8px 10px;
         font-size: 14px;
     }
 
     .inscripcion-aceptacion {
         padding: 12px;
     }
+
+    .inscripcion-aceptacion span { font-weight: 100 !important; font-size: 12px;}
+
+    .inscripcion-seleccion-conteo p { margin-bottom: 5px !important; }
 }
