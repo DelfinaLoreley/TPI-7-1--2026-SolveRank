@@ -1,10 +1,13 @@
 .panel-resultados-torneo {
     display: grid;
     gap: 16px;
+    min-width: 0;
     color: #f5f7ff;
 }
 
 .panel-resultados-seccion {
+    width: 100%;
+    min-width: 0;
     padding: 16px;
     border: 1px solid #1c3155;
     border-radius: 10px;
@@ -31,18 +34,19 @@
 
 .panel-resultados-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    padding: 0 5px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 12px;
+    min-width: 0;
 }
 
 .panel-resultados-card {
     display: grid;
-    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-columns: 52px minmax(0, 1fr);
     grid-template-rows: 1fr auto;
-    column-gap: 15px;
-    min-height: 78px;
-    padding: 8px;
+    column-gap: 12px;
+    min-width: 0;
+    min-height: 104px;
+    padding: 12px;
     border: 1px solid #263b5e;
     border-radius: 8px;
     background: #142442;
@@ -51,8 +55,8 @@
 .panel-resultados-icono {
     display: grid;
     grid-row: 1 / 3;
-    width: 45px;
-    height: 45px;
+    width: 52px;
+    height: 52px;
     place-items: center;
     border-radius: 50%;
     border: 2px solid transparent;
@@ -62,8 +66,8 @@
 }
 
 .panel-resultados-icono img {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     object-fit: contain;
 }
 
@@ -217,25 +221,51 @@
     color: #fff;
 }
 
-@media (max-width: 900px) {
-    .panel-resultados-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 560px) {
     .panel-resultados-seccion {
         padding: 12px;
     }
 
+    .panel-resultados-seccion p { font-size: 12px; }
+
     .panel-resultados-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 8px;
-        padding: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 
     .panel-resultados-card {
-        min-height: 82px;
+        grid-template-columns: 36px minmax(0, 1fr);
+        column-gap: 8px;
+        min-height: 96px;
+        padding: 8px;
+    }
+
+    .panel-resultados-icono {
+        width: 36px;
+        height: 36px;
+    }
+
+    .panel-resultados-icono img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .panel-resultados-card-info h3 {
+        font-size: 14px;
+    }
+
+    .panel-resultados-card-info p {
+        font-size: 11px;
+    }
+
+    .panel-resultados-card-info small {
+        font-size: 10px;
+    }
+
+    .panel-resultados-card > button {
+        min-width: 0;
+        padding: 3px 6px;
+        font-size: 9px;
     }
 
     .panel-resultados-tabla-contenedor table {
@@ -244,5 +274,8 @@
 
     .panel-resultados-importante {
         padding: 12px;
+        font-size: 12px;
     }
+
+    .panel-resultados-importante ul li { font-weight: 100 !important; }
 }

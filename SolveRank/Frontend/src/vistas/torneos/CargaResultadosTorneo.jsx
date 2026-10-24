@@ -290,23 +290,6 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 <div><span className="carga-resultados-icono"><img src={tiempoIcon}/></span><span><small>Tiempo límite</small><strong>{rondaActiva?.tiempoLimite || '—'}</strong></span></div>
                 <hr className="carga-resultados-separador" aria-hidden="true" />
                 <div><span className="carga-resultados-icono"><img src={competidoresIcon}/></span><span><small>Competidores</small><strong>{competidores.length}</strong></span></div>
-                <hr className="carga-resultados-separador" aria-hidden="true" />
-                <label className="carga-resultados-selector-ronda">
-                    <span>Seleccionar Ronda</span>
-                    <select value={idRondaActiva} onChange={(evento) => {
-                        const siguienteId = evento.target.value;
-                        const siguienteRonda = rondas.find((ronda) => String(ronda.idRonda) === siguienteId);
-                        setCargando(true);
-                        setIdRonda(siguienteId);
-                        setIdCompetidor('');
-                        setBusquedaCompetidor('');
-                        setIntentos(Array(Number(siguienteRonda?.cantidadIntentos) || 0).fill(''));
-                    }}>
-                        {rondas.map((ronda) => (
-                            <option key={ronda.idRonda} value={ronda.idRonda}>{ronda.categoria} · {ronda.ronda}</option>
-                        ))}
-                    </select>
-                </label>
             </section>
 
             {!cantidadIntentos && (
@@ -402,11 +385,11 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Pos.</th>
+                                    <th>#</th>
                                     <th>Nombre</th>
                                     <th>País</th>
                                     <th>Single</th>
-                                    <th>{String(rondaActiva?.formato).toUpperCase().startsWith('BO') ? 'Resultado' : 'Promedio'}</th>
+                                    <th>{String(rondaActiva?.formato).toUpperCase().startsWith('BO') ? 'Resultado' : 'Media'}</th>
                                     {Array.from({ length: cantidadIntentos }, (_, indice) => <th key={indice}>{indice + 1}</th>)}
                                 </tr>
                             </thead>

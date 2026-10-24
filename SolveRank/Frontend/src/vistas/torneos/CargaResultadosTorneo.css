@@ -79,7 +79,7 @@
 
 .carga-resultados-resumen {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr) 1px) minmax(0, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr) 1px) minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     min-height: 64px;
@@ -132,24 +132,6 @@
 .carga-resultados-icono img {
     width: 35px;
     height: 35px;
-}
-
-.carga-resultados-selector-ronda {
-    display: grid;
-    gap: 4px;
-    min-width: 0;
-    color: var(--resultados-suave);
-    font-size: 10px;
-}
-
-.carga-resultados-selector-ronda select {
-    width: 100%;
-    height: 34px;
-    padding: 0 8px;
-    border: 1px solid var(--resultados-borde);
-    border-radius: 6px;
-    background: #0b1730;
-    color: #f5f7ff;
 }
 
 .carga-resultados-columnas {
@@ -232,8 +214,7 @@
 }
 
 
-.carga-resultados-campo input:focus,
-.carga-resultados-selector-ronda select:focus {
+.carga-resultados-campo input:focus {
     border-color: #438bff;
 }
 
@@ -408,9 +389,12 @@
 
 @media (max-width: 850px) {
     .carga-resultados-resumen {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 10px;
+        min-height: 76px;
+        padding: 10px 12px;
     }
 
     .carga-resultados-separador {
@@ -418,11 +402,31 @@
     }
 
     .carga-resultados-resumen > div {
-        flex: 1 1 120px;
+        gap: 7px;
+        min-width: 0;
+        padding-right: 7px;
+        border-right: 1px solid #243654;
     }
 
-    .carga-resultados-selector-ronda {
-        flex: 1 1 100%;
+    .carga-resultados-resumen > div:nth-of-type(5) {
+        padding-right: 0;
+        border-right: 0;
+    }
+
+    .carga-resultados-icono img {
+        width: 27px;
+        height: 27px;
+    }
+
+    .carga-resultados-resumen small {
+        font-size: 11px;
+    }
+
+    .carga-resultados-resumen strong {
+        overflow: hidden;
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .carga-resultados-columnas {
@@ -461,27 +465,41 @@
     }
 
     .carga-resultados-resumen {
-        gap: 12px 8px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 4px;
+        min-height: 50px;
         margin: 0 0 12px;
-        padding: 10px;
+        padding: 8px 6px;
     }
 
     .carga-resultados-resumen > div {
-        flex: 1 1 28%;
-        gap: 6px;
-        padding-right: 5px;
+        gap: 4px;
+        min-width: 0;
+        padding-right: 4px;
+        border-right: 1px solid #243654;
+        height: 30px;
     }
 
     .carga-resultados-icono {
-        font-size: 23px;
+        flex: 0 0 16px;
+        font-size: 16px;
+    }
+
+    .carga-resultados-icono img {
+        width: 16px;
+        height: 16px;
     }
 
     .carga-resultados-resumen small {
-        font-size: 9px;
+        font-size: 7px;
     }
 
     .carga-resultados-resumen strong {
-        font-size: 12px;
+        font-size: 9px;
+    }
+
+    .carga-resultados-resumen > div > span:last-child {
+        min-width: 0;
     }
 
     .carga-resultados-formulario,
@@ -495,6 +513,46 @@
     }
 
     .carga-resultados-tabla-contenedor table {
-        min-width: 620px;
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .carga-resultados-tabla-contenedor th,
+    .carga-resultados-tabla-contenedor td {
+        overflow: hidden;
+        padding: 7px 4px;
+        text-overflow: ellipsis;
+    }
+
+    .carga-resultados-tabla-contenedor th {
+        font-size: 11px;
+    }
+
+    .carga-resultados-tabla-contenedor th:nth-child(n + 6),
+    .carga-resultados-tabla-contenedor td:nth-child(n + 6) {
+        display: none;
+    }
+
+    .carga-resultados-tabla-contenedor th:nth-child(1),
+    .carga-resultados-tabla-contenedor td:nth-child(1) {
+        width: 9%;
+    }
+
+    .carga-resultados-tabla-contenedor th:nth-child(2),
+    .carga-resultados-tabla-contenedor td:nth-child(2) {
+        width: 35%;
+    }
+
+    .carga-resultados-tabla-contenedor th:nth-child(3),
+    .carga-resultados-tabla-contenedor td:nth-child(3) {
+        width: 20%;
+    }
+
+    .carga-resultados-tabla-contenedor th:nth-child(4),
+    .carga-resultados-tabla-contenedor td:nth-child(4),
+    .carga-resultados-tabla-contenedor th:nth-child(5),
+    .carga-resultados-tabla-contenedor td:nth-child(5) {
+        width: 18%;
     }
 }
