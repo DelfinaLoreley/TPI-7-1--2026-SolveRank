@@ -56,6 +56,10 @@
     text-decoration: none;
 }
 
+.site-footer > div:not(:first-child) a.site-footer-link-activo {
+    color: #FF8A05;
+}
+
 .site-footer-copyright {
     padding: 9px 0 18px;
     color: #aeb9ca;

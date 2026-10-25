@@ -15,6 +15,7 @@ import MisTorneos from './vistas/torneos/MisTorneos.jsx'
 import GestionRoles from './vistas/admin/GestionRoles.jsx'
 import MiPerfil from './vistas/perfil/MiPerfil.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
+import PreguntasFrecuentes from './vistas/info/PreguntasFrecuentes.jsx'
 import PaginaNoEncontrada from './vistas/error404/PaginaNoEncontrada.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
@@ -24,8 +25,10 @@ function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
   const rutaInicial = window.location.pathname.replace(/\/+$/, '') || '/'
   const rutaConocida = rutaInicial === '/' || rutaInicial === '/index.html'
-  const esVistaInfoExtra = rutaConocida && new URLSearchParams(window.location.search).get('vista') === 'info-extra-torneo'
-  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : rutaConocida ? 'home' : 'pagina-no-encontrada')
+  const vistaExtra = new URLSearchParams(window.location.search).get('vista')
+  const esVistaInfoExtra = rutaConocida && vistaExtra === 'info-extra-torneo'
+  const esVistaPreguntasFrecuentes = rutaConocida && vistaExtra === 'preguntas-frecuentes'
+  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : esVistaPreguntasFrecuentes ? 'preguntas-frecuentes' : rutaConocida ? 'home' : 'pagina-no-encontrada')
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
@@ -46,7 +49,7 @@ function App() {
       .then(({ data }) => {
         if (activo) {
           setUsuario(data.usuario ?? null)
-          if (!esVistaInfoExtra && rutaConocida) {
+          if (!esVistaInfoExtra && !esVistaPreguntasFrecuentes && rutaConocida) {
             if (data.usuario?.perfilCompleto === false) {
               setVista('completar-registro-google')
             } else if (data.usuario?.rol === 'Organizador') {
@@ -120,7 +123,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'pagina-no-encontrada'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'pagina-no-encontrada' || vista === 'preguntas-frecuentes'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -202,6 +205,8 @@ function App() {
           />
         : vista === 'info-extra-torneo'
         ? <InfoExtraTorneo />
+        : vista === 'preguntas-frecuentes'
+        ? <PreguntasFrecuentes />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
           ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} onPublicar={async (datos) => {
@@ -230,7 +235,7 @@ function App() {
             />
           )}
 
-      {mostrarSitio && vista !== 'pagina-no-encontrada' && <Footer />}
+      {mostrarSitio && vista !== 'pagina-no-encontrada' && <Footer vistaActiva={vista} />}
     </div>
   )
 }

@@ -1,0 +1,230 @@
+.preguntas-frecuentes {
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding: 8px 20px 22px;
+    background: #020b21;
+    color: #f5f7ff;
+    font-family: 'Instrument Sans', sans-serif;
+}
+
+.preguntas-frecuentes,
+.preguntas-frecuentes * {
+    box-sizing: border-box;
+}
+
+.preguntas-frecuentes-contenedor {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+}
+
+.preguntas-frecuentes-hero {
+    position: relative;
+    display: flex;
+    min-height: 116px;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 39px 62px 26px;
+}
+
+.preguntas-frecuentes-hero > div:first-child {
+    position: relative;
+    z-index: 1;
+    max-width: 540px;
+}
+
+.preguntas-frecuentes-hero h1 {
+    margin: 0 0 8px;
+    font-size: 38px;
+    line-height: 1.2;
+}
+
+.preguntas-frecuentes-hero p {
+    max-width: 460px;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.preguntas-frecuentes-ilustracion {
+    position: absolute;
+    z-index: 0;
+    top: -15px;
+    right: 12px;
+    width: 330px;
+    height: 145px;
+}
+
+.preguntas-frecuentes-ilustracion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: .72;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%);
+    mask-image: linear-gradient(90deg, transparent, #000 38%);
+}
+
+.preguntas-frecuentes-ilustracion span {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    display: grid;
+    width: 74px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 3px solid #3986ff;
+    border-radius: 50%;
+    background: #071738;
+    box-shadow: 0 0 18px rgb(41 117 255 / 65%);
+    color: #d6e3ff;
+    font-size: 48px;
+    font-weight: 600;
+}
+
+.preguntas-frecuentes-lista {
+    display: grid;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 2px solid #101d36;
+    border-radius: 10px;
+    background: #091326;
+}
+
+.pregunta-frecuente {
+    min-width: 0;
+    border: 2px solid #1c3155;
+    border-radius: 8px;
+    background: #091326;
+}
+
+.pregunta-frecuente summary {
+    display: flex;
+    min-height: 50px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    list-style: none;
+}
+
+.pregunta-frecuente summary::-webkit-details-marker {
+    display: none;
+}
+
+.pregunta-frecuente summary img {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.pregunta-frecuente summary > span:nth-child(2) {
+    min-width: 0;
+}
+
+.pregunta-frecuente-chevron {
+    flex: 0 0 12px;
+    width: 12px;
+    height: 8px;
+    margin-left: auto;
+    background: #263e68;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transition: transform 160ms ease;
+}
+
+.pregunta-frecuente[open] .pregunta-frecuente-chevron {
+    transform: rotate(180deg);
+}
+
+.pregunta-frecuente-respuesta {
+    margin: 0 12px 10px;
+    padding: 10px 16px 12px;
+    border-top: 2px solid #101d36;
+    color: #e1e6f0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.pregunta-frecuente-respuesta p {
+    margin: 0 0 8px;
+}
+
+.pregunta-frecuente-respuesta p:last-child {
+    margin-bottom: 0;
+}
+
+.pregunta-frecuente-respuesta a {
+    color: #8eb8ff;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.pregunta-frecuente-respuesta a:hover {
+    color: #c5d9ff;
+}
+
+.pregunta-frecuente summary:focus-visible,
+.pregunta-frecuente-respuesta a:focus-visible {
+    outline: 2px solid #438bff;
+    outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+    .preguntas-frecuentes {
+        min-height: calc(100svh - var(--navbar-height, 72px));
+        padding: 8px 12px 22px;
+    }
+
+    .preguntas-frecuentes-hero {
+        min-height: 118px;
+        padding: 12px 10px;
+    }
+
+    .preguntas-frecuentes-hero > div:first-child {
+        max-width: 68%;
+    }
+
+    .preguntas-frecuentes-hero h1 {
+        font-size: 18px;
+    }
+
+    .preguntas-frecuentes-hero p {
+        font-size: 10px;
+    }
+
+    .preguntas-frecuentes-ilustracion {
+        top: 4px;
+        right: -36px;
+        width: 210px;
+        height: 110px;
+    }
+
+    .preguntas-frecuentes-ilustracion span {
+        top: 20px;
+        right: 42px;
+        width: 52px;
+        border-width: 2px;
+        font-size: 34px;
+    }
+
+    .preguntas-frecuentes-lista {
+        gap: 7px;
+        padding: 10px;
+    }
+
+    .pregunta-frecuente summary {
+        min-height: 48px;
+        gap: 8px;
+        padding: 9px 10px;
+        font-size: 14px;
+    }
+
+    .pregunta-frecuente-respuesta {
+        margin: 0 8px 8px;
+        padding: 9px 10px 10px;
+        font-size: 11px;
+    }
+}

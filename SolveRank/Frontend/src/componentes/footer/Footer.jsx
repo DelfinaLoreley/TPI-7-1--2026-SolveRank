@@ -1,7 +1,18 @@
 import './Footer.css';
 import logo from '/src/assets/login/logo.svg';
+import { useEffect, useState } from 'react';
 
-function Footer() {
+function Footer({ vistaActiva }) {
+    const [llegadaDesdeFooter, setLlegadaDesdeFooter] = useState(
+        () => sessionStorage.getItem('solverank-faq-desde-footer') === 'true'
+    );
+    const esVistaPreguntasFrecuentes = vistaActiva === 'preguntas-frecuentes';
+    const enlacePreguntasFrecuentesActivo = esVistaPreguntasFrecuentes && llegadaDesdeFooter;
+
+    useEffect(() => {
+        sessionStorage.removeItem('solverank-faq-desde-footer');
+    }, []);
+
     return (
         <footer className="site-footer-container">
             <div className="site-footer-content">
@@ -19,8 +30,15 @@ function Footer() {
                     </div>
                     <div>
                         <h2>Información</h2>
-                        <a href="#informacion">Preguntas frecuentes</a>
-                        <a href="#informacion">Reglamento oficial de la WCA</a>
+                        <a
+                            className={enlacePreguntasFrecuentesActivo ? 'site-footer-link-activo' : undefined}
+                            href="/?vista=preguntas-frecuentes"
+                            onClick={() => sessionStorage.setItem('solverank-faq-desde-footer', 'true')}
+                            aria-current={esVistaPreguntasFrecuentes ? 'page' : undefined}
+                        >
+                            Preguntas frecuentes
+                        </a>
+                        <a href="https://www.worldcubeassociation.org/regulations/" target="_blank" rel="noreferrer">Reglamento oficial de la WCA</a>
                     </div>
                 </div>
                 <div className="site-footer-copyright">
