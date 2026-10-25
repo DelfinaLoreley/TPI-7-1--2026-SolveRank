@@ -69,9 +69,19 @@
 
 @media (max-width: 440px) {
     .site-footer {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 18px 12px;
         padding-right: 8px;
         padding-left: 8px;
     }
+
+    .site-footer-brand p { font-size: 10px; }
+
+    .site-footer > div:not(:first-child) a { font-size: 10px; }
+
+    h2 { font-size: 12px !important; }
+
+    .site-footer-brand img {
+        width: 120px;
+    }    
 }
