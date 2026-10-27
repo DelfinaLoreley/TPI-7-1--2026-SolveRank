@@ -1,9 +1,0 @@
-node_modules/
-dist/
-tools/toolchain/
-tools/native/target/
-tools/native/staged/
-tools/reference/tnoodle/
-tools/reference/tnoodle-lib/
-artifacts/
-*.tgz
