@@ -33,6 +33,7 @@ function Navbar({
     onMisTorneos,
     onRankings,
     onRecords,
+    onLive,
     onPanelOrganizador,
     onGestionRoles,
     onMiPerfil,
@@ -165,7 +166,11 @@ function Navbar({
                     <img src={vistaActiva === 'records' ? recordsIconSeleccionado : recordsIcon} alt="" />
                     <span>Récords</span>
                 </a>
-                <a className="site-navbar-link" href="#estadisticas" onClick={cerrarMenu}>
+                <a className={`site-navbar-link${vistaActiva === 'live' ? ' activo' : ''}`} href="#live" onClick={(evento) => {
+                    evento.preventDefault();
+                    cerrarMenu();
+                    onLive?.();
+                }}>
                     <img src={vistaActiva === 'live' ? liveIconSeleccionado : liveIcon} alt="" />
                     <span>SolveRank LIVE</span>
                 </a>
