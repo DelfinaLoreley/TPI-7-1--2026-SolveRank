@@ -402,6 +402,80 @@
     list-style: none;
 }
 
+.torneo-general-documentos li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.torneo-general-documentos li > span,
+.torneo-general-documentos li > a:not(.torneo-general-documento-descarga) {
+    min-width: 0;
+    color: #f1f3fa;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.torneo-general-documento-nombre {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+}
+
+.torneo-general-documento-nombre > span {
+    min-width: 0;
+    color: #f1f3fa;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.torneo-general-documento-nombre > svg {
+    width: 25px;
+    height: 25px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: #ff6a6a;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.torneo-general-documento-pdf-texto {
+    fill: #ff6a6a;
+    stroke: none;
+    font-size: 7px;
+    font-weight: 700;
+}
+.torneo-general-documento-descarga {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    /* border: 1px solid #315eff; */
+    border-radius: 8px;
+    color: #8db7ff;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.torneo-general-documento-descarga:hover {
+    background: #132342;
+    color: #fff;
+}
+
+.torneo-general-documento-descarga svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .torneo-general-documentos a,
 .torneo-general-documentos span {
     color: #f1f3fa;
