@@ -131,13 +131,6 @@
     font-family: 'Instrument Sans', Arial, sans-serif;
 }
 
-.live-torneo-bandera {
-    display: block;
-    height: 19px;
-    font-size: 15px;
-    line-height: 18px;
-}
-
 .live-torneo-detalle {
     display: flex;
     min-width: 0;
@@ -158,6 +151,20 @@
     border-radius: 7px;
     background: #0c1930;
     line-height: 1;
+}
+
+.live-torneo-fecha-grupo {
+    display: flex;
+    min-width: 45px;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.live-torneo-fecha-bandera {
+    justify-content: center;
+    height: 12px;
+    font-size: 11px;
 }
 
 .live-torneo-fecha strong {

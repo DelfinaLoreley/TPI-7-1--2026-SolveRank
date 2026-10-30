@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 
 import searchIcon from '/src/assets/icons/search-icon.png';
 
@@ -37,48 +38,6 @@ function obtenerIconoCategoria(nombre) {
     return catalogoCategorias.find(({ id, etiqueta }) =>
         normalizar(id) === normalizado || normalizar(etiqueta) === normalizado
     )?.icono;
-}
-
-function obtenerBandera(pais) {
-    const codigo = new Intl.DisplayNames(['en'], { type: 'region' });
-    const codigos = {
-        argentina: 'AR',
-        peru: 'PE',
-        alemania: 'DE',
-        germany: 'DE',
-        chile: 'CL',
-        brasil: 'BR',
-        brazil: 'BR',
-        filipinas: 'PH',
-        philippines: 'PH',
-        nepal: 'NP',
-        estadosunidos: 'US',
-        'estados unidos': 'US',
-        'united states': 'US',
-        espana: 'ES',
-        spain: 'ES',
-        colombia: 'CO',
-        mexico: 'MX',
-        francia: 'FR',
-        france: 'FR',
-        japon: 'JP',
-        japan: 'JP',
-        india: 'IN',
-        canada: 'CA',
-        italia: 'IT',
-        italy: 'IT',
-        polonia: 'PL',
-        poland: 'PL',
-        'reino unido': 'GB',
-        'united kingdom': 'GB',
-        china: 'CN',
-        singapur: 'SG',
-        singapore: 'SG',
-    };
-    const nombre = normalizar(pais);
-    const region = codigos[nombre] || (String(pais ?? '').length === 2 ? String(pais).toUpperCase() : '');
-    if (!region || !codigo.of(region)) return '🌐';
-    return String.fromCodePoint(...[...region].map((letra) => letra.charCodeAt(0) + 127397));
 }
 
 function construirFila(competidor, ronda) {
@@ -164,7 +123,7 @@ function TablaResultadosLive({ ronda }) {
                                 {fila.resultado === null ? '—' : indice + 1}
                             </td>
                             <td>{fila.nombre}</td>
-                            <td>{fila.pais || '—'}</td>
+                            <td><PaisConBandera pais={fila.pais} /></td>
                             <td>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</td>
                             <td>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</td>
                             {Array.from({ length: cantidad }, (_, intento) => (
@@ -397,12 +356,8 @@ function DetalleTorneoLive({ torneoSeleccionado, onSalir }) {
                     </label>
                     <ul className="live-detalle-lista-competidores">
                         {competidoresFiltrados.map((competidor) => (
-                            <li key={competidor.idUsuario}>
-                                <span className="live-detalle-bandera" aria-label={competidor.pais || 'País no informado'}>
-                                    {obtenerBandera(competidor.pais)}
-                                </span>
-                                <span>{competidor.nombre}</span>
-                                <span className="live-detalle-pais">{competidor.pais || 'País no informado'}</span>
+                            <li key={competidor.idUsuario}>                                <span>{competidor.nombre}</span>
+                                <PaisConBandera className="live-detalle-pais" pais={competidor.pais} fallback="País no informado" />
                             </li>
                         ))}
                         {!competidoresFiltrados.length && (

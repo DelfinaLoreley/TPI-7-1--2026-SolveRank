@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import {
     estadisticasCompetidor,
@@ -88,7 +89,7 @@ function ResultadosFinalesTorneo({ datos }) {
                                         {posicion}
                                     </td>
                                     <td>{competidor.nombre}</td>
-                                    <td>{competidor.pais || '—'}</td>
+                                    <td><PaisConBandera pais={competidor.pais} /></td>
                                     {Array.from({ length: cantidadIntentos }, (_, intento) => (
                                         <td key={intento}>{intentoLegible(competidor.intentos?.[intento])}</td>
                                     ))}
