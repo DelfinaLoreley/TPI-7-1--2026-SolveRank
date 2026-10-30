@@ -20,3 +20,11 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Variables de entorno de la API
+
+- Desarrollo local (`.env.development`): `http://localhost:3000/api`.
+- Producción (`.env.production`): `https://solverankbackend.vercel.app/api`.
+- En Vercel, `VITE_API_URL` puede definirse como variable de entorno para reemplazar la URL de producción.
+
+En el proyecto de Vercel del backend, definir `CORS_ALLOWED_ORIGINS` con el origen público exacto del frontend (por ejemplo, `https://jirehsoftware.tech`). Para aceptar más de un origen, usar una lista separada por comas. Esta variable es independiente de `FRONTEND_URL`, que se reserva para el flujo de Google. En producción las cookies de sesión usan `SameSite=None; Secure` para permitir solicitudes con credenciales desde el frontend separado.

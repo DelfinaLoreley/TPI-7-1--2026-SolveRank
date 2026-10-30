@@ -17,6 +17,8 @@ import MiPerfil from './vistas/perfil/MiPerfil.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
 import PreguntasFrecuentes from './vistas/preguntasFrecuentes/PreguntasFrecuentes.jsx'
 import PaginaNoEncontrada from './vistas/error404/PaginaNoEncontrada.jsx'
+import SolveRankLive from './vistas/live/SolveRankLive.jsx'
+import DetalleTorneoLive from './vistas/live/DetalleTorneoLive.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
@@ -39,6 +41,11 @@ function App() {
     setTorneoSeleccionado(torneo)
     setVolverDetalleA(volverA)
     setVista('detalle-torneo')
+  }
+
+  function abrirDetalleTorneoLive(torneo) {
+    setTorneoSeleccionado(torneo)
+    setVista('detalle-torneo-live')
   }
 
   // Recuperar la sesión al abrir o actualizar la página.
@@ -123,7 +130,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'pagina-no-encontrada' || vista === 'preguntas-frecuentes'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'detalle-torneo-live' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'live' || vista === 'pagina-no-encontrada' || vista === 'preguntas-frecuentes'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -138,13 +145,14 @@ function App() {
     <div>
       {mostrarSitio && (
         <Navbar
-          vistaActiva={vista}
+          vistaActiva={vista === 'detalle-torneo-live' ? 'live' : vista}
           usuario={usuario}
           onInicio={() => setVista('home')}
           onTorneos={() => setVista('listado-torneos')}
           onMisTorneos={() => setVista('mis-torneos')}
           onRankings={() => setVista('rankings')}
           onRecords={() => setVista('records')}
+          onLive={() => setVista('live')}
           onPanelOrganizador={() => {
             if (usuario?.rol === 'Organizador') setVista('panel-organizador')
           }}
@@ -170,6 +178,10 @@ function App() {
         ? <Rankings usuario={usuario} />
         : vista === 'records'
         ? <Records />
+        : vista === 'live'
+        ? <SolveRankLive onVerTorneo={abrirDetalleTorneoLive} />
+        : vista === 'detalle-torneo-live'
+        ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista('live')} />
         : vista === 'mis-torneos'
         ? ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol)
           ? <MisTorneos usuario={usuario} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
