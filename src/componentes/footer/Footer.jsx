@@ -3,14 +3,20 @@ import logo from '/src/assets/login/logo.svg';
 import { useEffect, useState } from 'react';
 
 function Footer({ vistaActiva }) {
-    const [llegadaDesdeFooter, setLlegadaDesdeFooter] = useState(
+    const [llegadaDesdeFooter] = useState(
         () => sessionStorage.getItem('solverank-faq-desde-footer') === 'true'
     );
     const esVistaPreguntasFrecuentes = vistaActiva === 'preguntas-frecuentes';
     const enlacePreguntasFrecuentesActivo = esVistaPreguntasFrecuentes && llegadaDesdeFooter;
+    const [llegadaAReglamentoDesdeFooter] = useState(
+        () => sessionStorage.getItem('solverank-reglamento-desde-footer') === 'true'
+    );
+    const esVistaReglamentoOficial = vistaActiva === 'reglas-oficiales';
+    const enlaceReglamentoActivo = esVistaReglamentoOficial && llegadaAReglamentoDesdeFooter;
 
     useEffect(() => {
         sessionStorage.removeItem('solverank-faq-desde-footer');
+        sessionStorage.removeItem('solverank-reglamento-desde-footer');
     }, []);
 
     return (
@@ -38,7 +44,14 @@ function Footer({ vistaActiva }) {
                         >
                             Preguntas frecuentes
                         </a>
-                        <a href="https://www.worldcubeassociation.org/regulations/" target="_blank" rel="noreferrer">Reglamento oficial de la WCA</a>
+                        <a
+                            className={enlaceReglamentoActivo ? 'site-footer-link-activo' : undefined}
+                            href="/?vista=reglas-oficiales"
+                            onClick={() => sessionStorage.setItem('solverank-reglamento-desde-footer', 'true')}
+                            aria-current={esVistaReglamentoOficial ? 'page' : undefined}
+                        >
+                            Reglamento oficial de la WCA
+                        </a>
                     </div>
                 </div>
                 <div className="site-footer-copyright">
