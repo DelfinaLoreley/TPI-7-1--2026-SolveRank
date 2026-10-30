@@ -190,28 +190,53 @@ function ListaPersonas({ titulo, personas, icono }) {
     );
 }
 
+const documentosWca = [
+    { nombre: 'Reglamento de la WCA 2026.pdf', href: '/documentos-wca/Reglamento%20de%20la%20WCA%202026.pdf' },
+    { nombre: 'Manual de la WCA para COMPETIDORES.pdf', href: '/documentos-wca/Manual%20de%20la%20WCA%20para%20COMPETIDORES.pdf' },
+    { nombre: 'Manual de la WCA para JUECES NOVATOS.pdf', href: '/documentos-wca/Manual%20de%20la%20WCA%20para%20JUECES%20NOVATOS.pdf' }
+];
+
+function IconoPdf() {
+    return (
+        <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+            <path d="M7 2.5h9l6 6V25.5H7z" />
+            <path d="M16 2.5v6h6" />
+            <text x="8" y="19" className="torneo-general-documento-pdf-texto">PDF</text>
+        </svg>
+    );
+}
+function IconoDescarga() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" />
+        </svg>
+    );
+}
+
 function Documentacion({ documentos }) {
-    const lista = Array.isArray(documentos) ? documentos : [];
+    const adicionales = Array.isArray(documentos) ? documentos : [];
     return (
         <Tarjeta titulo="DOCUMENTACIÓN" icono={documentacionIcon}>
-            {lista.length > 0 ? (
-                <ul className="torneo-general-documentos">
-                    {lista.map((documento) => {
-                        const nombre = typeof documento === 'string' ? documento : documento.nombre || documento.titulo;
-                        const url = typeof documento === 'string' ? null : documento.url || documento.href;
-                        if (!nombre) return null;
-                        return (
-                            <li key={`${nombre}-${url || ''}`}>
-                                {url
-                                    ? <a href={url} target="_blank" rel="noreferrer">{nombre}</a>
-                                    : <span>{nombre}</span>}
-                            </li>
-                        );
-                    })}
-                </ul>
-            ) : (
-                <p className="torneo-general-vacio">No hay documentos publicados.</p>
-            )}
+            <ul className="torneo-general-documentos">
+                {documentosWca.map(({ nombre, href }) => (
+                    <li key={href}>
+                        <span className="torneo-general-documento-nombre"><IconoPdf /><span>{nombre.replace(/\.pdf$/i, "")}</span></span>
+                        <a className="torneo-general-documento-descarga" href={href} download={nombre} aria-label={`Descargar ${nombre}`} title={`Descargar ${nombre}`}>
+                            <IconoDescarga />
+                        </a>
+                    </li>
+                ))}
+                {adicionales.map((documento, indice) => {
+                    const nombre = typeof documento === 'string' ? documento : documento.nombre || documento.titulo;
+                    const url = typeof documento === 'string' ? null : documento.url || documento.href;
+                    if (!nombre) return null;
+                    return (
+                        <li key={`${nombre}-${url || indice}`}>
+                            {url ? <a href={url} target="_blank" rel="noreferrer">{nombre}</a> : <span>{nombre}</span>}
+                        </li>
+                    );
+                })}
+            </ul>
         </Tarjeta>
     );
 }
