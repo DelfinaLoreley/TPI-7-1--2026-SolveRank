@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
@@ -8,16 +9,6 @@ import ubicacionIcon from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 import searchIcon from '/src/assets/icons/search-icon.png';
 
 import './SolveRankLive.css';
-
-const paisesConBandera = {
-    argentina: '🇦🇷',
-    alemania: '🇩🇪',
-    germany: '🇩🇪',
-    nepal: '🇳🇵',
-    filipinas: '🇵🇭',
-    philippines: '🇵🇭',
-};
-
 function fechaLocal(fecha) {
     if (!fecha) return null;
     const [anio, mes, dia] = String(fecha).slice(0, 10).split('-').map(Number);
@@ -26,13 +17,9 @@ function fechaLocal(fecha) {
     return Number.isNaN(valor.getTime()) ? null : valor;
 }
 
-function obtenerBandera(pais) {
-    return paisesConBandera[String(pais ?? '').trim().toLocaleLowerCase('es')] ?? '🌐';
-}
-
 function TarjetaLive({ torneo, onVerTorneo }) {
     const fecha = fechaLocal(torneo.fecha_Inicio);
-    const ubicacion = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')
+    const ubicacion = [torneo.ciudad, torneo.provincia].filter(Boolean).join(', ')
         || torneo.Lugar_Venue
         || 'Ubicación a confirmar';
     const categorias = Number(torneo.categorias) || 0;
@@ -40,13 +27,13 @@ function TarjetaLive({ torneo, onVerTorneo }) {
 
     return (
         <article className="live-torneo-card">
-            <span className="live-torneo-bandera" aria-label={torneo.pais || 'Ubicación internacional'}>
-                {obtenerBandera(torneo.pais)}
-            </span>
             <div className="live-torneo-detalle">
-                <div className="live-torneo-fecha" aria-label={fecha ? fecha.toLocaleDateString('es-AR') : 'Fecha a confirmar'}>
-                    <strong>{fecha ? fecha.toLocaleDateString('es-AR', { day: '2-digit' }) : '—'}</strong>
-                    <span>{fecha ? fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase() : '—'}</span>
+                <div className="live-torneo-fecha-grupo">
+                    {torneo.pais && <PaisConBandera pais={torneo.pais} soloBandera className="live-torneo-fecha-bandera" />}
+                    <div className="live-torneo-fecha" aria-label={fecha ? fecha.toLocaleDateString('es-AR') : 'Fecha a confirmar'}>
+                        <strong>{fecha ? fecha.toLocaleDateString('es-AR', { day: '2-digit' }) : '—'}</strong>
+                        <span>{fecha ? fecha.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase() : '—'}</span>
+                    </div>
                 </div>
                 <div className="live-torneo-titulo">
                     <h2>{torneo.nombre}</h2>

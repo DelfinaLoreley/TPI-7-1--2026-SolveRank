@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 import './Rankings.css';
 
@@ -184,7 +185,7 @@ function Rankings({ usuario }) {
                                                                 <tr key={competidor.idUsuario}>
                                                                     <td className={`rankings-puesto puesto-${competidor.puesto}`}>{competidor.puesto}</td>
                                                                     <td className="rankings-nombre">{competidor.nombre}</td>
-                                                                    <td>{competidor.pais || '—'}</td>
+                                                                    <td><PaisConBandera pais={competidor.pais} /></td>
                                                                     <td className="rankings-tiempo">{competidor.dnf ? 'DNF' : formatearTiempo(competidor.valor)}</td>
                                                                 </tr>
                                                             )) : <tr><td colSpan="4">No hay resultados para los filtros seleccionados.</td></tr>}

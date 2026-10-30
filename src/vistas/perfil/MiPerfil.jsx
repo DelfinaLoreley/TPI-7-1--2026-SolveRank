@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 
 import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
@@ -195,7 +196,7 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
                     <aside className="mi-perfil-lateral">
                         <section className="mi-perfil-datos">
                             <h2>País representado</h2>
-                            <p>{perfil.pais || 'No informado'}</p>
+                            <p><PaisConBandera pais={perfil.pais} fallback="No informado" /></p>
                             {!publico && <><h2>Fecha de nacimiento</h2><p>{fechaVisible(perfil.fecha_Nacimiento)}</p></>}
                             <h2>Categorías con resultados</h2>
                             <div className="mi-perfil-categorias" aria-label="Categorías donde tiene resultados">

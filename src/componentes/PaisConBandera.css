@@ -1,0 +1,13 @@
+.pais-con-bandera {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 0.45em;
+    vertical-align: middle;
+}
+
+.pais-con-bandera-icono {
+    flex: 0 0 auto;
+    font-size: 1.08em;
+    line-height: 1;
+}

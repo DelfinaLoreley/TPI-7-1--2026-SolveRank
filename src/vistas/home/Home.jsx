@@ -1,6 +1,7 @@
 import './Home.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
 import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
 import rankingsIcon from '/src/assets/home/iconos/rankings-icon.png';
@@ -234,7 +235,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                                         <span className="ranking-puesto">{index + 1}</span>
                                         <span className="ranking-avatar"><img src={competidor.avatar_url || avatarPredeterminado} alt="" /></span>
                                         <strong>{[competidor.nombre, competidor.apellido].filter(Boolean).join(' ')}</strong>
-                                        <span className="ranking-pais">{competidor.pais || '—'}</span>
+                                        <span className="ranking-pais"><PaisConBandera pais={competidor.pais} /></span>
                                         <b>{formatearTiempoRanking(competidor.mejorTiempo)}</b>
                                     </li>
                                 ))}
