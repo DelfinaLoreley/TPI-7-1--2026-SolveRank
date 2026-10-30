@@ -187,9 +187,9 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                             <th scope="col">Pos.</th>
                             <th scope="col">Nombre</th>
                             <th scope="col">País</th>
-                            {Array.from({ length: cantidad }, (_, indice) => <th scope="col" key={indice}>{indice + 1}</th>)}
                             <th scope="col">Single</th>
                             <th scope="col">{formato.startsWith('BO') ? 'Resultado' : 'Media'}</th>
+                            {Array.from({ length: cantidad }, (_, indice) => <th scope="col" key={indice}>{indice + 1}</th>)}
                         </tr>
                     </thead>
                     <tbody>
@@ -211,15 +211,15 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                                 </td>
                                 <td className="resultados-publicos-nombre">{fila.nombre}</td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
-                                {Array.from({ length: cantidad }, (_, intento) => (
-                                    <td key={intento}>{fila.intentosParaMostrar[intento] || '—'}</td>
-                                ))}
                                 <td className="resultados-publicos-total">
                                     {fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}
                                 </td>
                                 <td className="resultados-publicos-total">
                                     {fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}
                                 </td>
+                                {Array.from({ length: cantidad }, (_, intento) => (
+                                    <td key={intento}>{fila.intentosParaMostrar[intento] || '—'}</td>
+                                ))}
                             </tr>
                         )) : (
                             <tr><td colSpan={cantidad + 5}>Todavía no hay resultados para esta ronda.</td></tr>
