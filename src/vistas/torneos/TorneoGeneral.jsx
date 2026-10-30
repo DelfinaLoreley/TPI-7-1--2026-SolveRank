@@ -225,8 +225,10 @@ function TorneoGeneral({ torneo }) {
     const importante = normalizarLista(torneo.importante || torneo.requisitos);
     const [leerMas, setLeerMas] = useState(false);
     const requisitosVisibles = leerMas ? importante : importante.slice(0, 4);
-    const urlMapa = lugar.length > 0
-        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lugar.join(', '))}`
+    const consultaMapa = [torneo.direccion, torneo.Lugar_Venue, torneo.ciudad, torneo.provincia, torneo.pais]
+        .filter(Boolean);
+    const urlMapa = consultaMapa.length > 0
+        ? `https://maps.google.com/maps?q=${encodeURIComponent(consultaMapa.join(', '))}&output=embed&z=16`
         : null;
 
     return (
@@ -283,10 +285,17 @@ function TorneoGeneral({ torneo }) {
                         <strong>{torneo.Lugar_Venue || 'Sede por confirmar'}</strong>
                         <span>{[torneo.direccion, torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ') || 'Ubicación por confirmar'}</span>
                     </p>
-                    {urlMapa && (
-                        <a className="torneo-general-mapa" href={urlMapa} target="_blank" rel="noreferrer">
-                            Ver ubicación en el mapa
-                        </a>
+                    {urlMapa ? (
+                        <iframe
+                            className="torneo-general-mapa"
+                            src={urlMapa}
+                            title={`Mapa de ${torneo.Lugar_Venue || lugar.join(', ')}`}
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            allowFullScreen
+                        />
+                    ) : (
+                        <p className="torneo-general-mapa-vacio">Ubicación por confirmar.</p>
                     )}
                 </Tarjeta>
 

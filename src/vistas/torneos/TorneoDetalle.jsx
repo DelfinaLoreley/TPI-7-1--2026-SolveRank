@@ -256,7 +256,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                                 </div>
                             </div>
                             <div className="torneo-detalle-btns">
-                                {usuario?.rol === 'Competidor' && inscripcionUsuarioActual && !inscripcionUsuarioActual.inscripto && (
+                                {usuario?.rol === 'Competidor' && estado !== 'Finalizado' && estadoRegistro === 'Inscripciones abiertas' && cuposRestantes > 0 && inscripcionUsuarioActual && !inscripcionUsuarioActual.inscripto && (
                                     <button className="btn-inscribirme" type="button" onClick={() => setSeccionActiva('inscripcion')}>
                                         Inscribirme <span aria-hidden="true">→</span>
                                     </button>
