@@ -72,6 +72,21 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
 
     useEffect(() => {
         let activo = true;
+        if (!usuario) {
+            axios.get(`/torneos/${idTorneo}/resultados/acceso-publico`)
+                .then(({ data }) => {
+                    if (activo) {
+                        setAccesoResultados({ idTorneo: String(idTorneo), idUsuario: null, permitido: true, publico: true, rondas: data.rondas ?? [] });
+                        setErrorAccesoResultados('');
+                    }
+                })
+                .catch((err) => {
+                    if (!activo) return;
+                    setAccesoResultados({ idTorneo: String(idTorneo), idUsuario: null, permitido: false, publico: true, rondas: [] });
+                    setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudieron consultar los resultados de este torneo.');
+                });
+            return () => { activo = false; };
+        }
         if (!['Organizador', 'Delegado', 'Competidor', 'Juez'].includes(usuario?.rol)) {
             return () => { activo = false; };
         }
@@ -171,7 +186,8 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         && accesoResultados?.idUsuario === String(usuario?.idUsuario)
         && accesoResultados.permitido;
     const resultadosAutorizados = ['Organizador', 'Delegado'].includes(usuario?.rol) && accesoResultadosActual;
-    const resultadosVisibles = ['Competidor', 'Juez'].includes(usuario?.rol) && accesoResultadosActual;
+    const resultadosVisibles = !usuario
+        || (['Competidor', 'Juez'].includes(usuario?.rol) && accesoResultadosActual);
     const estadoRegistro = estadoInscripcion(torneo);
     const inscripcionUsuarioActual = estadoInscripcionUsuario?.idTorneo === String(idTorneo)
         && estadoInscripcionUsuario?.idUsuario === String(usuario?.idUsuario)
@@ -317,7 +333,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                 {seccionActiva === 'resultados' && resultadosVisibles && (
                     <ResultadosPublicosTorneo
                         idTorneo={idTorneo}
-                        rondas={accesoResultados.rondas}
+                        rondas={accesoResultados?.rondas ?? []}
                     />
                 )}
 
