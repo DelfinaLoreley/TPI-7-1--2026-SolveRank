@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import rondaIcon from '/src/assets/torneos/rondas-icon.svg';
 import formatoIcon from '/src/assets/torneos/formato-icon.svg';
@@ -456,7 +457,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                                 {competidor.nombre}
                                             </button>
                                         </td>
-                                        <td>{competidor.pais || '—'}</td>
+                                        <td><PaisConBandera pais={competidor.pais} /></td>
                                         <td>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</td>
                                         <td>{competidor.resultado === null ? '—' : (
                                             Number.isFinite(competidor.resultado)
@@ -494,7 +495,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                             <img src={userPfpIcon} alt="" />
                             <div>
                                 <h2 id="carga-resultados-modal-titulo">{competidor.nombre} <strong>#{posicion}</strong></h2>
-                                <p>{competidor.pais || 'País no informado'}</p>
+                                <p><PaisConBandera pais={competidor.pais} fallback="País no informado" /></p>
                             </div>
                         </header>
 

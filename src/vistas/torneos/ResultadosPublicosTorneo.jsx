@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import lineaDecorativaIzq from '/src/assets/icons/linea-izq-decorativa.svg';
 import lineaDecorativaDer from '/src/assets/icons/linea-der-decorativa.svg';
@@ -209,7 +210,7 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                                     {indice + 1}
                                 </td>
                                 <td className="resultados-publicos-nombre">{fila.nombre}</td>
-                                <td>{fila.pais || '—'}</td>
+                                <td><PaisConBandera pais={fila.pais} /></td>
                                 {Array.from({ length: cantidad }, (_, intento) => (
                                     <td key={intento}>{fila.intentosParaMostrar[intento] || '—'}</td>
                                 ))}

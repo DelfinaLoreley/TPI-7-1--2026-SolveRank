@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 import './Records.css';
 
@@ -160,7 +161,7 @@ function Records() {
                                                                     <th scope="row">{tipo === 'single' ? 'Single' : 'Media'}</th>
                                                                     <td className="records-nombre">{record?.nombre || '—'}</td>
                                                                     <td>{formatearFecha(record?.fechaTorneo)}</td>
-                                                                    <td>{record?.pais || '—'}</td>
+                                                                    <td><PaisConBandera pais={record?.pais} /></td>
                                                                     <td className="records-tiempo">{record ? formatearTiempo(record.valor) : '—'}</td>
                                                                 </tr>;
                                                             })}
