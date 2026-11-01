@@ -1,0 +1,289 @@
+.reglamento-oficial {
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding: 8px 20px 8px;
+    background: #020b21;
+    color: #f5f7ff;
+    font-family: 'Instrument Sans', sans-serif;
+}
+
+.reglamento-oficial,
+.reglamento-oficial * {
+    box-sizing: border-box;
+}
+
+.reglamento-oficial-contenedor {
+    width: min(100%, 1220px);
+    margin: 0 auto;
+}
+
+.reglamento-oficial-hero {
+    position: relative;
+    display: flex;
+    min-height: 116px;
+    align-items: center;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 39px 5% 26px;
+}
+
+.reglamento-oficial-presentacion {
+    position: relative;
+    z-index: 1;
+    max-width: 70%;
+}
+
+.reglamento-oficial-presentacion h1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 38px;
+    line-height: 1.2;
+    width: 100%;
+}
+
+.reglamento-oficial-presentacion h1 img {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.reglamento-oficial-presentacion p {
+    max-width: 60%;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.3;
+}
+
+.reglamento-oficial-cubo {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    right: 0;
+    width: 48%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: .8;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 32%);
+    mask-image: linear-gradient(90deg, transparent, #000 32%);
+}
+
+.reglamento-oficial-documento {
+    margin: 0 0 28px;
+    padding: 18px 22px 20px;
+    border: 2px solid #101d36;
+    border-radius: 10px;
+    background: #091326;
+}
+
+.reglamento-oficial-documento h2,
+.reglamento-oficial-documento h3 {
+    text-align: center;
+}
+
+.reglamento-oficial-documento h2 {
+    margin: 0;
+    font-size: 27px;
+    line-height: 1.25;
+}
+
+.reglamento-oficial-documento h3 {
+    margin: 22px 0 16px;
+    font-size: 19px;
+}
+
+.reglamento-oficial-version {
+    margin: 8px 0 18px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.reglamento-oficial-introduccion,
+.reglamento-oficial-contenido > p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.reglamento-oficial-internet p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.reglamento-oficial a {
+    color: #1683ff;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.reglamento-oficial-internet a {
+    color: #ff8a05;
+}
+
+.reglamento-oficial a:hover {
+    color: #8eb8ff;
+}
+
+.reglamento-oficial-internet a:hover {
+    color: #ffc078;
+}
+
+.reglamento-oficial-contenido h3 {
+    margin-top: 22px;
+}
+
+.reglamento-oficial-contenido ul {
+    width: fit-content;
+    margin: 16px auto 0;
+    padding-left: 24px;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.reglamento-oficial a:focus-visible {
+    outline: 2px solid #438bff;
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .reglamento-oficial {
+        min-height: calc(100svh - var(--navbar-height, 72px));
+        padding: 8px clamp(12px, 4.5vw, 28px);
+    }
+
+    .reglamento-oficial-hero {
+        min-height: clamp(150px, 25vw, 190px);
+        padding: 22px 10px 18px;
+    }
+
+    .reglamento-oficial-presentacion {
+        max-width: 76%;
+    }
+
+    .reglamento-oficial-presentacion h1 {
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: clamp(23px, 4.2vw, 31px);
+    }
+
+    .reglamento-oficial-presentacion h1 img {
+        flex-basis: clamp(20px, 3.5vw, 26px);
+        width: clamp(20px, 3.5vw, 26px);
+        height: clamp(20px, 3.5vw, 26px);
+    }
+
+    .reglamento-oficial-presentacion p {
+        max-width: 78%;
+        font-size: clamp(15px, 2.5vw, 19px);
+    }
+
+    .reglamento-oficial-cubo {
+        right: -7%;
+        width: 54%;
+        opacity: .78;
+    }
+
+    .reglamento-oficial-documento {
+        margin-bottom: 24px;
+        padding: clamp(22px, 4vw, 32px) clamp(18px, 4vw, 28px);
+        border-radius: 18px;
+    }
+
+    .reglamento-oficial-documento h2 {
+        font-size: clamp(24px, 4vw, 30px);
+    }
+
+    .reglamento-oficial-documento h3 {
+        margin: 26px 0 18px;
+        font-size: clamp(19px, 3vw, 23px);
+    }
+
+    .reglamento-oficial-version {
+        margin: 12px 0 26px;
+        font-size: clamp(18px, 3vw, 22px);
+    }
+
+    .reglamento-oficial-introduccion,
+    .reglamento-oficial-internet p,
+    .reglamento-oficial-contenido > p,
+    .reglamento-oficial-contenido ul {
+        font-size: clamp(15px, 2.4vw, 18px);
+    }
+
+    .reglamento-oficial-contenido ul {
+        max-width: 100%;
+        margin-top: 22px;
+        padding-left: 24px;
+        line-height: 1.35;
+    }
+}
+
+@media (max-width: 440px) {
+    .reglamento-oficial {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .reglamento-oficial-hero {
+        min-height: 142px;
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .reglamento-oficial-presentacion {
+        max-width: 82%;
+    }
+
+    .reglamento-oficial-presentacion h1 {
+        gap: 5px;
+        font-size: clamp(16px, 5.4vw, 17px);
+    }
+
+    .reglamento-oficial-presentacion h1 img {
+        flex-basis: 19px;
+        width: 19px;
+        height: 19px;
+    }
+
+    .reglamento-oficial-presentacion p {
+        max-width: 78%;
+        font-size: clamp(10px, 3.8vw, 11px);
+    }
+
+    .reglamento-oficial-cubo {
+        width: 62%;
+    }
+
+    .reglamento-oficial-documento {
+        padding: 22px 16px 26px;
+        border-radius: 15px;
+        margin-bottom: 5px;
+    }
+
+    .reglamento-oficial-documento h2 {
+        font-size: clamp(16px, 5.6vw, 18px);
+    }
+
+    .reglamento-oficial-documento h3 {
+        margin: 24px 0 14px;
+        font-size: 19px;
+    }
+
+    .reglamento-oficial-version {
+        font-size: 15px;
+    }
+
+    .reglamento-oficial-introduccion,
+    .reglamento-oficial-internet p,
+    .reglamento-oficial-contenido > p,
+    .reglamento-oficial-contenido ul {
+        font-size: 12px;
+    }
+
+    .reglamento-oficial-contenido ul {
+        padding-left: 20px;
+    }
+}

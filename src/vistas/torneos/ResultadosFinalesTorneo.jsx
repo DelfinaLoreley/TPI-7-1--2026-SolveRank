@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
+import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import {
     estadisticasCompetidor,
@@ -38,6 +40,8 @@ function ResultadosFinalesTorneo({ datos }) {
     const [vista, setVista] = useState('podios');
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todas');
     const categorias = datos.categorias ?? [];
+    const marcasTiempos = useMarcasTiempos(categorias.flatMap((categoria) => (categoria.rondas ?? [])
+        .flatMap((ronda) => (ronda.competidores ?? []).map((competidor) => ({ idCategoria: ronda.idCategoria, idUsuario: competidor.idUsuario })))));
     const categoriasActivas = vista === 'podios'
         ? (categoriaSeleccionada === 'todas'
             ? categorias
@@ -93,8 +97,8 @@ function ResultadosFinalesTorneo({ datos }) {
                                     {Array.from({ length: cantidadIntentos }, (_, intento) => (
                                         <td key={intento}>{intentoLegible(competidor.intentos?.[intento])}</td>
                                     ))}
-                                    <td>{competidor.mejor === null ? 'DNF' : tiempoLegible(competidor.mejor)}</td>
-                                    <td>{valorPromedio(competidor)}</td>
+                                    <td><TiempoConBadge valor={competidor.mejor === null ? null : competidor.mejor / 100} idCategoria={ronda.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{competidor.mejor === null ? 'DNF' : tiempoLegible(competidor.mejor)}</TiempoConBadge></td>
+                                    <td><TiempoConBadge valor={Number.isFinite(competidor.resultado) ? competidor.resultado / 100 : null} tipo={String(ronda.formato).toUpperCase().startsWith('BO') ? 'single' : 'media'} idCategoria={ronda.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{valorPromedio(competidor)}</TiempoConBadge></td>
                                 </tr>
                             );
                         })}

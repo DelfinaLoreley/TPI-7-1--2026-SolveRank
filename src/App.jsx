@@ -16,6 +16,7 @@ import GestionRoles from './vistas/admin/GestionRoles.jsx'
 import MiPerfil from './vistas/perfil/MiPerfil.jsx'
 import InfoExtraTorneo from './vistas/torneos/InfoExtraTorneo.jsx'
 import PreguntasFrecuentes from './vistas/preguntasFrecuentes/PreguntasFrecuentes.jsx'
+import ReglamentoOficial from './vistas/reglamentoOficial/ReglamentoOficial.jsx'
 import PaginaNoEncontrada from './vistas/error404/PaginaNoEncontrada.jsx'
 import SolveRankLive from './vistas/live/SolveRankLive.jsx'
 import DetalleTorneoLive from './vistas/live/DetalleTorneoLive.jsx'
@@ -30,7 +31,8 @@ function App() {
   const vistaExtra = new URLSearchParams(window.location.search).get('vista')
   const esVistaInfoExtra = rutaConocida && vistaExtra === 'info-extra-torneo'
   const esVistaPreguntasFrecuentes = rutaConocida && vistaExtra === 'preguntas-frecuentes'
-  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : esVistaPreguntasFrecuentes ? 'preguntas-frecuentes' : rutaConocida ? 'home' : 'pagina-no-encontrada')
+  const esVistaReglamentoOficial = rutaConocida && vistaExtra === 'reglas-oficiales'
+  const [vista, setVista] = useState(esVistaInfoExtra ? 'info-extra-torneo' : esVistaPreguntasFrecuentes ? 'preguntas-frecuentes' : esVistaReglamentoOficial ? 'reglas-oficiales' : rutaConocida ? 'home' : 'pagina-no-encontrada')
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
@@ -56,7 +58,7 @@ function App() {
       .then(({ data }) => {
         if (activo) {
           setUsuario(data.usuario ?? null)
-          if (!esVistaInfoExtra && !esVistaPreguntasFrecuentes && rutaConocida) {
+          if (!esVistaInfoExtra && !esVistaPreguntasFrecuentes && !esVistaReglamentoOficial && rutaConocida) {
             if (data.usuario?.perfilCompleto === false) {
               setVista('completar-registro-google')
             } else if (data.usuario?.rol === 'Organizador') {
@@ -79,7 +81,7 @@ function App() {
     return () => {
       activo = false
     }
-  }, [])
+  }, [esVistaInfoExtra, esVistaPreguntasFrecuentes, esVistaReglamentoOficial, rutaConocida])
 
   // Se ejecuta después de un login exitoso.
   async function manejarLogin() {
@@ -130,7 +132,7 @@ function App() {
     }
   }
 
-  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'detalle-torneo-live' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'live' || vista === 'pagina-no-encontrada' || vista === 'preguntas-frecuentes'
+  const mostrarSitio = vista === 'home' || vista === 'rankings' || vista === 'records' || vista === 'mis-torneos' || vista === 'panel-organizador' || vista === 'crear-torneo' || vista === 'detalle-torneo' || vista === 'detalle-torneo-live' || vista === 'listado-torneos' || vista === 'gestion-roles' || vista === 'mi-perfil' || vista === 'perfil-publico' || vista === 'live' || vista === 'pagina-no-encontrada' || vista === 'preguntas-frecuentes' || vista === 'reglas-oficiales'
 
   // Evitar mostrar la interfaz antes de comprobar la sesión.
   if (cargandoSesion) {
@@ -219,6 +221,8 @@ function App() {
         ? <InfoExtraTorneo />
         : vista === 'preguntas-frecuentes'
         ? <PreguntasFrecuentes />
+        : vista === 'reglas-oficiales'
+        ? <ReglamentoOficial />
         : vista === 'crear-torneo'
         ? usuario?.rol === 'Organizador'
           ? <CreacionTorneo usuario={usuario} onSalir={() => setVista('panel-organizador')} onPublicar={async (datos) => {
