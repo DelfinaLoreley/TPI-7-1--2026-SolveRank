@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
+import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
 import lineaDecorativaIzq from '/src/assets/icons/linea-izq-decorativa.svg';
 import lineaDecorativaDer from '/src/assets/icons/linea-der-decorativa.svg';
@@ -52,12 +54,12 @@ function calcularFila(competidor, ronda) {
             const aPromediar = ordenados.slice(1, -1);
             resultado = aPromediar.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(aPromediar.reduce((suma, valor) => suma + valor, 0) / aPromediar.length);
+                : aPromediar.reduce((suma, valor) => suma + valor, 0) / aPromediar.length;
             media = resultado;
         } else {
             resultado = valores.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(valores.reduce((suma, valor) => suma + valor, 0) / valores.length);
+                : valores.reduce((suma, valor) => suma + valor, 0) / valores.length;
             media = resultado;
         }
     }
@@ -132,7 +134,7 @@ function esUltimaRonda(ronda, rondas) {
     return String(rondasCategoria.at(-1)?.idRonda) === String(ronda.idRonda);
 }
 
-function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false }) {
+function TablaResultados({ ronda, rondas, marcasTiempos, podios = false, ultimaRonda = false }) {
     const filas = ordenarFilas(ronda);
     const visibles = podios ? filas.filter((fila) => Number.isFinite(fila.resultado)).slice(0, 3) : filas;
     const avanzan = cantidadClasifican(ronda, rondas);
@@ -212,10 +214,14 @@ function TablaResultados({ ronda, rondas, podios = false, ultimaRonda = false })
                                 <td className="resultados-publicos-nombre">{fila.nombre}</td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
                                 <td className="resultados-publicos-total">
-                                    {fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}
+                                    <TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} idCategoria={ronda.idCategoria} idUsuario={fila.idUsuario} marcas={marcasTiempos}>
+                                        {fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}
+                                    </TiempoConBadge>
                                 </td>
                                 <td className="resultados-publicos-total">
-                                    {fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}
+                                    <TiempoConBadge valor={Number.isFinite(fila.resultado) ? fila.resultado / 100 : null} tipo={formato.startsWith('BO') ? 'single' : 'media'} idCategoria={ronda.idCategoria} idUsuario={fila.idUsuario} marcas={marcasTiempos}>
+                                        {fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}
+                                    </TiempoConBadge>
                                 </td>
                                 {Array.from({ length: cantidad }, (_, intento) => (
                                     <td key={intento}>{fila.intentosParaMostrar[intento] || '—'}</td>
@@ -249,6 +255,11 @@ function ResultadosPublicosTorneo({ idTorneo, rondas = [] }) {
     const [resultados, setResultados] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
+    const marcasTiempos = useMarcasTiempos(resultados.flatMap((ronda) => (ronda.competidores ?? []).map((competidor) => ({
+        idCategoria: ronda.idCategoria,
+        idUsuario: competidor.idUsuario,
+        intentos: competidor.intentos
+    }))));
 
     useEffect(() => {
         let activo = true;
@@ -308,7 +319,7 @@ function ResultadosPublicosTorneo({ idTorneo, rondas = [] }) {
             {cargando ? <p className="resultados-publicos-mensaje" role="status">Cargando resultados…</p>
                 : error ? <p className="resultados-publicos-mensaje" role="alert">{error}</p>
                     : modo === 'podios' ? (
-                        podios.length ? podios.map((ronda) => <TablaResultados key={ronda.idRonda} ronda={ronda} rondas={resultados} podios />)
+                        podios.length ? podios.map((ronda) => <TablaResultados key={ronda.idRonda} ronda={ronda} rondas={resultados} marcasTiempos={marcasTiempos} podios />)
                             : <p className="resultados-publicos-mensaje">Todavía no hay resultados para mostrar en los podios.</p>
                     ) : (
                         rondasVisibles.length ? rondasVisibles.map((ronda) => (
@@ -316,6 +327,7 @@ function ResultadosPublicosTorneo({ idTorneo, rondas = [] }) {
                                 key={ronda.idRonda}
                                 ronda={ronda}
                                 rondas={resultados}
+                                marcasTiempos={marcasTiempos}
                                 ultimaRonda={esUltimaRonda(ronda, resultados)}
                             />
                         ))

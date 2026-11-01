@@ -1,10 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 
+import mediaIcon from '/src/assets/icons/promedio-icon.png';
 import searchIcon from '/src/assets/icons/search-icon.png';
+import userPfpIcon from '/src/assets/home/iconos/user-pfp-icon.png';
+import compIcon from '/src/assets/icons/organizador-azul-icon.svg';
+import starIcon from '/src/assets/torneos/estrella-icon-responsive.png';
+import rondaIcon from '/src/assets/torneos/rondas-icon.svg';
 
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
+import '../torneos/CargaResultadosTorneo.css';
 import './DetalleTorneoLive.css';
 
 function normalizar(valor) {
@@ -33,11 +40,12 @@ function horarioLegible(valor) {
     return valor ? String(valor).slice(0, 5) : '—';
 }
 
-function obtenerIconoCategoria(nombre) {
+function obtenerIconoCategoria(nombre, seleccionado = false) {
     const normalizado = normalizar(nombre);
-    return catalogoCategorias.find(({ id, etiqueta }) =>
+    const categoria = catalogoCategorias.find(({ id, etiqueta }) =>
         normalizar(id) === normalizado || normalizar(etiqueta) === normalizado
-    )?.icono;
+    );
+    return seleccionado ? (categoria?.iconoSeleccionado || categoria?.icono) : categoria?.icono;
 }
 
 function construirFila(competidor, ronda) {
@@ -57,11 +65,11 @@ function construirFila(competidor, ronda) {
             const promediar = [...valores].sort((a, b) => (a ?? Infinity) - (b ?? Infinity)).slice(1, -1);
             resultado = promediar.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(promediar.reduce((suma, valor) => suma + valor, 0) / promediar.length);
+                : promediar.reduce((suma, valor) => suma + valor, 0) / promediar.length;
         } else {
             resultado = valores.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(valores.reduce((suma, valor) => suma + valor, 0) / valores.length);
+                : valores.reduce((suma, valor) => suma + valor, 0) / valores.length;
         }
     }
 
@@ -102,40 +110,164 @@ function esActividadActual(actividad, torneo, ahora) {
 function TablaResultadosLive({ ronda }) {
     const filas = ordenarFilas(ronda);
     const cantidad = Number(ronda?.cantidadIntentos) || 0;
+    const [competidorSeleccionado, setCompetidorSeleccionado] = useState(null);
+    const esFormatoBo = String(ronda?.formato ?? '').toUpperCase().startsWith('BO');
+
+    useEffect(() => {
+        if (!competidorSeleccionado) return undefined;
+
+        function cerrarConEscape(evento) {
+            if (evento.key === 'Escape') setCompetidorSeleccionado(null);
+        }
+
+        document.addEventListener('keydown', cerrarConEscape);
+        return () => document.removeEventListener('keydown', cerrarConEscape);
+    }, [competidorSeleccionado]);
+
+    function abrirDetalleCompetidor(fila, indice) {
+        if (!window.matchMedia('(max-width: 560px)').matches) return;
+        setCompetidorSeleccionado({
+            fila,
+            posicion: fila.resultado !== null ? indice + 1 : '—',
+        });
+    }
+
+    function verTodosLosResultados() {
+        setCompetidorSeleccionado(null);
+        document.querySelector('.live-detalle-resultados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     return (
-        <div className="live-detalle-tabla-contenedor" role="region" aria-label="Resultados de la categoría" tabIndex={0}>
-            <table className="live-detalle-tabla">
-                <thead>
-                    <tr>
-                        <th scope="col">Pos.</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">País</th>
-                        <th scope="col">Single</th>
-                        <th scope="col">Media</th>
-                        {Array.from({ length: cantidad }, (_, indice) => <th scope="col" key={indice}>{indice + 1}</th>)}
-                    </tr>
-                </thead>
-                <tbody>
-                    {filas.length ? filas.map((fila, indice) => (
-                        <tr key={fila.idUsuario}>
-                            <td className={indice < 3 && fila.resultado !== null ? `live-detalle-puesto puesto-${indice + 1}` : 'live-detalle-puesto'}>
-                                {fila.resultado === null ? '—' : indice + 1}
-                            </td>
-                            <td>{fila.nombre}</td>
-                            <td><PaisConBandera pais={fila.pais} /></td>
-                            <td>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</td>
-                            <td>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</td>
-                            {Array.from({ length: cantidad }, (_, intento) => (
-                                <td key={intento}>{String(fila.intentos[intento] ?? '—').replace(/^00:/, '')}</td>
-                            ))}
+        <>
+            <div className="live-detalle-tabla-contenedor" role="region" aria-label="Resultados de la categoría" tabIndex={0}>
+                <table className="live-detalle-tabla">
+                    <thead>
+                        <tr>
+                            <th scope="col">Pos.</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">País</th>
+                            <th scope="col">Single</th>
+                            <th scope="col">{esFormatoBo ? 'Resultado' : 'Media'}</th>
+                            {Array.from({ length: cantidad }, (_, indice) => <th scope="col" key={indice}>{indice + 1}</th>)}
                         </tr>
-                    )) : (
-                        <tr><td colSpan={cantidad + 5}>Todavía no hay resultados para esta ronda.</td></tr>
-                    )}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {filas.length ? filas.map((fila, indice) => (
+                            <tr key={fila.idUsuario}>
+                                <td className={indice < 3 && fila.resultado !== null ? `live-detalle-puesto puesto-${indice + 1}` : 'live-detalle-puesto'}>
+                                    {fila.resultado === null ? '—' : indice + 1}
+                                </td>
+                                <td>
+                                    <button
+                                        className="live-detalle-nombre-competidor"
+                                        type="button"
+                                        aria-label={`Ver intentos de ${fila.nombre}`}
+                                        onClick={() => abrirDetalleCompetidor(fila, indice)}
+                                    >
+                                        {fila.nombre}
+                                    </button>
+                                </td>
+                                <td><PaisConBandera pais={fila.pais} /></td>
+                                <td><TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} marca={fila.marcas}>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</TiempoConBadge></td>
+                                <td><TiempoConBadge valor={Number.isFinite(fila.resultado) ? fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={fila.marcas}>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</TiempoConBadge></td>
+                                {Array.from({ length: cantidad }, (_, intento) => (
+                                    <td key={intento}>{String(fila.intentos[intento] ?? '—').replace(/^00:/, '')}</td>
+                                ))}
+                            </tr>
+                        )) : (
+                            <tr><td colSpan={cantidad + 5}>Todavía no hay resultados para esta ronda.</td></tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            {competidorSeleccionado && (
+                <div
+                    className="carga-resultados-modal-fondo"
+                    onMouseDown={(evento) => {
+                        if (evento.target === evento.currentTarget) setCompetidorSeleccionado(null);
+                    }}
+                >
+                    <section
+                        className="carga-resultados-modal live-detalle-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="carga-resultados-modal-titulo"
+                        tabIndex="-1"
+                    >
+                        <header className="carga-resultados-modal-perfil">
+                            <img src={userPfpIcon} alt="" />
+                            <div>
+                                <h2 id="carga-resultados-modal-titulo">
+                                    {competidorSeleccionado.fila.nombre}
+                                    {' '}
+                                    <strong>#{competidorSeleccionado.posicion}</strong>
+                                </h2>
+                                <p><PaisConBandera pais={competidorSeleccionado.fila.pais} fallback="País no informado" /></p>
+                            </div>
+                        </header>
+
+                        <div className="carga-resultados-modal-datos">
+                            <div>
+                                <span className="carga-resultados-modal-icono"><img src={compIcon} alt="" /></span>
+                                <span>Competidor<strong>ID: {competidorSeleccionado.fila.idUsuario}</strong></span>
+                            </div>
+                            <div>
+                                <span className="carga-resultados-modal-icono categoria">
+                                    {obtenerIconoCategoria(ronda?.categoria, true)
+                                        ? <img src={obtenerIconoCategoria(ronda?.categoria, true)} alt="" />
+                                        : '◇'}
+                                </span>
+                                <span>Categoría<strong>{ronda?.categoria || '—'}</strong></span>
+                            </div>
+                            <div>
+                                <span className="carga-resultados-modal-icono"><img src={rondaIcon} alt="" /></span>
+                                <span>Ronda<strong>{ronda?.ronda || '—'}</strong></span>
+                            </div>
+                        </div>
+
+                        <h3 className="carga-resultados-modal-intentos-titulo">Intentos</h3>
+                        <div className="carga-resultados-modal-intentos">
+                            {Array.from({ length: cantidad }, (_, intento) => (
+                                <div key={intento}>
+                                    <strong>{intento + 1}</strong>
+                                    <span>{String(competidorSeleccionado.fila.intentos[intento] ?? '—').replace(/^00:/, '')}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="carga-resultados-modal-estadisticas">
+                            <div>
+                                <span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span>
+                                <span>{esFormatoBo ? 'Resultado' : 'Promedio'}
+                                    <strong><TiempoConBadge valor={Number.isFinite(competidorSeleccionado.fila.resultado) ? competidorSeleccionado.fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={competidorSeleccionado.fila.marcas}>
+                                        {competidorSeleccionado.fila.resultado === null
+                                            ? '—'
+                                            : Number.isFinite(competidorSeleccionado.fila.resultado)
+                                            ? tiempoLegible(competidorSeleccionado.fila.resultado)
+                                            : 'DNF'}
+                                    </TiempoConBadge></strong>
+                                </span>
+                            </div>
+                            <div>
+                                <span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span>
+                                <span>Mejor
+                                    <strong><TiempoConBadge valor={competidorSeleccionado.fila.mejor === null ? null : competidorSeleccionado.fila.mejor / 100} marca={competidorSeleccionado.fila.marcas}>
+                                        {competidorSeleccionado.fila.mejor === null
+                                            ? (competidorSeleccionado.fila.completo ? 'DNF' : '—')
+                                            : tiempoLegible(competidorSeleccionado.fila.mejor)}
+                                    </TiempoConBadge></strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <footer className="carga-resultados-modal-acciones">
+                            <button type="button" onClick={verTodosLosResultados}>Ver todos los resultados</button>
+                            <button type="button" onClick={() => setCompetidorSeleccionado(null)}>Cerrar</button>
+                        </footer>
+                    </section>
+                </div>
+            )}
+        </>
     );
 }
 
@@ -305,7 +437,7 @@ function DetalleTorneoLive({ torneoSeleccionado, onSalir }) {
                                         aria-pressed={String(ronda.idRonda) === idRondaActiva}
                                         onClick={() => setRondaSeleccionada(String(ronda.idRonda))}
                                     >
-                                        {ronda.ronda}
+                                        <span>{ronda.ronda}</span>
                                     </button>
                                 ))}
                             </nav>
