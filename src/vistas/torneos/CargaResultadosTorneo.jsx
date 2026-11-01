@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
+import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import rondaIcon from '/src/assets/torneos/rondas-icon.svg';
 import formatoIcon from '/src/assets/torneos/formato-icon.svg';
@@ -243,6 +245,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                 : (a.resultado ?? Infinity) - (b.resultado ?? Infinity);
             return diferencia || (a.nombre || '').localeCompare(b.nombre || '', 'es');
         }), [competidores, rondaActiva?.cantidadIntentos, rondaActiva?.formato]);
+    const marcasTiempos = useMarcasTiempos(clasificacion.map((competidor) => ({ idCategoria: rondaActiva?.idCategoria, idUsuario: competidor.idUsuario, single: competidor.mejor, media: competidor.resultado, intentos: competidor.intentos })));
 
     function seleccionarCompetidor(valor) {
         setBusquedaCompetidor(valor);
@@ -458,14 +461,14 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                             </button>
                                         </td>
                                         <td><PaisConBandera pais={competidor.pais} /></td>
-                                        <td>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</td>
-                                        <td>{competidor.resultado === null ? '—' : (
+                                        <td><TiempoConBadge valor={competidor.mejor === null ? null : competidor.mejor / 100} idCategoria={rondaActiva?.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</TiempoConBadge></td>
+                                        <td><TiempoConBadge valor={Number.isFinite(competidor.resultado) ? competidor.resultado / 100 : null} tipo={String(rondaActiva?.formato).toUpperCase().startsWith('BO') ? 'single' : 'media'} idCategoria={rondaActiva?.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{competidor.resultado === null ? '—' : (
                                             Number.isFinite(competidor.resultado)
                                                 ? (competidor.promedio !== null
                                                     ? tiempoPromedioLegible(competidor.promedioSuma, competidor.promedioCantidad)
                                                     : tiempoLegible(competidor.resultado))
                                                 : 'DNF'
-                                        )}</td>
+                                        )}</TiempoConBadge></td>
                                         {Array.from({ length: cantidadIntentos }, (_, intento) => <td key={intento}>{intentoLegible(competidor.intentos?.[intento])}</td>)}
                                     </tr>
                                 )) : (
@@ -513,8 +516,8 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                         </div>
 
                         <div className="carga-resultados-modal-estadisticas">
-                            <div><span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span><span>{etiquetaPromedio}<strong>{promedio}</strong></span></div>
-                            <div><span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span><span>Mejor<strong>{mejor}</strong></span></div>
+                            <div><span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span><span>{etiquetaPromedio}<strong><TiempoConBadge valor={Number.isFinite(competidor.resultado) ? competidor.resultado / 100 : null} tipo={String(rondaActiva?.formato).toUpperCase().startsWith('BO') ? 'single' : 'media'} idCategoria={rondaActiva?.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{promedio}</TiempoConBadge></strong></span></div>
+                            <div><span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span><span>Mejor<strong><TiempoConBadge valor={competidor.mejor === null ? null : competidor.mejor / 100} idCategoria={rondaActiva?.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{mejor}</TiempoConBadge></strong></span></div>
                         </div>
 
                         <footer className="carga-resultados-modal-acciones">

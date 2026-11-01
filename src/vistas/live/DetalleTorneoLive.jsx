@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 
 import mediaIcon from '/src/assets/icons/promedio-icon.png';
 import searchIcon from '/src/assets/icons/search-icon.png';
@@ -64,11 +65,11 @@ function construirFila(competidor, ronda) {
             const promediar = [...valores].sort((a, b) => (a ?? Infinity) - (b ?? Infinity)).slice(1, -1);
             resultado = promediar.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(promediar.reduce((suma, valor) => suma + valor, 0) / promediar.length);
+                : promediar.reduce((suma, valor) => suma + valor, 0) / promediar.length;
         } else {
             resultado = valores.some((valor) => valor === null)
                 ? Infinity
-                : Math.floor(valores.reduce((suma, valor) => suma + valor, 0) / valores.length);
+                : valores.reduce((suma, valor) => suma + valor, 0) / valores.length;
         }
     }
 
@@ -167,8 +168,8 @@ function TablaResultadosLive({ ronda }) {
                                     </button>
                                 </td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
-                                <td>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</td>
-                                <td>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</td>
+                                <td><TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} marca={fila.marcas}>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</TiempoConBadge></td>
+                                <td><TiempoConBadge valor={Number.isFinite(fila.resultado) ? fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={fila.marcas}>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</TiempoConBadge></td>
                                 {Array.from({ length: cantidad }, (_, intento) => (
                                     <td key={intento}>{String(fila.intentos[intento] ?? '—').replace(/^00:/, '')}</td>
                                 ))}
@@ -238,23 +239,23 @@ function TablaResultadosLive({ ronda }) {
                             <div>
                                 <span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span>
                                 <span>{esFormatoBo ? 'Resultado' : 'Promedio'}
-                                    <strong>
+                                    <strong><TiempoConBadge valor={Number.isFinite(competidorSeleccionado.fila.resultado) ? competidorSeleccionado.fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={competidorSeleccionado.fila.marcas}>
                                         {competidorSeleccionado.fila.resultado === null
                                             ? '—'
                                             : Number.isFinite(competidorSeleccionado.fila.resultado)
                                             ? tiempoLegible(competidorSeleccionado.fila.resultado)
                                             : 'DNF'}
-                                    </strong>
+                                    </TiempoConBadge></strong>
                                 </span>
                             </div>
                             <div>
                                 <span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span>
                                 <span>Mejor
-                                    <strong>
+                                    <strong><TiempoConBadge valor={competidorSeleccionado.fila.mejor === null ? null : competidorSeleccionado.fila.mejor / 100} marca={competidorSeleccionado.fila.marcas}>
                                         {competidorSeleccionado.fila.mejor === null
                                             ? (competidorSeleccionado.fila.completo ? 'DNF' : '—')
                                             : tiempoLegible(competidorSeleccionado.fila.mejor)}
-                                    </strong>
+                                    </TiempoConBadge></strong>
                                 </span>
                             </div>
                         </div>

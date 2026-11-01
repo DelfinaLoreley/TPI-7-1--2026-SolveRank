@@ -286,12 +286,6 @@
     color: #fff;
 }
 
-@media (min-width: 761px) {
-    .listado-torneos-pestanas button:nth-child(3) {
-        display: none;
-    }
-}
-
 .listado-orden {
     position: relative;
     display: flex;
