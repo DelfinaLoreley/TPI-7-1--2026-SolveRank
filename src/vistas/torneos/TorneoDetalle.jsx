@@ -7,6 +7,8 @@ import fechaTorneoIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
 import ubicacionIcon2 from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 import liveIcon from '/src/assets/torneos/en-vivo-icon.svg';
 import cuboBanner from '/src/assets/img-cubo-banner2.png';
+import trashIcon from '/src/assets/torneos/trash-icon.svg';
+import editIcon from '/src/assets/torneos/edit-icon.svg';
 
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
@@ -25,6 +27,11 @@ function fechaLegible(fecha) {
     const dia = new Date(`${String(fecha).slice(0, 10)}T12:00:00`);
     if (Number.isNaN(dia.getTime())) return 'Fecha por confirmar';
     return dia.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(' de ', ' ').replace('.', '').replace(' de ', ' ').replace('.', '').toLocaleUpperCase('es-AR');
+}
+
+function fechaLocalActual() {
+    const hoy = new Date();
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 }
 
 function estadoInscripcion(torneo) {
@@ -48,6 +55,11 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const [accesoResultados, setAccesoResultados] = useState(null);
     const [errorAccesoResultados, setErrorAccesoResultados] = useState('');
     const [rondaSeleccionada, setRondaSeleccionada] = useState('');
+    const [recargaDetalle, setRecargaDetalle] = useState(0);
+    const [editandoTorneo, setEditandoTorneo] = useState(false);
+    const [guardandoEdicion, setGuardandoEdicion] = useState(false);
+    const [eliminandoTorneo, setEliminandoTorneo] = useState(false);
+    const [mensajeAccionesTorneo, setMensajeAccionesTorneo] = useState('');
 
     useEffect(() => {
         let activo = true;
@@ -58,7 +70,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
             .catch((err) => { if (activo) setError(err?.response?.data?.mensaje || 'No se pudo cargar el torneo.'); })
             .finally(() => { if (activo) setCargando(false); });
         return () => { activo = false; };
-    }, [idTorneo]);
+    }, [idTorneo, recargaDetalle]);
 
     useEffect(() => {
         let activo = true;
@@ -182,6 +194,10 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
     const limite = Number(torneo.limite_participantes) || 0;
     const cuposRestantes = Math.max(limite - (Number(torneo.inscriptos) || 0), 0);
     const estado = estadoTorneo(torneo);
+    const esOrganizadorPropietario = usuario?.rol === 'Organizador'
+        && Number(usuario.idUsuario) === Number(torneo.idOrganizador);
+    const puedeGestionarTorneo = esOrganizadorPropietario
+        && fechaFormulario(torneo.Fecha_Inicio_Inscripcion) > fechaLocalActual();
     const accesoResultadosActual = accesoResultados?.idTorneo === String(idTorneo)
         && accesoResultados?.idUsuario === String(usuario?.idUsuario)
         && accesoResultados.permitido;
@@ -220,6 +236,59 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
         } catch (err) {
             setErrorAccesoResultados(err?.response?.data?.mensaje || 'No se pudo actualizar el estado de las rondas.');
         }
+    }
+
+    async function guardarEdicionTorneo(event) {
+        event.preventDefault();
+        if (!puedeGestionarTorneo) return;
+        setGuardandoEdicion(true);
+        setMensajeAccionesTorneo('');
+        const formularioEdicion = new FormData(event.currentTarget);
+        const fechaHoraSql = (valor) => `${valor.replace('T', ' ')}:00`;
+        try {
+            await axios.put(`/torneos/${idTorneo}`, {
+                nombre: formularioEdicion.get('nombre'),
+                fecha_Inicio: fechaHoraSql(formularioEdicion.get('fecha_Inicio')),
+                fecha_fin: fechaHoraSql(formularioEdicion.get('fecha_fin')),
+                Fecha_Inicio_Inscripcion: formularioEdicion.get('Fecha_Inicio_Inscripcion'),
+                Fecha_fin_Inscripcion: formularioEdicion.get('Fecha_fin_Inscripcion'),
+                Contacto_Organizador: formularioEdicion.get('Contacto_Organizador'),
+                descripcion: formularioEdicion.get('descripcion'),
+                Lugar_Venue: formularioEdicion.get('Lugar_Venue'),
+                direccion: formularioEdicion.get('direccion'),
+                limite_participantes: Number(formularioEdicion.get('limite_participantes'))
+            });
+            setEditandoTorneo(false);
+            setMensajeAccionesTorneo('Los datos del torneo se actualizaron correctamente.');
+            setRecargaDetalle((actual) => actual + 1);
+        } catch (err) {
+            setMensajeAccionesTorneo(err?.response?.data?.mensaje || 'No se pudo actualizar el torneo.');
+        } finally {
+            setGuardandoEdicion(false);
+        }
+    }
+
+    async function eliminarTorneo() {
+        if (!puedeGestionarTorneo) return;
+        if (!window.confirm(`¿Querés eliminar el torneo "${torneo.nombre}"? También se eliminarán sus inscripciones y resultados. Esta acción no se puede deshacer.`)) return;
+        setEliminandoTorneo(true);
+        setMensajeAccionesTorneo('');
+        try {
+            await axios.delete(`/torneos/${idTorneo}`);
+            onSalir?.();
+        } catch (err) {
+            setMensajeAccionesTorneo(err?.response?.data?.mensaje || 'No se pudo eliminar el torneo.');
+        } finally {
+            setEliminandoTorneo(false);
+        }
+    }
+
+    function fechaHoraFormulario(fecha) {
+        return fecha ? String(fecha).slice(0, 16).replace(' ', 'T') : '';
+    }
+
+    function fechaFormulario(fecha) {
+        return fecha ? String(fecha).slice(0, 10) : '';
     }
 
     if (seccionActiva === 'resultados' && (resultadosAutorizados || resultadosVisibles) && rondaSeleccionada) {
@@ -283,6 +352,33 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                                         Ver resultados en vivo
                                     </button>
                                 )}
+                                {esOrganizadorPropietario && (
+                                    <>
+                                        <button
+                                            className="btn-accion-torneo btn-eliminar-torneo"
+                                            type="button"
+                                            onClick={eliminarTorneo}
+                                            disabled={!puedeGestionarTorneo || eliminandoTorneo || guardandoEdicion}
+                                            aria-label="Eliminar torneo"
+                                            title={puedeGestionarTorneo ? 'Eliminar torneo' : 'Solo se puede eliminar antes de que abra la inscripción'}
+                                        >
+                                            <img src={trashIcon} alt="Eliminar torneo" />
+                                        </button>
+                                        <button
+                                            className="btn-accion-torneo btn-editar-torneo"
+                                            type="button"
+                                            onClick={() => {
+                                                setMensajeAccionesTorneo('');
+                                                setEditandoTorneo(true);
+                                            }}
+                                            disabled={!puedeGestionarTorneo || eliminandoTorneo || guardandoEdicion}
+                                            aria-label="Editar torneo"
+                                            title={puedeGestionarTorneo ? 'Editar torneo' : 'Solo se puede editar antes de que abra la inscripción'}
+                                        >
+                                            <img src={editIcon} alt="Editar torneo" />
+                                        </button>
+                                    </>
+                                )}
                             </div>
                             <img
                                 className={`torneo-detalle-hero-imagen${torneo.pathImagen ? '' : ' torneo-detalle-hero-imagen-placeholder'}`}
@@ -293,6 +389,73 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                         </div>
                     </div>
                 </header>
+
+                {mensajeAccionesTorneo && <p className="torneo-acciones-mensaje" role="status">{mensajeAccionesTorneo}</p>}
+
+                {editandoTorneo && puedeGestionarTorneo && (
+                    <div className="torneo-edicion-fondo">
+                        <section
+                            className="torneo-edicion-dialogo"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="torneo-edicion-titulo"
+                        >
+                            <form onSubmit={guardarEdicionTorneo}>
+                                <h2 id="torneo-edicion-titulo">Editar torneo</h2>
+                                <label>
+                                    Nombre del torneo
+                                    <input name="nombre" defaultValue={torneo.nombre} maxLength="100" required />
+                                </label>
+                                <div className="torneo-edicion-fechas">
+                                    <label>
+                                        Fecha de inicio
+                                        <input name="fecha_Inicio" type="datetime-local" defaultValue={fechaHoraFormulario(torneo.fecha_Inicio)} required />
+                                    </label>
+                                    <label>
+                                        Fecha de finalización
+                                        <input name="fecha_fin" type="datetime-local" defaultValue={fechaHoraFormulario(torneo.fecha_fin)} required />
+                                    </label>
+                                    <label>
+                                        Apertura de inscripción
+                                        <input name="Fecha_Inicio_Inscripcion" type="date" defaultValue={fechaFormulario(torneo.Fecha_Inicio_Inscripcion)} required />
+                                    </label>
+                                    <label>
+                                        Cierre de inscripción
+                                        <input name="Fecha_fin_Inscripcion" type="date" defaultValue={fechaFormulario(torneo.Fecha_fin_Inscripcion)} required />
+                                    </label>
+                                </div>
+                                <label>
+                                    Contacto del organizador
+                                    <input name="Contacto_Organizador" defaultValue={torneo.Contacto_Organizador || ''} maxLength="250" required />
+                                </label>
+                                <label>
+                                    Lugar / sede
+                                    <input name="Lugar_Venue" defaultValue={torneo.Lugar_Venue || ''} />
+                                </label>
+                                <label>
+                                    Dirección
+                                    <input name="direccion" defaultValue={torneo.direccion || ''} maxLength="150" required />
+                                </label>
+                                <label>
+                                    Límite de competidores
+                                    <input name="limite_participantes" type="number" min="1" max="10000" defaultValue={torneo.limite_participantes} required />
+                                </label>
+                                <label>
+                                    Descripción
+                                    <textarea name="descripcion" rows="4" maxLength="1000" defaultValue={torneo.descripcion || ''} />
+                                </label>
+                                <div className="torneo-edicion-acciones">
+                                    <button type="button" onClick={() => setEditandoTorneo(false)} disabled={guardandoEdicion}>
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" disabled={guardandoEdicion}>
+                                        {guardandoEdicion ? 'Guardando…' : 'Guardar cambios'}
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+                )}
 
                 <nav className="navbar-torneo-detalle" aria-label="Secciones del torneo">
                     {secciones.map(([id, etiqueta]) => (
