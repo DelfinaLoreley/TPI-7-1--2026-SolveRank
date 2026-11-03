@@ -117,8 +117,8 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
             event.target.value = '';
             return;
         }
-        if (archivo && archivo.size > 5 * 1024 * 1024) {
-            setMensaje('La imagen no puede superar los 5 MB.');
+        if (archivo && archivo.size > 3 * 1024 * 1024) {
+            setMensaje('La imagen no puede superar los 3 MB.');
             event.target.value = '';
             return;
         }
