@@ -4,7 +4,7 @@ import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 import './Rankings.css';
 
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import paisesIcon from '/src/assets/home/iconos/paises-cuberos-azul-icon.png';
 import categoriasIcon from '/src/assets/icons/categorias-amarillo-icon.svg';

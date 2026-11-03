@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
 import competidoresIcon2 from '/src/assets/Organizador/competidores-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';

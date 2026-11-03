@@ -3,7 +3,7 @@ import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import rondaIcon from '/src/assets/torneos/rondas-icon.svg';
 import formatoIcon from '/src/assets/torneos/formato-icon.svg';
 import tiempoIcon from '/src/assets/torneos/tiempo-limite-icon.svg';

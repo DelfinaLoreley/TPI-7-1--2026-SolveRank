@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import infoIcon from '/src/assets/icons/Info.png';
 import TarjetaTorneo from './listado/TarjetaTorneo.jsx';
 import './ListadoTorneo.css';

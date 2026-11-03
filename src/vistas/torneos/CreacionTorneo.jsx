@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import imagenPredeterminadaTorneo from '/src/assets/img-cubo-banner2.png';
 import { PasoCategorias } from './pasos/PasoCategorias';
 import { PasoCronograma } from './pasos/PasoCronograma';

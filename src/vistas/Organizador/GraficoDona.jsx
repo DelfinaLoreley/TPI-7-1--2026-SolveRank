@@ -4,10 +4,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Plugin personalizado para dibujar el texto en el centro
-const textoCentralPlugin = (total) => ({
+// Plugin personalizado para dibujar en el centro el total actualizado de torneos.
+const textoCentralPlugin = {
   id: 'textoCentral',
-  beforeDraw: function(chart) {
+  beforeDraw: function(chart, _args, options) {
     const ctx = chart.ctx;
     const centro = chart.getDatasetMeta(0).data[0];
     if (!centro) return;
@@ -20,14 +20,14 @@ const textoCentralPlugin = (total) => ({
     
     ctx.font = "bold 45px Inter";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(String(total), textX, textY - 10);
+    ctx.fillText(String(options.total ?? 0), textX, textY - 10);
     
     // Palabra "Torneos"
     ctx.font = "20px Instrument Sans";
     ctx.fillText("Torneos", textX, textY + 15);
     ctx.save();
   }
-});
+};
 
 const GraficoDona = ({ resumen, total = 0 }) => {
   const data = {
@@ -44,6 +44,7 @@ const GraficoDona = ({ resumen, total = 0 }) => {
     responsive: true,
     maintainAspectRatio: false, 
     plugins: {
+      textoCentral: { total },
       legend: {
         position: 'right', 
         labels: {
@@ -56,8 +57,8 @@ const GraficoDona = ({ resumen, total = 0 }) => {
     }
   };
 
-  // Pasamos el plugin al componente
-  return <Doughnut data={data} options={options} plugins={[textoCentralPlugin(total)]} />;
+  // El plugin es estable; Chart.js recibe el total cambiante mediante options.
+  return <Doughnut data={data} options={options} plugins={[textoCentralPlugin]} />;
 };
 
 export default GraficoDona;

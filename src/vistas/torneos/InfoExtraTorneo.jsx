@@ -1,4 +1,4 @@
-import cubeBanner from '../../assets/img-cubo-banner.png';
+import cubeBanner from '../../assets/img-cubo-banner2.png';
 import importantIcon from '../../assets/torneos/importante-icon.svg';
 import youtubeIcon from '../../assets/torneos/yt-icon.svg';
 import './InfoExtraTorneo.css';
