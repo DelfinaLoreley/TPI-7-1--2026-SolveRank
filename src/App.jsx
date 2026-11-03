@@ -37,7 +37,13 @@ function App() {
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
   const [volverDetalleA, setVolverDetalleA] = useState('home')
+  const [seccionMisTorneos, setSeccionMisTorneos] = useState(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
+
+  function abrirMisTorneos(seccion = null) {
+    setSeccionMisTorneos(seccion)
+    setVista('mis-torneos')
+  }
 
   function abrirDetalleTorneo(torneo, volverA = 'home') {
     setTorneoSeleccionado(torneo)
@@ -151,7 +157,7 @@ function App() {
           usuario={usuario}
           onInicio={() => setVista('home')}
           onTorneos={() => setVista('listado-torneos')}
-          onMisTorneos={() => setVista('mis-torneos')}
+          onMisTorneos={() => abrirMisTorneos()}
           onRankings={() => setVista('rankings')}
           onRecords={() => setVista('records')}
           onLive={() => setVista('live')}
@@ -186,7 +192,7 @@ function App() {
         ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista('live')} />
         : vista === 'mis-torneos'
         ? ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol)
-          ? <MisTorneos usuario={usuario} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
+          ? <MisTorneos usuario={usuario} seccionOrganizador={seccionMisTorneos} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
           : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} onVerRankings={() => setVista('rankings')} />
         : vista === 'listado-torneos'
         ? <ListadoTorneo usuario={usuario} onIniciarSesion={() => setVista('login')} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'listado-torneos')} />
@@ -196,6 +202,7 @@ function App() {
               usuario={usuario}
               onCrearTorneo={() => setVista('crear-torneo')}
               onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'panel-organizador')}
+              onVerMisTorneos={abrirMisTorneos}
             />
           : <Home />
         : vista === 'gestion-roles'

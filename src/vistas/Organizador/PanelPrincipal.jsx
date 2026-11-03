@@ -53,7 +53,7 @@ function puedeGenerarMezclas(torneo, ahora = new Date()) {
     return ahora > cierre && ahora < inicioTorneo;
 }
 
-function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
+function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo, onVerMisTorneos }){
     const [torneos, setTorneos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
@@ -184,8 +184,8 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                         <div className="accesos-rapidos-container">
                             <h3>Accesos rápidos</h3>
                             <button className="acceso-rapido-btn" type="button" onClick={onCrearTorneo}>Crear <br/> Torneo</button>
-                            <button className="acceso-rapido-btn mt">Mis Torneos <br/> en VIVO</button>
-                            <button className="acceso-rapido-btn">Cargar <br/> resultados</button>
+                            <button className="acceso-rapido-btn mt" type="button" onClick={() => onVerMisTorneos?.('en-vivo')}>Mis Torneos <br/> en VIVO</button>
+                            <button className="acceso-rapido-btn" type="button" onClick={() => onVerMisTorneos?.('sin-resultados')}>Cargar <br/> resultados</button>
                         </div>
                     </div>
                 </section>

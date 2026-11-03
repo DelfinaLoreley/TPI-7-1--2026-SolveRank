@@ -59,6 +59,10 @@
     background: #091328;
 }
 
+.mis-torneos-seccion[id] {
+    scroll-margin-top: calc(var(--navbar-height, 64px) + 16px);
+}
+
 .mis-torneos-seccion > h2,
 .mis-torneos-titulo h2 {
     margin: 0 0 22px;
