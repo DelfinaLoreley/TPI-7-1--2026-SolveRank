@@ -197,9 +197,9 @@
 }
 
 .acceso-rapido-btn {
-    background: linear-gradient(90deg, #0A1225, #101B31);
+    background: linear-gradient(180deg, #5D30C4, #063BA4);
     color: #ffffff;
-    border: 2px solid #5B3CB4;
+    border: 2px solid #7D4AF2;
     border-radius: 10px;
     padding: 10px 20px;
     font-size: 21px !important;
@@ -208,6 +208,7 @@
     width: 100%;
     min-width: 0;
     height: max-content;
+    box-shadow: 2px 1px 10px 3px #5D30C4;
 }
 
 .panel-resumen-container{
@@ -251,6 +252,9 @@
     position: absolute;
     top: 0;
     z-index: -1;
+    opacity: 0.98;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.28) 28%, #000 72%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.28) 28%, #000 72%);
 }
 
 /*Sección de torneos-------------------------------------------------------------*/

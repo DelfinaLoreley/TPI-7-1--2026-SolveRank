@@ -2,6 +2,7 @@ import './Home.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
 import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
 import rankingsIcon from '/src/assets/home/iconos/rankings-icon.png';
@@ -148,7 +149,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                             tus resultados y supera tus propios límites.
                         </p>
                         <div className="home-hero-botones">
-                            <a href="#torneos" className="home-button primario"><img src={torneosIcon} alt="Torneos" /> Ver Torneos</a>
+                            <a href="#torneos" className="home-button primario" onClick={(evento) => { evento.preventDefault(); onVerTodosTorneos?.(); }}><img src={torneosIcon} alt="Torneos" /> Ver Torneos</a>
                             <a href="#rankings" className="home-button secundario" onClick={(evento) => { evento.preventDefault(); onVerRankings?.(); }}><img src={rankingsIcon} alt="Rankings" /> Ver Rankings</a>
                         </div>
                         <div className="home-resumen">
@@ -180,10 +181,9 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                                 const fecha = torneo.fechaObjeto;
                                 const estado = estadoInscripcion(torneo);
                                 const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
-                                const imagen = torneo.pathImagen ? `${urlBackend}${torneo.pathImagen}` : cuboImagen;
                                 return <article className="home-torneo-card" key={torneo.idTorneo}>
                                 <div className="home-torneo-imagen">
-                                    <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
+                                    <ImagenTorneo className="home-torneo-foto" pathImagen={torneo.pathImagen} urlBackend={urlBackend} alt={`Imagen del torneo ${torneo.nombre}`} />
                                     <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
                                     <button
                                         className={`home-torneo-btn-guardar${favoritos.has(String(torneo.idTorneo)) ? ' guardado' : ''}`}
@@ -261,7 +261,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                             <div>
                                 <h3>¿Listo para competir?</h3>
                                 <p>Encuentra tu próximo torneo y<br />demuestra de lo que eres capaz.</p>
-                                <a href="#torneos">Explorar torneos ⟶</a>
+                                <a href="#torneos" onClick={(evento) => { evento.preventDefault(); onVerTodosTorneos?.(); }}>Explorar torneos ⟶</a>
                             </div>
                             <div className="cubo-img-cta">
                                 <img src={cuboImg} alt="" />

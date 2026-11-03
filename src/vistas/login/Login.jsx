@@ -6,6 +6,7 @@ import passwordicon from '/src/assets/login/iconos/password.svg';
 import googleIcon from '/src/assets/login/iconos/google-icon.svg';
 
 import axios from '../../axiosApi';
+import Swal from 'sweetalert2';
 
 function Login({ onRegister, onLogin }) {
     return (
@@ -60,7 +61,11 @@ function hacerLogin(event, onLogin) {
                 error.response?.data?.message ||
                 'No se pudo conectar con el servidor.';
 
-            alert('No se pudo iniciar sesión: ' + message);
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudo iniciar sesión',
+                text: message
+            });
         });
 }
 

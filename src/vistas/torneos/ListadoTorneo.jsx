@@ -3,7 +3,7 @@ import axios from '../../axiosApi';
 
 import paginaAnteriorIcon from '/src/assets/icons/triflecha-izq-icon.png';
 import paginaSiguienteIcon from '/src/assets/icons/triflecha-der-icon.png';
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 
 import './ListadoTorneo.css';
 import FiltrosTorneo from './listado/FiltrosTorneo.jsx';

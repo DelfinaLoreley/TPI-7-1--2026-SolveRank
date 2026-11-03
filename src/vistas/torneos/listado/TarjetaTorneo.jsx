@@ -1,16 +1,9 @@
-import cuboImagen from '/src/assets/home/img-cubo-home.png';
+import ImagenTorneo from '../../../componentes/ImagenTorneo.jsx';
 import ubicacionIcon from '/src/assets/home/iconos/ubicacion-icon.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';
 import guardarIcon from '/src/assets/home/iconos/guardado.png';
 import finalizadoIcon from '/src/assets/torneos/finalizado-icon.png';
-import sedeUshuaia from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
-import sedeRioGrande from '/src/assets/home/cards-torneos/Universidad_Torcuato_Di_Tella.jpg';
-import sedeBuenosAires from '/src/assets/home/cards-torneos/club_defensores_de_belgrano.jpg';
-import sedeClub from '/src/assets/home/cards-torneos/club_peon_peon.jfif';
-
-const imagenesPorDefecto = [sedeUshuaia, sedeRioGrande, sedeBuenosAires, sedeClub];
-
 function fechaLocal(fecha) {
     if (!fecha) return null;
     const [anio, mes, dia] = String(fecha).slice(0, 10).split('-').map(Number);
@@ -41,15 +34,12 @@ function TarjetaTorneo({ torneo, urlBackend, guardado, onAlternarGuardado, onSol
     const ubicacion = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')
         || torneo.Lugar_Venue
         || 'Ubicación a confirmar';
-    const imagen = torneo.pathImagen
-        ? `${urlBackend}${torneo.pathImagen}`
-        : imagenesPorDefecto[Math.abs(Number(torneo.idTorneo) || 0) % imagenesPorDefecto.length] || cuboImagen;
     const cupos = Number(torneo.limite_participantes) || 0;
 
     return (
         <article className="listado-torneo-card">
             <div className="listado-torneo-imagen">
-                <img src={imagen} alt={`Sede del torneo ${torneo.nombre}`} />
+                <ImagenTorneo pathImagen={torneo.pathImagen} urlBackend={urlBackend} alt={`Sede del torneo ${torneo.nombre}`} />
                 <span className={`listado-torneo-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>
                     {estado === 'Torneo finalizado' && <img src={finalizadoIcon} alt="" />}
                     {estado === 'Torneo finalizado' ? 'Finalizado' : estado}

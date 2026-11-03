@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 
-import cuboBanner from '/src/assets/img-cubo-banner.png';
+import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon from '/src/assets/torneos/competidores-blanco-icon.svg';
 import ubicacionIcon from '/src/assets/torneos/ubicacion-violeta-icon.svg';
