@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import cuboBanner from '/src/assets/img-cubo-banner.png';
+import imagenPredeterminadaTorneo from '/src/assets/img-cubo-banner2.png';
 import { PasoCategorias } from './pasos/PasoCategorias';
 import { PasoCronograma } from './pasos/PasoCronograma';
 import { PasoInformacion } from './pasos/PasoInformacion';
@@ -178,34 +179,51 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
         setMensaje('');
         try {
             const sqlDateTime = (value) => value ? `${value.replace('T', ' ')}:00` : '';
+            const parseTime = (value, fallback) => {
+                const match = String(value || '').match(/^(\d{1,2}):(\d{2})(?:\.\d+)?$/);
+                return match ? `00:${match[1].padStart(2, '0')}:${match[2]}` : fallback;
+            };
             const formatos = {};
             const rondas = {};
             formulario.categorias.forEach((id) => {
                 const config = formulario.rondas[id] || {};
                 const formato = catalogos.formatos.find((item) => item.formato.toUpperCase() === String(config.formato || 'AO5').toUpperCase()) || catalogos.formatos[0];
                 if (formato) formatos[id] = formato.idFormato;
-                rondas[id] = Array.from({ length: Math.max(1, Number(config.cantidad) || 3) }, (_, index) => {
-                    const detalle = config.rondas?.[String(index + 1)] || {};
-                    const parseTime = (value, fallback) => {
-                        const match = String(value || '').match(/^(\d{1,2}):(\d{2})(?:\.\d+)?$/);
-                        return match ? `00:${match[1].padStart(2, '0')}:${match[2]}` : fallback;
-                    };
-                    const avanceConfigurado = detalle.avance === undefined ? '20%' : detalle.avance;
-                    return { nombre: `Ronda ${index + 1}`, cutoff: parseTime(detalle.cutoff, '00:00:00'), tiempoLimite: parseTime(detalle.limite, '00:10:00'), porcentajeAvance: Math.max(0, Math.min(100, parseInt(avanceConfigurado, 10) || 0)) };
-                });
+                const cantidadTotal = Math.max(1, Math.min(3, Number(config.cantidad) || 3));
+                const cantidadPrevias = cantidadTotal - 1;
+                rondas[id] = [
+                    ...Array.from({ length: cantidadPrevias }, (_, index) => {
+                        const detalle = config.rondas?.[String(index + 1)] || {};
+                        const avanceConfigurado = detalle.avance === undefined ? '20%' : detalle.avance;
+                        return { nombre: `Ronda ${index + 1}`, cutoff: parseTime(detalle.cutoff, '00:00:00'), tiempoLimite: parseTime(detalle.limite, '00:10:00'), porcentajeAvance: Math.max(0, Math.min(100, parseInt(avanceConfigurado, 10) || 0)) };
+                    }),
+                    {
+                        nombre: 'Final',
+                        cutoff: parseTime(config.rondas?.final?.cutoff, '00:00:00'),
+                        tiempoLimite: parseTime(config.rondas?.final?.limite, '00:10:00'),
+                        porcentajeAvance: 100
+                    }
+                ];
             });
             const toSqlTime = (value) => `${value.slice(0, 5)}:00`;
             const cronogramaApi = cronograma.filter((item) => /Ronda \d+|Final/.test(item.nombre)).map((item) => {
                 const categoria = formulario.categorias.find((id) => item.nombre.startsWith(categoriasVista.find((c) => c.id === id)?.etiqueta || '\u0000')) || formulario.categorias[0];
-                const numero = Number(item.nombre.match(/Ronda (\d+)/)?.[1]) || rondas[categoria]?.length || 1;
-                return { idCategoria: Number(categoria), ronda: `Ronda ${numero}`, evento: item.nombre, horaInicio: toSqlTime(item.comienzo), horaFin: toSqlTime(item.fin) };
+                const numero = Number(item.nombre.match(/Ronda (\d+)/)?.[1]);
+                const ronda = numero ? `Ronda ${numero}` : 'Final';
+                return { idCategoria: Number(categoria), ronda, evento: item.nombre, horaInicio: toSqlTime(item.comienzo), horaFin: toSqlTime(item.fin) };
             });
-            const imagenData = imagen ? await new Promise((resolve, reject) => {
+            let imagenParaEnviar = imagen;
+            if (!imagenParaEnviar) {
+                const respuestaImagen = await fetch(imagenPredeterminadaTorneo);
+                if (!respuestaImagen.ok) throw new Error('No se pudo cargar la imagen predeterminada del torneo.');
+                imagenParaEnviar = await respuestaImagen.blob();
+            }
+            const imagenData = await new Promise((resolve, reject) => {
                 const lector = new FileReader();
                 lector.onload = () => resolve(lector.result);
                 lector.onerror = () => reject(new Error('No se pudo leer la imagen seleccionada'));
-                lector.readAsDataURL(imagen);
-            }) : null;
+                lector.readAsDataURL(imagenParaEnviar);
+            });
             await onPublicar({
                 idPais: Number(formulario.pais), idProvicncia: Number(formulario.provincia), idCiudad: Number(formulario.ciudad),
                 fecha_Inicio: sqlDateTime(formulario.fechaInicio), fecha_fin: sqlDateTime(formulario.fechaFin),

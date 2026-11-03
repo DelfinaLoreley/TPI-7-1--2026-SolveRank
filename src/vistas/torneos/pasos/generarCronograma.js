@@ -61,12 +61,12 @@ export function generarCronograma(fechaInicio, categorias, rondas, catalogo = []
     agregarActividad('Tutorial para nuevos competidores', 30);
 
     const cantidadMaximaRondas = Math.max(
-        ...categorias.map((categoria) => Math.max(1, Number(rondas[categoria]?.cantidad) || 3))
+        ...categorias.map((categoria) => Math.max(0, Math.min(2, (Number(rondas[categoria]?.cantidad) || 3) - 1)))
     );
 
     for (let numero = 1; numero <= cantidadMaximaRondas; numero += 1) {
         categorias.forEach((categoria) => {
-            const cantidad = Math.max(1, Number(rondas[categoria]?.cantidad) || 3);
+            const cantidad = Math.max(0, Math.min(2, (Number(rondas[categoria]?.cantidad) || 3) - 1));
             if (numero > cantidad) return;
 
             agregarActividad(

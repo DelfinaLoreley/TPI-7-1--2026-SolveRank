@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
 import categoIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import fechaTorneoIcon from '/src/assets/torneos/calendar-violeta-icon.svg';
 import ubicacionIcon2 from '/src/assets/torneos/ubicacion-violeta-icon.svg';
 import liveIcon from '/src/assets/torneos/en-vivo-icon.svg';
-import cuboBanner from '/src/assets/img-cubo-banner2.png';
 import trashIcon from '/src/assets/torneos/trash-icon.svg';
 import editIcon from '/src/assets/torneos/edit-icon.svg';
 
@@ -380,11 +380,11 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                                     </>
                                 )}
                             </div>
-                            <img
+                            <ImagenTorneo
                                 className={`torneo-detalle-hero-imagen${torneo.pathImagen ? '' : ' torneo-detalle-hero-imagen-placeholder'}`}
-                                src={torneo.pathImagen ? `${axios.defaults.baseURL.replace(/\/api\/?$/, '')}${torneo.pathImagen}` : cuboBanner}
-                                alt={torneo.pathImagen ? `Imagen del torneo ${torneo.nombre}` : ''}
-                                aria-hidden={!torneo.pathImagen}
+                                pathImagen={torneo.pathImagen}
+                                urlBackend={axios.defaults.baseURL.replace(/\/api\/?$/, '')}
+                                alt={`Imagen del torneo ${torneo.nombre}`}
                             />
                         </div>
                     </div>

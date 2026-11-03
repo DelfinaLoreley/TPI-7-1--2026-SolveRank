@@ -1,6 +1,7 @@
 import './PanelPrincipal.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
+import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 
 import cuboBanner from '/src/assets/img-cubo-banner.png';
 import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
@@ -44,11 +45,12 @@ function estadoInscripcion(torneo, ahora = new Date()) {
     return 'Inscripciones cerradas';
 }
 
-function inscripcionFinalizada(torneo, ahora = new Date()) {
+function puedeGenerarMezclas(torneo, ahora = new Date()) {
     const cierre = convertirFecha(torneo.Fecha_fin_Inscripcion);
-    if (!cierre) return false;
+    const inicioTorneo = convertirFecha(torneo.fecha_Inicio);
+    if (!cierre || !inicioTorneo) return false;
     cierre.setHours(23, 59, 59, 999);
-    return ahora > cierre;
+    return ahora > cierre && ahora < inicioTorneo;
 }
 
 function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
@@ -89,7 +91,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
     const urlBackend = axios.defaults.baseURL.replace(/\/api\/?$/, '');
 
     async function generarMezclasTorneo(torneo) {
-        if (usuario?.rol !== 'Organizador' || !inscripcionFinalizada(torneo)) return;
+        if (usuario?.rol !== 'Organizador' || !puedeGenerarMezclas(torneo, ahora)) return;
         setGenerandoTorneoId(torneo.idTorneo);
         setMensajesMezclas((actuales) => ({ ...actuales, [torneo.idTorneo]: 'Buscando rondas pendientes…' }));
         try {
@@ -201,10 +203,9 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                 const fecha = convertirFecha(torneo.fecha_Inicio);
                                 const estado = estadoInscripcion(torneo, ahora);
                                 const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
-                                const imagen = torneo.pathImagen ? `${urlBackend}${torneo.pathImagen}` : cuboBanner;
                                 return <article className="home-torneo-card" key={torneo.idTorneo}>
                                     <div className="home-torneo-imagen">
-                                        <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
+                                        <ImagenTorneo className="home-torneo-foto" pathImagen={torneo.pathImagen} urlBackend={urlBackend} alt={`Imagen del torneo ${torneo.nombre}`} />
                                         <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
                                         <button
                                             className={`panel-torneo-btn-guardar${favoritos.has(String(torneo.idTorneo)) ? ' guardado' : ''}`}
@@ -230,9 +231,11 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo }){
                                                 className="home-torneo-mezclas-btn"
                                                 type="button"
                                                 onClick={() => generarMezclasTorneo(torneo)}
-                                                disabled={!inscripcionFinalizada(torneo, ahora) || generandoTorneoId !== null ||
+                                                disabled={!puedeGenerarMezclas(torneo, ahora) || generandoTorneoId !== null ||
                                                     (Number(torneo.rondasTotales) > 0 && Number(torneo.rondasConMezclas) >= Number(torneo.rondasTotales))}
-                                                title={!inscripcionFinalizada(torneo, ahora) ? 'Se habilita cuando cierre la inscripción' : undefined}
+                                                title={!puedeGenerarMezclas(torneo, ahora)
+                                                    ? 'Se habilita después del cierre de inscripción y antes del inicio del torneo'
+                                                    : undefined}
                                             >
                                                 {generandoTorneoId === torneo.idTorneo
                                                     ? 'Generando…'

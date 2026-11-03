@@ -2,6 +2,7 @@ import './Home.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
 import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
 import rankingsIcon from '/src/assets/home/iconos/rankings-icon.png';
@@ -180,10 +181,9 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                                 const fecha = torneo.fechaObjeto;
                                 const estado = estadoInscripcion(torneo);
                                 const lugar = [torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ');
-                                const imagen = torneo.pathImagen ? `${urlBackend}${torneo.pathImagen}` : cuboImagen;
                                 return <article className="home-torneo-card" key={torneo.idTorneo}>
                                 <div className="home-torneo-imagen">
-                                    <img className="home-torneo-foto" src={imagen} alt={`Imagen del torneo ${torneo.nombre}`} />
+                                    <ImagenTorneo className="home-torneo-foto" pathImagen={torneo.pathImagen} urlBackend={urlBackend} alt={`Imagen del torneo ${torneo.nombre}`} />
                                     <span className={`home-estado ${estado === 'Inscripciones abiertas' ? 'abiertas' : estado === 'Inscripciones cerradas' ? 'cerradas' : estado === 'Torneo finalizado' ? 'finalizado' : ''}`}>{estado}</span>
                                     <button
                                         className={`home-torneo-btn-guardar${favoritos.has(String(torneo.idTorneo)) ? ' guardado' : ''}`}

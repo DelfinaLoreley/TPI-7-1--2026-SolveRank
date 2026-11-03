@@ -26,12 +26,15 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion,
         ? categoriaSeleccionada
         : categorias[0] || '';
     const configuracion = obtenerConfiguracion(configuraciones, categoriaActiva);
-    const cantidadRondas = Math.max(1, Number(configuracion.cantidad) || 1);
-    const numeroRondaActiva = rondaActiva === 'final' ? 'final' : String(Math.min(Number(rondaActiva), cantidadRondas));
+    const cantidadRondas = Math.max(1, Math.min(3, Number(configuracion.cantidad) || 1));
+    const cantidadRondasPrevias = cantidadRondas - 1;
+    const numeroRondaActiva = rondaActiva === 'final' || cantidadRondasPrevias === 0
+        ? 'final'
+        : String(Math.min(Number(rondaActiva), cantidadRondasPrevias));
     const detalle = configuracion.rondas?.[numeroRondaActiva] || detallePredeterminado;
 
     function cambiarCantidad(event) {
-        const cantidad = Math.max(1, Math.min(10, Number(event.target.value) || 1));
+        const cantidad = Math.max(1, Math.min(3, Number(event.target.value) || 1));
         onCambioConfiguracion(categoriaActiva, {
             ...configuracion,
             cantidad
@@ -82,7 +85,7 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion,
                             etiqueta="Cantidad de rondas"
                             type="number"
                             min="1"
-                            max="10"
+                            max="3"
                             value={configuracion.cantidad}
                             onChange={cambiarCantidad}
                         />
@@ -98,7 +101,7 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion,
                         <CampoSelect
                             etiqueta="Seleccioná la ronda a configurar"
                             opciones={[
-                                ...Array.from({ length: cantidadRondas }, (_, indice) => `Ronda ${indice + 1}`),
+                                ...Array.from({ length: cantidadRondasPrevias }, (_, indice) => `Ronda ${indice + 1}`),
                                 'Final'
                             ]}
                             value={numeroRondaActiva === 'final' ? 'Final' : `Ronda ${numeroRondaActiva}`}
@@ -137,7 +140,7 @@ export function PasoRondas({ categorias, configuraciones, onCambioConfiguracion,
                     <section className="creacion-rondas-vista-previa" aria-label="Vista previa de las rondas">
                         <h3>Vista previa de las rondas</h3>
                         <ol>
-                            {[...Array.from({ length: cantidadRondas }, (_, indice) => ({
+                            {[...Array.from({ length: cantidadRondasPrevias }, (_, indice) => ({
                                 id: String(indice + 1),
                                 nombre: `Ronda ${indice + 1}`,
                                 final: false
