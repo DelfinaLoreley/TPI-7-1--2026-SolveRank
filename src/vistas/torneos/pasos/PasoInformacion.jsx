@@ -90,7 +90,7 @@ export function PasoInformacion({
                         <span className="creacion-subida">
                             <img src={iconoSubida} alt="" />
                             <span>{imagen?.name || 'Poné una imagen del local del torneo, o la ciudad.'}</span>
-                            <small>JPG o PNG, máximo 5 MB.</small>
+                            <small>JPG o PNG, máximo 3 MB.</small>
                             <input
                                 type="file"
                                 name="imagen"
