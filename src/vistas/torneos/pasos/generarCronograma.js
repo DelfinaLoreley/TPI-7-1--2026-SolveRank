@@ -10,7 +10,7 @@ import iconMegaminx from '/src/assets/categorias/megaminx-icon.svg';
 import iconPyraminx from '/src/assets/categorias/pyraminx icon.svg';
 import iconSkewb from '/src/assets/categorias/skewb-icon.svg';
 import iconPremiacion from '/src/assets/torneos/premiacion-icon.svg'
-import { etiquetaCategoria } from './datosCategorias';
+import { categorias as catalogoIconos, etiquetaCategoria } from './datosCategorias';
 
 const iconosCategoria = {
     '3x3x3': icon3x3,
@@ -34,6 +34,17 @@ function formatearHora(fecha) {
         minute: '2-digit',
         hourCycle: 'h23'
     }).format(fecha);
+}
+
+function iconoDeCategoria(categoria, catalogo) {
+    const datosCategoria = catalogo.find((item) => String(item.id) === String(categoria));
+    if (datosCategoria?.icono) return datosCategoria.icono;
+    const nombre = datosCategoria?.etiqueta || etiquetaCategoria(categoria, catalogo);
+    const nombreNormalizado = String(nombre).trim().toLocaleLowerCase('es');
+    return catalogoIconos.find((item) =>
+        String(item.id).trim().toLocaleLowerCase('es') === nombreNormalizado
+        || String(item.etiqueta).trim().toLocaleLowerCase('es') === nombreNormalizado
+    )?.icono || iconosCategoria[categoria] || iconosCategoria[nombre];
 }
 
 export function generarCronograma(fechaInicio, categorias, rondas, catalogo = []) {
@@ -72,13 +83,13 @@ export function generarCronograma(fechaInicio, categorias, rondas, catalogo = []
             agregarActividad(
                 `${etiquetaCategoria(categoria, catalogo)} - Ronda ${numero}`,
                 50,
-                iconosCategoria[categoria]
+                iconoDeCategoria(categoria, catalogo)
             );
         });
     }
 
     categorias.forEach((categoria) => {
-            agregarActividad(`${etiquetaCategoria(categoria, catalogo)} - Final`, 50, iconosCategoria[categoria]);
+            agregarActividad(`${etiquetaCategoria(categoria, catalogo)} - Final`, 50, iconoDeCategoria(categoria, catalogo));
     });
 
     agregarActividad('Premiación', 30, iconPremiacion );
