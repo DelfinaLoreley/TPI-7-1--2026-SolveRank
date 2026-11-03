@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
+import Swal from 'sweetalert2';
 import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 
 import competidoresLimIcon from '/src/assets/home/iconos/competidores-violeta-icon.png';
@@ -270,7 +271,17 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
 
     async function eliminarTorneo() {
         if (!puedeGestionarTorneo) return;
-        if (!window.confirm(`¿Querés eliminar el torneo "${torneo.nombre}"? También se eliminarán sus inscripciones y resultados. Esta acción no se puede deshacer.`)) return;
+        const confirmacion = await Swal.fire({
+            icon: 'warning',
+            title: '¿Eliminar torneo?',
+            text: `Se eliminarán "${torneo.nombre}", sus inscripciones y resultados. Esta acción no se puede deshacer.`,
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            focusCancel: true
+        });
+        if (!confirmacion.isConfirmed) return;
         setEliminandoTorneo(true);
         setMensajeAccionesTorneo('');
         try {

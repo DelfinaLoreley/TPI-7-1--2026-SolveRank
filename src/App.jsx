@@ -23,6 +23,7 @@ import DetalleTorneoLive from './vistas/live/DetalleTorneoLive.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
+import Swal from 'sweetalert2'
 
 function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
@@ -110,9 +111,11 @@ function App() {
 
       setUsuario(null)
 
-      alert(
-        'Se inició sesión, pero no se pudieron recuperar los datos del usuario. Volvé a intentarlo.'
-      )
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo recuperar la sesión',
+        text: 'Se inició sesión, pero no se pudieron recuperar los datos del usuario. Volvé a intentarlo.'
+      })
     }
   }
 
@@ -124,7 +127,11 @@ function App() {
       window.history.replaceState({}, document.title, window.location.pathname)
     } catch (error) {
       console.error('No se pudo actualizar la sesión:', error)
-      alert('Se guardó el perfil, pero no se pudieron recuperar tus datos. Actualizá la página.')
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo actualizar la sesión',
+        text: 'Se guardó el perfil, pero no se pudieron recuperar tus datos. Actualizá la página.'
+      })
     }
   }
 
