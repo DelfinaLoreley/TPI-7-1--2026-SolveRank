@@ -144,6 +144,7 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
             [campoSeleccionados]: [...actual[campoSeleccionados], valor],
             [nombre]: ''
         }));
+        setErrores((actuales) => ({ ...actuales, [campoSeleccionados]: '' }));
     }
 
     function quitarPersona(nombre, persona) {
@@ -278,6 +279,12 @@ function CreacionTorneo({ onPublicar, onSalir, usuario }) {
             }
             if (!Number(formulario.cupoMaximo) || Number(formulario.cupoMaximo) < 1) {
                 nuevosErrores.cupoMaximo = 'Ingresá un cupo mayor a cero.';
+            }
+            if (formulario.juecesSeleccionados.length === 0) {
+                nuevosErrores.juecesSeleccionados = 'Seleccioná al menos un juez.';
+            }
+            if (formulario.delegadosSeleccionados.length === 0) {
+                nuevosErrores.delegadosSeleccionados = 'Seleccioná al menos un delegado de la WCA.';
             }
         }
 

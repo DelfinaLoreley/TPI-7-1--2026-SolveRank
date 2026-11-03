@@ -28,7 +28,7 @@ export function CampoSelect({ etiqueta, opciones, className = '', error, ...prop
     );
 }
 
-export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, onAgregar, onQuitar }) {
+export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, onAgregar, onQuitar, error }) {
     return (
         <div className="creacion-campo">
             <span className="creacion-etiqueta">{etiqueta}</span>
@@ -56,6 +56,7 @@ export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, 
                     <img src={plusIcon} alt="" />
                 </button>
             </div>
+            {error && <span className="creacion-error" role="alert">{error}</span>}
             {formulario[`${nombre}Seleccionados`].length > 0 && (
                 <ul className="creacion-equipo-lista">
                     {formulario[`${nombre}Seleccionados`].map((persona) => (
