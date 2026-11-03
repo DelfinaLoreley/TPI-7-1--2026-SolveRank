@@ -15,6 +15,10 @@ import lugarIcon from '/src/assets/home/iconos/ubicacion-icon.png';
 import categoriasIcon from '/src/assets/home/iconos/categoria3x3-icon.png';
 import competidoresIcon2 from '/src/assets/home/iconos/competidores-icon.png';
 import estadisticasIcon from '/src/assets/home/iconos/estadisticas.png';
+import competidoresEstadisticaIcon from '/src/assets/home/iconos/competidores-ic.png';
+import torneosEstadisticaIcon from '/src/assets/home/iconos/torneos-ic.png';
+import paisesEstadisticaIcon from '/src/assets/home/iconos/paises-ic.png';
+import resultadosEstadisticaIcon from '/src/assets/home/iconos/resultados-ic.png';
 import cuboImg from '/src/assets/home/cubo-img-stat.png';
 import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
 import useTorneosFavoritos from '../../hooks/useTorneosFavoritos.js';
@@ -61,10 +65,10 @@ function formatearTiempoRanking(segundos) {
 }
 
 const indicadoresEstadisticas = [
-    { icono: '/src/assets/home/iconos/competidores-ic.png', clave: 'competidores', texto: 'Competidores registrados', color: 'violeta' },
-    { icono: '/src/assets/home/iconos/torneos-ic.png', clave: 'torneosEsteAnio', texto: 'Torneos este año', color: 'dorado' },
-    { icono: '/src/assets/home/iconos/paises-ic.png', clave: 'paises', texto: 'Países representados', color: 'azul' },
-    { icono: '/src/assets/home/iconos/resultados-ic.png', clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
+    { icono: competidoresEstadisticaIcon, clave: 'competidores', texto: 'Competidores registrados', color: 'violeta' },
+    { icono: torneosEstadisticaIcon, clave: 'torneosEsteAnio', texto: 'Torneos este año', color: 'dorado' },
+    { icono: paisesEstadisticaIcon, clave: 'paises', texto: 'Países representados', color: 'azul' },
+    { icono: resultadosEstadisticaIcon, clave: 'resultadosRegistrados', texto: 'Resultados registrados', color: 'verde' },
 ];
 
 function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onIniciarSesion }) {

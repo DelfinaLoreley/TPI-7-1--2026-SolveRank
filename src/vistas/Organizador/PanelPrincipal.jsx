@@ -4,6 +4,7 @@ import axios from '../../axiosApi';
 import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 
 import cuboBanner from '/src/assets/img-cubo-banner2.png';
+import cuboCta from '/src/assets/Organizador/img-cubo-hom-removebg-preview.png';
 import torneosIcon from '/src/assets/Organizador/torneos-icon.png';
 import competidoresIcon2 from '/src/assets/Organizador/competidores-icon.png';
 import competidoresIcon from '/src/assets/home/iconos/competidores-icon.png';
@@ -177,7 +178,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo, onVerMisTorneos }
                                 <button type="button" onClick={onCrearTorneo}>Crear torneo ⟶</button>
                             </div>
                             <div className="panel-cubo-img-cta2">
-                                <img src="/src/assets/Organizador/img-cubo-hom-removebg-preview.png" alt="" />
+                                <img src={cuboCta} alt="" />
                             </div>
                         </div>
                     
