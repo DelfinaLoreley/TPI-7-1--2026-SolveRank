@@ -177,7 +177,7 @@ function PanelPrincipal({ usuario, onCrearTorneo, onVerTorneo, onVerMisTorneos }
                                 <button type="button" onClick={onCrearTorneo}>Crear torneo ⟶</button>
                             </div>
                             <div className="panel-cubo-img-cta2">
-                                <img src="/src/assets/organizador/img-cubo-hom-removebg-preview.png" alt="" />
+                                <img src="/src/assets/Organizador/img-cubo-hom-removebg-preview.png" alt="" />
                             </div>
                         </div>
                     
