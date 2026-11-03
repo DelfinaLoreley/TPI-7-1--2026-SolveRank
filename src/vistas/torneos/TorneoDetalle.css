@@ -235,6 +235,136 @@
     cursor: not-allowed;
 }
 
+.torneo-detalle-btns .btn-accion-torneo {
+    display: inline-grid;
+    width: 46px;
+    min-width: 46px;
+    border: 2px solid;
+    min-height: 46px;
+    place-items: center;
+    padding: 9px;
+    background: transparent;
+}
+
+.btn-accion-torneo img {
+    width: 24px;
+    height: 24px;
+}
+
+.btn-eliminar-torneo {
+    border-color: #b10e29 !important;
+    color: #e11d3e !important;
+}
+
+.btn-editar-torneo {
+    border-color: #315eff !important;
+    color: #416cff !important;
+}
+
+.btn-accion-torneo:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.torneo-acciones-mensaje {
+    margin: -12px 0 20px;
+    color: #fca5a5;
+}
+
+.torneo-edicion-fondo {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    display: grid;
+    overflow-y: auto;
+    place-items: center;
+    padding: 24px;
+    background: rgb(2 8 23 / 82%);
+}
+
+.torneo-edicion-dialogo {
+    width: min(100%, 680px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 24px;
+    border: 1px solid var(--detalle-borde);
+    border-radius: 14px;
+    background: #091328;
+    box-shadow: 0 24px 80px rgb(0 0 0 / 45%);
+}
+
+.torneo-edicion-dialogo h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+}
+
+.torneo-edicion-dialogo form,
+.torneo-edicion-dialogo label {
+    display: grid;
+    gap: 8px;
+}
+
+.torneo-edicion-dialogo form {
+    gap: 16px;
+}
+
+.torneo-edicion-dialogo label {
+    color: #dce5f8;
+    font-size: 14px;
+}
+
+.torneo-edicion-dialogo input,
+.torneo-edicion-dialogo textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #334766;
+    border-radius: 7px;
+    background: #0c1930;
+    color: #f5f7ff;
+    font: inherit;
+}
+
+.torneo-edicion-dialogo input:focus,
+.torneo-edicion-dialogo textarea:focus {
+    outline: 2px solid #315eff;
+    outline-offset: 1px;
+}
+
+.torneo-edicion-fechas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.torneo-edicion-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.torneo-edicion-acciones button {
+    min-height: 42px;
+    padding: 9px 16px;
+    border: 1px solid #315eff;
+    border-radius: 8px;
+    background: transparent;
+    color: #f5f7ff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.torneo-edicion-acciones button[type='submit'] {
+    background: #2148da;
+}
+
+.torneo-edicion-acciones button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 #seccion-inscripcion {
     scroll-margin-top: 24px;
 }

@@ -16,7 +16,7 @@ export function CampoSelect({ etiqueta, opciones, className = '', error, ...prop
         <label className={`creacion-campo ${className}`}>
             <span className="creacion-etiqueta">{etiqueta}</span>
             <select className="creacion-input creacion-select" {...props}>
-                <option value="">Seleccioná una opción</option>
+                <option value="" disabled>Seleccioná una opción</option>
                 {opciones.map((opcion) => {
                     const valor = typeof opcion === 'string' ? opcion : opcion.value;
                     const texto = typeof opcion === 'string' ? opcion : opcion.label;
@@ -28,7 +28,7 @@ export function CampoSelect({ etiqueta, opciones, className = '', error, ...prop
     );
 }
 
-export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, onAgregar, onQuitar }) {
+export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, onAgregar, onQuitar, error }) {
     return (
         <div className="creacion-campo">
             <span className="creacion-etiqueta">{etiqueta}</span>
@@ -40,7 +40,7 @@ export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, 
                     onChange={onCambio}
                     aria-label={etiqueta}
                 >
-                    <option value="">Seleccioná una persona</option>
+                    <option value="" disabled>Seleccioná una persona</option>
                     {opciones.map((persona) => {
                         const value = typeof persona === 'string' ? persona : persona.value;
                         const label = typeof persona === 'string' ? persona : persona.label;
@@ -56,6 +56,7 @@ export function CampoEquipo({ etiqueta, nombre, opciones, formulario, onCambio, 
                     <img src={plusIcon} alt="" />
                 </button>
             </div>
+            {error && <span className="creacion-error" role="alert">{error}</span>}
             {formulario[`${nombre}Seleccionados`].length > 0 && (
                 <ul className="creacion-equipo-lista">
                     {formulario[`${nombre}Seleccionados`].map((persona) => (

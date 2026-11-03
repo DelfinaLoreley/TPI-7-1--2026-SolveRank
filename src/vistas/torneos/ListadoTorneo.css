@@ -702,7 +702,7 @@
     .listado-torneos-inscripciones {
         display: block;
         width: 50%;
-        font-size: 14px !important;
+        font-size: 14px;
         padding: 5px;
     }
 
@@ -932,7 +932,21 @@
     }
 
     .listado-torneos-pestanas button {
-        font-size: 9px;
+        font-size: 10px;
+    }
+
+    .listado-filtro-select select,
+    .listado-filtro-categoria-trigger { 
+        font-size: 10px !important; 
+        min-height: 35px;
+        border-radius: 8px;
+    }
+
+    .listado-orden-select {
+        min-width: 135px;
+        max-width: 155px;
+        height: 28px;
+        font-size: 12px !important;
     }
 
     .listado-torneos-grid {
@@ -940,8 +954,20 @@
         padding-left: 4px;
     }
 
+    .listado-filtro-busqueda {
+        min-height: 40px !important;
+        border-radius: 13px;
+    }
+
     .listado-torneo-card {
         padding: 10px;
+    }
+
+    .listado-torneos-inscripciones {
+        display: block;
+        width: 40%;
+        font-size: 10px !important;
+        padding: 5px;
     }
 
     .listado-torneo-detalle h2 {

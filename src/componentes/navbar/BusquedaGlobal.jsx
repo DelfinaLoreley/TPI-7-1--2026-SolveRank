@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
+import ImagenTorneo from '../ImagenTorneo.jsx';
 import avatarPredeterminado from '/src/assets/home/iconos/user-pfp-icon.png';
 import './BusquedaGlobal.css';
 
@@ -77,7 +78,7 @@ export default function BusquedaGlobal({ onCerrar, onElegirTorneo, onElegirCompe
                 {!!torneos.length && <section className="busqueda-global-grupo">
                     <h2>Torneos</h2>
                     {torneos.map((torneo) => <button className="busqueda-global-resultado" type="button" key={torneo.idTorneo} onClick={() => onElegirTorneo(torneo)}>
-                        {torneo.pathImagen && <img className="busqueda-global-imagen-torneo" src={`${urlBackend}${torneo.pathImagen}`} alt="" />}
+                        <ImagenTorneo className="busqueda-global-imagen-torneo" pathImagen={torneo.pathImagen} urlBackend={urlBackend} alt="" />
                         <span className="busqueda-global-info"><strong>{torneo.nombre}</strong><small>{[torneo.ciudad, torneo.provincia, torneo.pais].filter(Boolean).join(', ')}</small></span>
                         <span className="busqueda-global-meta">{fechaCorta(torneo.fecha_Inicio)}</span>
                     </button>)}

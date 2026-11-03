@@ -80,6 +80,7 @@ export function PasoInformacion({
                         onCambio={onCambio}
                         onAgregar={onAgregarPersona}
                         onQuitar={onQuitarPersona}
+                        error={error.juecesSeleccionados}
                     />
                 </div>
 
@@ -157,6 +158,7 @@ export function PasoInformacion({
                         onCambio={onCambio}
                         onAgregar={onAgregarPersona}
                         onQuitar={onQuitarPersona}
+                        error={error.delegadosSeleccionados}
                     />
                 </div>
             </div>

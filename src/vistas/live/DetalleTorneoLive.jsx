@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
+import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 
 import mediaIcon from '/src/assets/icons/promedio-icon.png';
 import searchIcon from '/src/assets/icons/search-icon.png';
@@ -107,11 +108,16 @@ function esActividadActual(actividad, torneo, ahora) {
     return horaActual >= horaInicio && horaActual <= horaFin;
 }
 
-function TablaResultadosLive({ ronda }) {
+function TablaResultadosLive({ ronda, marcasTiempos }) {
     const filas = ordenarFilas(ronda);
     const cantidad = Number(ronda?.cantidadIntentos) || 0;
     const [competidorSeleccionado, setCompetidorSeleccionado] = useState(null);
     const esFormatoBo = String(ronda?.formato ?? '').toUpperCase().startsWith('BO');
+    const obtenerMarca = (competidor) => marcasTiempos[`${ronda?.idCategoria}:${competidor.idUsuario}`]
+        || competidor.marcas;
+    const marcaSeleccionada = competidorSeleccionado
+        ? obtenerMarca(competidorSeleccionado.fila)
+        : null;
 
     useEffect(() => {
         if (!competidorSeleccionado) return undefined;
@@ -168,8 +174,8 @@ function TablaResultadosLive({ ronda }) {
                                     </button>
                                 </td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
-                                <td><TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} marca={fila.marcas}>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</TiempoConBadge></td>
-                                <td><TiempoConBadge valor={Number.isFinite(fila.resultado) ? fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={fila.marcas}>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</TiempoConBadge></td>
+                                <td><TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} marca={obtenerMarca(fila)}>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</TiempoConBadge></td>
+                                <td><TiempoConBadge valor={Number.isFinite(fila.resultado) ? fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={obtenerMarca(fila)}>{fila.resultado === null ? '—' : Number.isFinite(fila.resultado) ? tiempoLegible(fila.resultado) : 'DNF'}</TiempoConBadge></td>
                                 {Array.from({ length: cantidad }, (_, intento) => (
                                     <td key={intento}>{String(fila.intentos[intento] ?? '—').replace(/^00:/, '')}</td>
                                 ))}
@@ -239,7 +245,7 @@ function TablaResultadosLive({ ronda }) {
                             <div>
                                 <span className="carga-resultados-modal-icono"><img src={mediaIcon} alt="" /></span>
                                 <span>{esFormatoBo ? 'Resultado' : 'Promedio'}
-                                    <strong><TiempoConBadge valor={Number.isFinite(competidorSeleccionado.fila.resultado) ? competidorSeleccionado.fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={competidorSeleccionado.fila.marcas}>
+                                    <strong><TiempoConBadge valor={Number.isFinite(competidorSeleccionado.fila.resultado) ? competidorSeleccionado.fila.resultado / 100 : null} tipo={esFormatoBo ? 'single' : 'media'} marca={marcaSeleccionada}>
                                         {competidorSeleccionado.fila.resultado === null
                                             ? '—'
                                             : Number.isFinite(competidorSeleccionado.fila.resultado)
@@ -251,7 +257,7 @@ function TablaResultadosLive({ ronda }) {
                             <div>
                                 <span className="carga-resultados-modal-estrella" aria-hidden="true"><img src={starIcon} alt="" /></span>
                                 <span>Mejor
-                                    <strong><TiempoConBadge valor={competidorSeleccionado.fila.mejor === null ? null : competidorSeleccionado.fila.mejor / 100} marca={competidorSeleccionado.fila.marcas}>
+                                    <strong><TiempoConBadge valor={competidorSeleccionado.fila.mejor === null ? null : competidorSeleccionado.fila.mejor / 100} marca={marcaSeleccionada}>
                                         {competidorSeleccionado.fila.mejor === null
                                             ? (competidorSeleccionado.fila.completo ? 'DNF' : '—')
                                             : tiempoLegible(competidorSeleccionado.fila.mejor)}
@@ -282,6 +288,15 @@ function DetalleTorneoLive({ torneoSeleccionado, onSalir }) {
     const [rondaSeleccionada, setRondaSeleccionada] = useState('');
     const [busquedaCompetidor, setBusquedaCompetidor] = useState('');
     const [ahora, setAhora] = useState(() => new Date());
+
+    const registrosParaMarcas = useMemo(
+        () => datosLive.rondas.flatMap((ronda) => (ronda.competidores ?? []).map((competidor) => ({
+            idCategoria: ronda.idCategoria,
+            idUsuario: competidor.idUsuario
+        }))),
+        [datosLive.rondas]
+    );
+    const marcasTiempos = useMarcasTiempos(registrosParaMarcas);
 
     useEffect(() => {
         let activo = true;
@@ -441,7 +456,7 @@ function DetalleTorneoLive({ torneoSeleccionado, onSalir }) {
                                     </button>
                                 ))}
                             </nav>
-                            <TablaResultadosLive ronda={rondaActiva} />
+                            <TablaResultadosLive ronda={rondaActiva} marcasTiempos={marcasTiempos} />
                         </>
                     ) : (
                         <p className="live-detalle-mensaje">Todavía no hay rondas configuradas para esta categoría.</p>

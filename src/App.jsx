@@ -23,6 +23,7 @@ import DetalleTorneoLive from './vistas/live/DetalleTorneoLive.jsx'
 import Navbar from './componentes/navbar/Navbar.jsx'
 import Footer from './componentes/footer/Footer.jsx'
 import axios from './axiosApi'
+import Swal from 'sweetalert2'
 
 function App() {
   // Home es pública: no hace falta iniciar sesión para entrar.
@@ -37,7 +38,14 @@ function App() {
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
   const [volverDetalleA, setVolverDetalleA] = useState('home')
+  const [volverDetalleLiveA, setVolverDetalleLiveA] = useState('live')
+  const [seccionMisTorneos, setSeccionMisTorneos] = useState(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
+
+  function abrirMisTorneos(seccion = null) {
+    setSeccionMisTorneos(seccion)
+    setVista('mis-torneos')
+  }
 
   function abrirDetalleTorneo(torneo, volverA = 'home') {
     setTorneoSeleccionado(torneo)
@@ -45,8 +53,9 @@ function App() {
     setVista('detalle-torneo')
   }
 
-  function abrirDetalleTorneoLive(torneo) {
+  function abrirDetalleTorneoLive(torneo, volverA = 'live') {
     setTorneoSeleccionado(torneo)
+    setVolverDetalleLiveA(volverA)
     setVista('detalle-torneo-live')
   }
 
@@ -102,9 +111,11 @@ function App() {
 
       setUsuario(null)
 
-      alert(
-        'Se inició sesión, pero no se pudieron recuperar los datos del usuario. Volvé a intentarlo.'
-      )
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo recuperar la sesión',
+        text: 'Se inició sesión, pero no se pudieron recuperar los datos del usuario. Volvé a intentarlo.'
+      })
     }
   }
 
@@ -116,7 +127,11 @@ function App() {
       window.history.replaceState({}, document.title, window.location.pathname)
     } catch (error) {
       console.error('No se pudo actualizar la sesión:', error)
-      alert('Se guardó el perfil, pero no se pudieron recuperar tus datos. Actualizá la página.')
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo actualizar la sesión',
+        text: 'Se guardó el perfil, pero no se pudieron recuperar tus datos. Actualizá la página.'
+      })
     }
   }
 
@@ -151,7 +166,7 @@ function App() {
           usuario={usuario}
           onInicio={() => setVista('home')}
           onTorneos={() => setVista('listado-torneos')}
-          onMisTorneos={() => setVista('mis-torneos')}
+          onMisTorneos={() => abrirMisTorneos()}
           onRankings={() => setVista('rankings')}
           onRecords={() => setVista('records')}
           onLive={() => setVista('live')}
@@ -183,10 +198,10 @@ function App() {
         : vista === 'live'
         ? <SolveRankLive onVerTorneo={abrirDetalleTorneoLive} />
         : vista === 'detalle-torneo-live'
-        ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista('live')} />
+        ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista(volverDetalleLiveA)} />
         : vista === 'mis-torneos'
         ? ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol)
-          ? <MisTorneos usuario={usuario} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
+          ? <MisTorneos usuario={usuario} seccionOrganizador={seccionMisTorneos} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
           : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} onVerRankings={() => setVista('rankings')} />
         : vista === 'listado-torneos'
         ? <ListadoTorneo usuario={usuario} onIniciarSesion={() => setVista('login')} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'listado-torneos')} />
@@ -196,6 +211,7 @@ function App() {
               usuario={usuario}
               onCrearTorneo={() => setVista('crear-torneo')}
               onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'panel-organizador')}
+              onVerMisTorneos={abrirMisTorneos}
             />
           : <Home />
         : vista === 'gestion-roles'
@@ -215,6 +231,7 @@ function App() {
         ? <TorneoDetalle
             idTorneo={torneoSeleccionado?.idTorneo}
             usuario={usuario}
+            onVerResultadosLive={(torneo) => abrirDetalleTorneoLive(torneo, 'detalle-torneo')}
             onSalir={() => setVista(volverDetalleA)}
           />
         : vista === 'info-extra-torneo'

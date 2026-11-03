@@ -59,6 +59,10 @@
     background: #091328;
 }
 
+.mis-torneos-seccion[id] {
+    scroll-margin-top: calc(var(--navbar-height, 64px) + 16px);
+}
+
 .mis-torneos-seccion > h2,
 .mis-torneos-titulo h2 {
     margin: 0 0 22px;
@@ -87,6 +91,17 @@
     color: #4387f5;
     font: inherit;
     font-size: 17px;
+    cursor: pointer;
+}
+
+.mis-torneos-proximos-vacio button {
+    margin: 0;
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: #4387f5;
+    font: inherit;
+    font-size: 22px;
     cursor: pointer;
 }
 
@@ -413,7 +428,7 @@
         display: inline;
         padding: 0;
         border: 0;
-        background: transparent;
+        background: none;
         color: #4387f5;
         font: inherit;
         cursor: pointer;

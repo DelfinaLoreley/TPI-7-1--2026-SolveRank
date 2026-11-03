@@ -27,6 +27,12 @@
     margin-bottom: 32px;
 }
 
+.creacion-encabezado img {
+    opacity: 0.78;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.28) 28%, #000 72%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.28) 28%, #000 72%);
+}
+
 .creacion-volver {
     display: inline-flex;
     align-items: center;

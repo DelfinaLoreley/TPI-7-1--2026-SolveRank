@@ -9,7 +9,7 @@ import iconoFormato from '/src/assets/torneos/formato-icon.svg';
 import iconoFecha from '/src/assets/home/iconos/Calendar.png';
 import iconoContacto from '/src/assets/torneos/contacto-icon.svg';
 import iconoOrganizador from '/src/assets/icons/organizador-azul-icon.svg';
-import imagenPredeterminada from '/src/assets/home/cards-torneos/casa_de_la_cultura_ush.jpeg';
+import imagenPredeterminada from '/src/assets/img-cubo-banner2.png';
 
 function obtenerNombre(lista, id, claveId, claveNombre) {
     return lista.find((item) => String(item[claveId]) === String(id))?.[claveNombre] || '';
@@ -135,9 +135,13 @@ export function PasoRevision({ formulario, cronograma, catalogo = [], catalogos 
                     <>
                         <div className="revision-categorias">
                             {categoriasVisibles.map(({ id, etiqueta, icono, configuracion }) => {
-                                const cantidad = Math.max(1, Number(configuracion.cantidad) || 3);
+                                const cantidad = Math.max(1, Math.min(3, Number(configuracion.cantidad) || 3));
+                                const nombresRondas = [
+                                    ...Array.from({ length: cantidad - 1 }, (_, indice) => `Ronda ${indice + 1}`),
+                                    'Final'
+                                ];
                                 const limite = configuracion.rondas?.final?.limite
-                                    || configuracion.rondas?.[String(cantidad)]?.limite
+                                    || configuracion.rondas?.[String(cantidad - 1)]?.limite
                                     || configuracion.rondas?.['1']?.limite
                                     || '—';
                                 return (
@@ -146,7 +150,7 @@ export function PasoRevision({ formulario, cronograma, catalogo = [], catalogos 
                                         <div>
                                             <strong>{etiqueta}</strong>
                                             <span> Formato: {configuracion.formato || 'Ao5'}</span>
-                                            <span> Rondas: {cantidad} + Final</span>
+                                            <span> Rondas: {nombresRondas.join(', ')}</span>
                                             <span> Tiempo límite: {limite}</span>
                                         </div>
                                     </article>

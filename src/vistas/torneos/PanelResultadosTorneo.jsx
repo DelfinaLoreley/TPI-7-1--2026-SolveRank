@@ -2,15 +2,16 @@ import './PanelResultadosTorneo.css';
 import categoriasIcon from '/src/assets/torneos/categorias-azul-icon.png';
 import importanteIcon from '/src/assets/torneos/importante-icon.svg';
 import { categorias } from './pasos/datosCategorias';
+import { normalizarNombre } from './rondasTorneo.js';
 
 function horaLegible(hora) {
     return hora ? String(hora).slice(0, 5) : '—';
 }
 
 function iconoCategoria(categoria) {
-    const nombre = String(categoria).trim().toLowerCase();
+    const nombre = normalizarNombre(categoria);
     return categorias.find(({ id, etiqueta }) =>
-        id.toLowerCase() === nombre || etiqueta.toLowerCase() === nombre
+        normalizarNombre(id) === nombre || normalizarNombre(etiqueta) === nombre
     )?.icono;
 }
 
@@ -92,13 +93,21 @@ function PanelResultadosTorneo({ torneo, rondas, cronograma = [], onSeleccionarR
                                 </tr>
                             </thead>
                             <tbody>
-                                {cronograma.map((actividad, indice) => (
-                                    <tr key={`${actividad.idRonda}-${indice}`}>
-                                        <td>{horaLegible(actividad.horaInicio)}</td>
-                                        <td>{horaLegible(actividad.horaFin)}</td>
-                                        <td>{actividad.evento || `${actividad.categoria} · ${actividad.ronda}`}</td>
-                                    </tr>
-                                ))}
+                                {cronograma.map((actividad, indice) => {
+                                    const icono = iconoCategoria(actividad.categoria);
+                                    return (
+                                        <tr key={`${actividad.idRonda}-${indice}`}>
+                                            <td>{horaLegible(actividad.horaInicio)}</td>
+                                            <td>{horaLegible(actividad.horaFin)}</td>
+                                            <td>
+                                                <span className="panel-resultados-cronograma-actividad">
+                                                    {icono && <img src={icono} alt="" />}
+                                                    <span>{actividad.evento || `${actividad.categoria} · ${actividad.ronda}`}</span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

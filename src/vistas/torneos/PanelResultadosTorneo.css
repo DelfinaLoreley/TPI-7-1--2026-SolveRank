@@ -152,6 +152,17 @@
     height: 18px;
 }
 
+.panel-resultados-cronograma-actividad {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-resultados-cronograma-actividad img {
+    flex: 0 0 18px;
+    object-fit: contain;
+}
+
 .panel-resultados-tabla-contenedor {
     width: min(100%, 760px);
     max-height: 430px;
