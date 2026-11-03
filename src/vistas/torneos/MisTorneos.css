@@ -94,6 +94,17 @@
     cursor: pointer;
 }
 
+.mis-torneos-proximos-vacio button {
+    margin: 0;
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: #4387f5;
+    font: inherit;
+    font-size: 22px;
+    cursor: pointer;
+}
+
 .mis-torneos-seccion .listado-torneos-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
@@ -417,7 +428,7 @@
         display: inline;
         padding: 0;
         border: 0;
-        background: transparent;
+        background: none;
         color: #4387f5;
         font: inherit;
         cursor: pointer;
