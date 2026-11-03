@@ -1,7 +1,8 @@
 import imagenPredeterminadaTorneo from '/src/assets/img-cubo-banner2.png';
 
 export default function ImagenTorneo({ pathImagen, urlBackend = '', ...props }) {
-    const src = pathImagen ? `${urlBackend}${pathImagen}` : imagenPredeterminadaTorneo;
+    const esUrlAbsoluta = /^https?:\/\//i.test(pathImagen || '');
+    const src = pathImagen ? (esUrlAbsoluta ? pathImagen : `${urlBackend}${pathImagen}`) : imagenPredeterminadaTorneo;
 
     function usarImagenPredeterminada(evento) {
         evento.currentTarget.onerror = null;
