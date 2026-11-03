@@ -37,6 +37,7 @@ function App() {
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
   const [volverDetalleA, setVolverDetalleA] = useState('home')
+  const [volverDetalleLiveA, setVolverDetalleLiveA] = useState('live')
   const [seccionMisTorneos, setSeccionMisTorneos] = useState(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
 
@@ -51,8 +52,9 @@ function App() {
     setVista('detalle-torneo')
   }
 
-  function abrirDetalleTorneoLive(torneo) {
+  function abrirDetalleTorneoLive(torneo, volverA = 'live') {
     setTorneoSeleccionado(torneo)
+    setVolverDetalleLiveA(volverA)
     setVista('detalle-torneo-live')
   }
 
@@ -189,7 +191,7 @@ function App() {
         : vista === 'live'
         ? <SolveRankLive onVerTorneo={abrirDetalleTorneoLive} />
         : vista === 'detalle-torneo-live'
-        ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista('live')} />
+        ? <DetalleTorneoLive key={torneoSeleccionado?.idTorneo} torneoSeleccionado={torneoSeleccionado} onSalir={() => setVista(volverDetalleLiveA)} />
         : vista === 'mis-torneos'
         ? ['Competidor', 'Juez', 'Delegado', 'Organizador'].includes(usuario?.rol)
           ? <MisTorneos usuario={usuario} seccionOrganizador={seccionMisTorneos} onVerTorneo={(torneo) => abrirDetalleTorneo(torneo, 'mis-torneos')} onVerTodosTorneos={() => setVista('listado-torneos')} />
@@ -222,6 +224,7 @@ function App() {
         ? <TorneoDetalle
             idTorneo={torneoSeleccionado?.idTorneo}
             usuario={usuario}
+            onVerResultadosLive={(torneo) => abrirDetalleTorneoLive(torneo, 'detalle-torneo')}
             onSalir={() => setVista(volverDetalleA)}
           />
         : vista === 'info-extra-torneo'

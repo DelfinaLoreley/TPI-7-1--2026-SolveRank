@@ -45,7 +45,7 @@ function estadoInscripcion(torneo) {
     return 'Inscripciones cerradas';
 }
 
-function TorneoDetalle({ idTorneo, usuario, onSalir }) {
+function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
     const [detalle, setDetalle] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
@@ -347,7 +347,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir }) {
                                     </button>
                                 )}
                                 {estado === 'En curso' && (
-                                    <button className="btn-ver-resultados" type="button" disabled title="Próximamente">
+                                    <button className="btn-ver-resultados" type="button" onClick={() => onVerResultadosLive?.(torneo)}>
                                         <img src={liveIcon} alt="" />
                                         Ver resultados en vivo
                                     </button>
