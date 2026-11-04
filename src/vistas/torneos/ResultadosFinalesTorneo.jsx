@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
@@ -92,7 +93,7 @@ function ResultadosFinalesTorneo({ datos }) {
                                     ].filter(Boolean).join(' ')}>
                                         {posicion}
                                     </td>
-                                    <td>{competidor.nombre}</td>
+                                    <td><EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor></td>
                                     <td><PaisConBandera pais={competidor.pais} /></td>
                                     {Array.from({ length: cantidadIntentos }, (_, intento) => (
                                         <td key={intento}>{intentoLegible(competidor.intentos?.[intento])}</td>

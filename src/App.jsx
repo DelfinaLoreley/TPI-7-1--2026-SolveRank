@@ -37,6 +37,7 @@ function App() {
   const [usuario, setUsuario] = useState(null)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
   const [perfilSeleccionadoId, setPerfilSeleccionadoId] = useState(null)
+  const [volverPerfilA, setVolverPerfilA] = useState('home')
   const [volverDetalleA, setVolverDetalleA] = useState('home')
   const [volverDetalleLiveA, setVolverDetalleLiveA] = useState('live')
   const [seccionMisTorneos, setSeccionMisTorneos] = useState(null)
@@ -91,6 +92,18 @@ function App() {
       activo = false
     }
   }, [esVistaInfoExtra, esVistaPreguntasFrecuentes, esVistaReglamentoOficial, rutaConocida])
+
+  useEffect(() => {
+    const abrirPerfilPublico = (evento) => {
+      const idUsuario = Number(evento.detail?.idUsuario)
+      if (!Number.isSafeInteger(idUsuario) || idUsuario <= 0) return
+      setVolverPerfilA(vista === 'perfil-publico' ? volverPerfilA : vista)
+      setPerfilSeleccionadoId(idUsuario)
+      setVista('perfil-publico')
+    }
+    window.addEventListener('solverank:abrir-perfil-publico', abrirPerfilPublico)
+    return () => window.removeEventListener('solverank:abrir-perfil-publico', abrirPerfilPublico)
+  }, [vista, volverPerfilA])
 
   // Se ejecuta después de un login exitoso.
   async function manejarLogin() {
@@ -226,7 +239,7 @@ function App() {
             }} />
           : <Home usuario={usuario} onIniciarSesion={() => setVista('login')} />
         : vista === 'perfil-publico'
-        ? <MiPerfil idUsuario={perfilSeleccionadoId} publico onVolver={() => setVista('home')} />
+        ? <MiPerfil idUsuario={perfilSeleccionadoId} publico onVolver={() => setVista(volverPerfilA)} />
         : vista === 'detalle-torneo'
         ? <TorneoDetalle
             idTorneo={torneoSeleccionado?.idTorneo}
