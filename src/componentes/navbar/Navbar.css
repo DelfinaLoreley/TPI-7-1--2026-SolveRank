@@ -171,7 +171,8 @@
 /* ---------- Perfil de usuario ---------- */
 .menuPerfil {
     position: relative;
-    right: 5%;
+    right: 0;
+    flex: 0 0 auto;
 }
 
 .PerfilBtn {
@@ -195,7 +196,28 @@
 
 .menuDesplegado {
     padding: 10px 15px;
-    margin: 20px -200%;
+}
+
+.menuPerfil .menuDesplegado {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: auto;
+    width: max-content;
+    min-width: 220px;
+    max-width: min(320px, calc(100vw - 24px));
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #182945;
+    background: #030d20;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.menuPerfil .menuDesplegado label,
+.menuPerfil .menuDesplegado a {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* ---------- Acciones derecha ---------- */
