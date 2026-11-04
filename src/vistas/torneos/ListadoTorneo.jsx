@@ -27,6 +27,7 @@ function filtrarPorPestana(torneo, pestana, hoy) {
     const fin = fechaLocal(torneo.fecha_fin) ?? inicio;
     if (!inicio) return false;
 
+    if (pestana === 'Todos') return true;
     if (pestana === 'Próximos') return inicio > hoy;
     if (pestana === 'En curso') return inicio <= hoy && (!fin || fin >= hoy);
     if (pestana === 'Recientes') {
@@ -203,6 +204,18 @@ function ListadoTorneo({ onVerTorneo, usuario, onIniciarSesion }) {
                                     </button>
                                 ))}
                             </nav>
+                            <button
+                                type="button"
+                                className={`listado-torneos-inscripciones${pestanaActiva === 'Todos' ? ' activa' : ''}`}
+                                aria-pressed={pestanaActiva === 'Todos'}
+                                onClick={() => {
+                                    setPestanaActiva('Todos');
+                                    setSoloInscripcionesAbiertas(false);
+                                    setPagina(1);
+                                }}
+                            >
+                                Todos
+                            </button>
                             <button
                                 type="button"
                                 className={`listado-torneos-inscripciones${soloInscripcionesAbiertas ? ' activa' : ''}`}
