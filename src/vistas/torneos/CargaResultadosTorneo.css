@@ -245,7 +245,12 @@
 }
 
 .carga-resultados-lista-competidores li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     margin: 0;
+    padding: 4px 8px;
 }
 
 .carga-resultados-lista-competidores button {
@@ -273,6 +278,21 @@
 .carga-resultados-lista-competidores small {
     color: #9bbdf3;
     font-size: 10px;
+}
+
+.carga-resultados-lista-competidores li > a {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.carga-resultados-lista-competidores li > button {
+    width: auto;
+    min-height: 28px;
+    padding: 4px 8px;
+    color: #9bbdf3;
+    white-space: nowrap;
 }
 
 .carga-resultados-lista-vacia {
@@ -382,6 +402,22 @@
     color: inherit;
     font: inherit;
     text-align: left;
+}
+
+.carga-resultados-nombre-celda {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.carga-resultados-nombre-celda > a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.carga-resultados-nombre-celda .carga-resultados-nombre-competidor {
+    color: #9bbdf3;
+    white-space: nowrap;
 }
 
 .carga-resultados-vacia {

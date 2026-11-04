@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 import './Records.css';
 
@@ -159,7 +160,7 @@ function Records() {
                                                                 const record = categoria[tipo];
                                                                 return <tr key={tipo}>
                                                                     <th scope="row">{tipo === 'single' ? 'Single' : 'Media'}</th>
-                                                                    <td className="records-nombre">{record?.nombre || '—'}</td>
+                                                                    <td className="records-nombre">{record ? <EnlacePerfilCompetidor idUsuario={record.idUsuario}>{record.nombre}</EnlacePerfilCompetidor> : '—'}</td>
                                                                     <td>{formatearFecha(record?.fechaTorneo)}</td>
                                                                     <td><PaisConBandera pais={record?.pais} /></td>
                                                                     <td className="records-tiempo">{record ? formatearTiempo(record.valor) : '—'}</td>

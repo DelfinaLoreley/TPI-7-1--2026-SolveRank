@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 
@@ -164,14 +165,17 @@ function TablaResultadosLive({ ronda, marcasTiempos }) {
                                     {fila.resultado === null ? '—' : indice + 1}
                                 </td>
                                 <td>
-                                    <button
-                                        className="live-detalle-nombre-competidor"
-                                        type="button"
-                                        aria-label={`Ver intentos de ${fila.nombre}`}
-                                        onClick={() => abrirDetalleCompetidor(fila, indice)}
-                                    >
-                                        {fila.nombre}
-                                    </button>
+                                    <div className="live-detalle-nombre-celda">
+                                        <EnlacePerfilCompetidor idUsuario={fila.idUsuario}>{fila.nombre}</EnlacePerfilCompetidor>
+                                        <button
+                                            className="live-detalle-nombre-competidor"
+                                            type="button"
+                                            aria-label={`Ver intentos de ${fila.nombre}`}
+                                            onClick={() => abrirDetalleCompetidor(fila, indice)}
+                                        >
+                                            Intentos
+                                        </button>
+                                    </div>
                                 </td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
                                 <td><TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} marca={obtenerMarca(fila)}>{fila.mejor === null ? (fila.completo ? 'DNF' : '—') : tiempoLegible(fila.mejor)}</TiempoConBadge></td>
@@ -204,7 +208,7 @@ function TablaResultadosLive({ ronda, marcasTiempos }) {
                             <img src={userPfpIcon} alt="" />
                             <div>
                                 <h2 id="carga-resultados-modal-titulo">
-                                    {competidorSeleccionado.fila.nombre}
+                                    <EnlacePerfilCompetidor idUsuario={competidorSeleccionado.fila.idUsuario}>{competidorSeleccionado.fila.nombre}</EnlacePerfilCompetidor>
                                     {' '}
                                     <strong>#{competidorSeleccionado.posicion}</strong>
                                 </h2>
@@ -503,7 +507,7 @@ function DetalleTorneoLive({ torneoSeleccionado, onSalir }) {
                     </label>
                     <ul className="live-detalle-lista-competidores">
                         {competidoresFiltrados.map((competidor) => (
-                            <li key={competidor.idUsuario}>                                <span>{competidor.nombre}</span>
+                            <li key={competidor.idUsuario}>                                <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
                                 <PaisConBandera className="live-detalle-pais" pais={competidor.pais} fallback="País no informado" />
                             </li>
                         ))}

@@ -2,6 +2,7 @@ import './Home.css';
 import { useEffect, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import ImagenTorneo from '../../componentes/ImagenTorneo.jsx';
 import cuboImagen from '/src/assets/home/img-cubo-home.png';
 import torneosIcon from '/src/assets/home/iconos/torneos-icon.png';
@@ -238,7 +239,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                                     <li key={competidor.idUsuario}>
                                         <span className="ranking-puesto">{index + 1}</span>
                                         <span className="ranking-avatar"><img src={competidor.avatar_url || avatarPredeterminado} alt="" /></span>
-                                        <strong>{[competidor.nombre, competidor.apellido].filter(Boolean).join(' ')}</strong>
+                                        <strong><EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{[competidor.nombre, competidor.apellido].filter(Boolean).join(' ')}</EnlacePerfilCompetidor></strong>
                                         <span className="ranking-pais"><PaisConBandera pais={competidor.pais} /></span>
                                         <b>{formatearTiempoRanking(competidor.mejorTiempo)}</b>
                                     </li>

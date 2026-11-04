@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import { categorias as catalogoCategorias } from '../torneos/pasos/datosCategorias.js';
 import './Rankings.css';
 
@@ -184,7 +185,7 @@ function Rankings({ usuario }) {
                                                             : resultados.length ? resultados.map((competidor) => (
                                                                 <tr key={competidor.idUsuario}>
                                                                     <td className={`rankings-puesto puesto-${competidor.puesto}`}>{competidor.puesto}</td>
-                                                                    <td className="rankings-nombre">{competidor.nombre}</td>
+                                                                    <td className="rankings-nombre"><EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor></td>
                                                                     <td><PaisConBandera pais={competidor.pais} /></td>
                                                                     <td className="rankings-tiempo">{competidor.dnf ? 'DNF' : formatearTiempo(competidor.valor)}</td>
                                                                 </tr>

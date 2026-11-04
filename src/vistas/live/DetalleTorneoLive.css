@@ -380,6 +380,12 @@
     text-align: left;
 }
 
+.live-detalle-nombre-celda {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .live-detalle-nombre-competidor:hover {
     color: #9dc1ff;
 }

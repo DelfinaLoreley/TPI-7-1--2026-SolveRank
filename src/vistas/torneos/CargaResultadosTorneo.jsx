@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import cuboBanner from '/src/assets/img-cubo-banner2.png';
@@ -379,7 +380,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                             required
                         />
                         {selectorCompetidoresAbierto && (
-                            <ul className="carga-resultados-lista-competidores" id="carga-resultados-lista-competidores" role="listbox">
+                            <ul className="carga-resultados-lista-competidores" id="carga-resultados-lista-competidores">
                                 {competidores
                                     .filter((competidor) => {
                                         const termino = busquedaCompetidor.trim().toLocaleLowerCase('es');
@@ -388,14 +389,15 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                             || competidor.wcaid?.toLocaleLowerCase('es').includes(termino);
                                     })
                                     .map((competidor) => (
-                                        <li key={competidor.idUsuario} role="option" aria-selected={String(competidor.idUsuario) === idCompetidor}>
+                                        <li key={competidor.idUsuario}>
+                                            <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
+                                            {competidor.wcaid && <small>{competidor.wcaid}</small>}
                                             <button
                                                 type="button"
                                                 onMouseDown={(evento) => evento.preventDefault()}
                                                 onClick={() => seleccionarCompetidor(`${competidor.nombre}${competidor.wcaid ? ` · ${competidor.wcaid}` : ''}`)}
                                             >
-                                                <span>{competidor.nombre}</span>
-                                                {competidor.wcaid && <small>{competidor.wcaid}</small>}
+                                                Seleccionar
                                             </button>
                                         </li>
                                     ))}
@@ -456,9 +458,12 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                             {competidor.resultado !== null ? indice + 1 : '—'}
                                         </td>
                                         <td>
-                                            <button className="carga-resultados-nombre-competidor" type="button" onClick={() => abrirDetalleCompetidor(competidor, indice)}>
-                                                {competidor.nombre}
-                                            </button>
+                                            <div className="carga-resultados-nombre-celda">
+                                                <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
+                                                <button className="carga-resultados-nombre-competidor" type="button" onClick={() => abrirDetalleCompetidor(competidor, indice)}>
+                                                    Intentos
+                                                </button>
+                                            </div>
                                         </td>
                                         <td><PaisConBandera pais={competidor.pais} /></td>
                                         <td><TiempoConBadge valor={competidor.mejor === null ? null : competidor.mejor / 100} idCategoria={rondaActiva?.idCategoria} idUsuario={competidor.idUsuario} marcas={marcasTiempos}>{competidor.mejor === null ? (competidor.completo ? 'DNF' : '—') : tiempoLegible(competidor.mejor)}</TiempoConBadge></td>
@@ -497,7 +502,7 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                         <header className="carga-resultados-modal-perfil">
                             <img src={userPfpIcon} alt="" />
                             <div>
-                                <h2 id="carga-resultados-modal-titulo">{competidor.nombre} <strong>#{posicion}</strong></h2>
+                                <h2 id="carga-resultados-modal-titulo"><EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor> <strong>#{posicion}</strong></h2>
                                 <p><PaisConBandera pais={competidor.pais} fallback="País no informado" /></p>
                             </div>
                         </header>

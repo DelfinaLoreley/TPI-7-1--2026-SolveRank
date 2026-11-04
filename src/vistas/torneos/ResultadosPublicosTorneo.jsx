@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../../axiosApi';
 import PaisConBandera from '../../componentes/PaisConBandera.jsx';
+import EnlacePerfilCompetidor from '../../componentes/EnlacePerfilCompetidor.jsx';
 import TiempoConBadge from '../../componentes/TiempoConBadge.jsx';
 import useMarcasTiempos from '../../hooks/useMarcasTiempos.js';
 import resultadosIcon from '/src/assets/home/iconos/resultados-icon-selected.png';
@@ -211,7 +212,7 @@ function TablaResultados({ ronda, rondas, marcasTiempos, podios = false, ultimaR
                                     )}
                                     {indice + 1}
                                 </td>
-                                <td className="resultados-publicos-nombre">{fila.nombre}</td>
+                                <td className="resultados-publicos-nombre"><EnlacePerfilCompetidor idUsuario={fila.idUsuario}>{fila.nombre}</EnlacePerfilCompetidor></td>
                                 <td><PaisConBandera pais={fila.pais} /></td>
                                 <td className="resultados-publicos-total">
                                     <TiempoConBadge valor={fila.mejor === null ? null : fila.mejor / 100} idCategoria={ronda.idCategoria} idUsuario={fila.idUsuario} marcas={marcasTiempos}>
