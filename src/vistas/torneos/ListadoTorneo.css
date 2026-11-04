@@ -251,6 +251,12 @@
     gap: 14px;
 }
 
+.listado-torneos-filtros-estado {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
 .listado-torneos-pestanas button {
     min-height: 29px;
     padding: 10px 12px;
@@ -701,9 +707,15 @@
 
     .listado-torneos-inscripciones {
         display: block;
-        width: 50%;
+        width: auto;
+        flex: 1 1 0;
+        min-width: 0;
         font-size: 14px;
         padding: 5px;
+    }
+
+    .listado-torneos-filtros-estado {
+        width: 100%;
     }
 
     .listado-torneos-pestanas button {
@@ -965,7 +977,7 @@
 
     .listado-torneos-inscripciones {
         display: block;
-        width: 40%;
+        width: auto;
         font-size: 10px !important;
         padding: 5px;
     }

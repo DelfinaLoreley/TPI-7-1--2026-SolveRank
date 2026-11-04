@@ -204,26 +204,28 @@ function ListadoTorneo({ onVerTorneo, usuario, onIniciarSesion }) {
                                     </button>
                                 ))}
                             </nav>
-                            <button
-                                type="button"
-                                className={`listado-torneos-inscripciones${pestanaActiva === 'Todos' ? ' activa' : ''}`}
-                                aria-pressed={pestanaActiva === 'Todos'}
-                                onClick={() => {
-                                    setPestanaActiva('Todos');
-                                    setSoloInscripcionesAbiertas(false);
-                                    setPagina(1);
-                                }}
-                            >
-                                Todos
-                            </button>
-                            <button
-                                type="button"
-                                className={`listado-torneos-inscripciones${soloInscripcionesAbiertas ? ' activa' : ''}`}
-                                aria-pressed={soloInscripcionesAbiertas}
-                                onClick={() => actualizarFiltro(setSoloInscripcionesAbiertas, !soloInscripcionesAbiertas)}
-                            >
-                                Inscripciones abiertas
-                            </button>
+                            <div className="listado-torneos-filtros-estado">
+                                <button
+                                    type="button"
+                                    className={`listado-torneos-inscripciones${pestanaActiva === 'Todos' ? ' activa' : ''}`}
+                                    aria-pressed={pestanaActiva === 'Todos'}
+                                    onClick={() => {
+                                        setPestanaActiva('Todos');
+                                        setSoloInscripcionesAbiertas(false);
+                                        setPagina(1);
+                                    }}
+                                >
+                                    Todos
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`listado-torneos-inscripciones${soloInscripcionesAbiertas ? ' activa' : ''}`}
+                                    aria-pressed={soloInscripcionesAbiertas}
+                                    onClick={() => actualizarFiltro(setSoloInscripcionesAbiertas, !soloInscripcionesAbiertas)}
+                                >
+                                    Inscripciones abiertas
+                                </button>
+                            </div>
                         </div>
                     </div>
 
