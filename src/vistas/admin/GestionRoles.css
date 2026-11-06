@@ -6,6 +6,29 @@
     background-size: min(52vw, 900px) auto;
 }
 
+.gestion-roles-secciones {
+    display: flex;
+    gap: 12px;
+    max-width: 1800px;
+    margin: 0 auto 18px;
+}
+
+.gestion-roles-secciones button {
+    padding: 12px 20px;
+    border: 1px solid #20375f;
+    border-radius: 12px;
+    background: #0a1429;
+    color: #c3cad8;
+    font: inherit;
+    cursor: pointer;
+}
+
+.gestion-roles-secciones button.activa {
+    border-color: #3987ff;
+    background: #12326a;
+    color: #fff;
+}
+
 .gestion-roles-cabecera {
     margin: 0 auto 30px;
     max-width: 1800px;
@@ -105,6 +128,72 @@
     font: inherit;
     font-size: clamp(14px, 1.5vw, 25px);
 }
+
+.gestion-roles-subtitulo {
+    margin: 28px 0 12px;
+    color: #f4f7ff;
+    font-size: clamp(19px, 1.6vw, 28px);
+}
+
+.gestion-roles-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 22px;
+}
+
+.gestion-roles-control {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 16px;
+    border: 2px solid #20375f;
+    border-radius: 14px;
+    outline: none;
+    background: #0b152b;
+    color: #f4f7ff;
+    font: inherit;
+    font-size: 17px;
+}
+
+.gestion-roles-control:focus { border-color: #4189ff; }
+.gestion-roles-control option { background: #0b152b; }
+
+.gestion-roles-listado {
+    margin-top: 42px;
+    padding-top: 18px;
+    border-top: 1px solid #20375f;
+}
+
+.gestion-roles-listado .gestion-roles-subtitulo { margin-top: 0; }
+.gestion-roles-filtro-lista { max-width: 700px; }
+.gestion-roles-usuarios-lista { display: grid; gap: 10px; margin-top: 16px; }
+
+.gestion-roles-usuario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 18px;
+    border: 1px solid #20375f;
+    border-radius: 12px;
+    background: #0b152b;
+}
+
+.gestion-roles-usuario > div { display: grid; gap: 3px; min-width: 0; }
+.gestion-roles-usuario strong { color: #f4f7ff; overflow-wrap: anywhere; }
+.gestion-roles-usuario span, .gestion-roles-usuario small { color: #aebbd1; overflow-wrap: anywhere; }
+
+.gestion-roles-eliminar {
+    flex: 0 0 auto;
+    padding: 9px 14px;
+    border: 1px solid #a83d49;
+    border-radius: 9px;
+    background: #411b29;
+    color: #ffdce0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.gestion-roles-eliminar:disabled { opacity: .5; cursor: not-allowed; }
 
 .gestion-roles-input-con-icono input {
     padding-left: 64px;
@@ -240,6 +329,14 @@
     .gestion-roles-panel { 
         border-radius: 18px; 
     }
+
+    .gestion-roles-secciones { gap: 8px; }
+    .gestion-roles-secciones button { flex: 1; padding: 10px 8px; font-size: 13px; }
+    .gestion-roles-form-grid { grid-template-columns: 1fr; gap: 0; }
+    .gestion-roles-control { min-height: 46px; font-size: 14px; }
+    .gestion-roles-usuario { align-items: flex-start; padding: 12px; }
+    .gestion-roles-eliminar { padding: 8px 10px; font-size: 13px; }
+    .gestion-roles-listado { margin-top: 30px; }
 
     .gestion-roles-cabecera h1 { font-size: 24px; margin-top: 5px;}
 
