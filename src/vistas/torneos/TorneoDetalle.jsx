@@ -502,7 +502,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
                     </section>
                 )}
 
-                {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} />}
+                {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} puedeGestionar={esOrganizadorPropietario} />}
 
                 {seccionActiva === 'resultados' && resultadosVisibles && (
                     <ResultadosPublicosTorneo
