@@ -142,8 +142,7 @@
 }
 
 .gestion-roles-control {
-    width: 100%;
-    min-height: 52px;
+    min-height: 42px;
     padding: 12px 16px;
     border: 2px solid #20375f;
     border-radius: 14px;
