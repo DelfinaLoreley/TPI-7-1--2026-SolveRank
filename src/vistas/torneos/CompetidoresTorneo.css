@@ -1,0 +1,85 @@
+.competidores-torneo {
+    display: grid;
+    gap: 16px;
+}
+
+.competidores-torneo-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.competidores-torneo-encabezado h2 {
+    margin: 0;
+    color: var(--detalle-texto, #f5f7ff);
+    font-family: 'Inclusive Sans';
+    font-size: 20px;
+}
+
+.competidores-torneo-encabezado p,
+.competidores-torneo-vacio {
+    margin: 5px 0 0;
+    color: var(--detalle-suave, #a6b1c8);
+    font-size: 15px;
+}
+
+.competidores-torneo-lista {
+    display: grid;
+    gap: 9px;
+}
+
+.competidor-torneo-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 16px;
+    border: 1px solid var(--detalle-borde, #1c3155);
+    border-radius: 10px;
+    background: var(--detalle-panel, #091328);
+}
+
+.competidor-torneo-datos {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+}
+
+.competidor-torneo-perfil {
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #64a0ff;
+    text-align: left;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.competidor-torneo-perfil:hover { text-decoration: underline; }
+.competidor-torneo-datos span,
+.competidor-torneo-datos small { color: var(--detalle-suave, #a6b1c8); overflow-wrap: anywhere; }
+.competidor-torneo-datos span { font-size: 13px; }
+.competidor-torneo-datos small { font-size: 12px; }
+
+.competidor-torneo-quitar {
+    flex: 0 0 auto;
+    padding: 9px 13px;
+    border: 1px solid #a83d49;
+    border-radius: 8px;
+    background: #411b29;
+    color: #ffdce0;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.competidor-torneo-quitar:disabled { opacity: .6; cursor: wait; }
+.competidores-torneo-error { margin: 0; color: #ff9999; }
+
+@media (max-width: 600px) {
+    .competidor-torneo-fila { align-items: flex-start; padding: 11px; }
+    .competidor-torneo-quitar { padding: 8px 10px; font-size: 12px; }
+}
