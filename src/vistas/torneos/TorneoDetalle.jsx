@@ -14,6 +14,7 @@ import editIcon from '/src/assets/torneos/edit-icon.svg';
 import TorneoGeneral from './TorneoGeneral.jsx';
 import Inscripcion from './Inscripcion.jsx';
 import MezclasTorneo from './MezclasTorneo.jsx';
+import CompetidoresTorneo from './CompetidoresTorneo.jsx';
 import CargaResultadosTorneo from './CargaResultadosTorneo.jsx';
 import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
 import ResultadosPublicosTorneo from './ResultadosPublicosTorneo.jsx';
@@ -216,6 +217,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
         ['general', 'General'],
         ['categorias', 'Categorías'],
         ...(puedeVerMezclas ? [['mezclas', 'Mezclas']] : []),
+        ['competidores', 'Competidores'],
         ['cronograma', 'Cronograma'],
         ...(resultadosAutorizados
             ? [['resultados', 'Cargar resultados']]
@@ -503,6 +505,7 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
                 )}
 
                 {seccionActiva === 'mezclas' && puedeVerMezclas && <MezclasTorneo idTorneo={idTorneo} puedeGestionar={esOrganizadorPropietario} />}
+                {seccionActiva === 'competidores' && <CompetidoresTorneo idTorneo={idTorneo} puedeQuitar={esOrganizadorPropietario} onInscripcionQuitada={() => setRecargaDetalle((actual) => actual + 1)} />}
 
                 {seccionActiva === 'resultados' && resultadosVisibles && (
                     <ResultadosPublicosTorneo
