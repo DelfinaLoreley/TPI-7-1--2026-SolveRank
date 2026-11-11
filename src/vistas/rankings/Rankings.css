@@ -97,7 +97,7 @@
 
 .rankings-selectores {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
     padding-left: 20px;
 }
@@ -141,7 +141,7 @@
     grid-template-columns: minmax(0, 1fr) 300px;
     grid-template-areas:
         "tabla lateral"
-        "estadisticas estadisticas";
+        "tabla estadisticas";
     align-items: start;
     gap: 20px;
 }
@@ -329,7 +329,7 @@
 
 .rankings-estadisticas {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
 }
 
@@ -505,6 +505,7 @@
 
     .rankings-selectores {
         width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
         padding: 0;
     }
