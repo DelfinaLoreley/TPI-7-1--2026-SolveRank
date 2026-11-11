@@ -221,7 +221,11 @@ function Navbar({
                                     <img src={userNotLogged} alt="" />
                                     Mi Perfil
                                 </a>
-                                <a href="#configuracion" onClick={cerrarMenu}>
+                                <a href="#perfil" onClick={(evento) => {
+                                    evento.preventDefault();
+                                    cerrarMenu();
+                                    onMiPerfil?.();
+                                }}>
                                     <img src={resultadosIcon} alt="" />
                                     Mis Resultados
                                 </a>
