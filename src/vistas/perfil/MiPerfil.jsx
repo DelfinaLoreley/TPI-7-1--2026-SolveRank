@@ -195,10 +195,10 @@ export default function MiPerfil({ idUsuario, publico = false, onVolver, onPerfi
 
                     <aside className="mi-perfil-lateral">
                         <section className="mi-perfil-datos">
-                            <h2>País representado</h2>
+                            <h2>País</h2>
                             <p><PaisConBandera pais={perfil.pais} fallback="No informado" /></p>
                             {!publico && <><h2>Fecha de nacimiento</h2><p>{fechaVisible(perfil.fecha_Nacimiento)}</p></>}
-                            <h2>Categorías con resultados</h2>
+                            <h2>Categorías</h2>
                             <div className="mi-perfil-categorias" aria-label="Categorías donde tiene resultados">
                                 {categorias.length ? categorias.map((categoria) => {
                                     const icono = iconoCategoria(categoria.categoria);

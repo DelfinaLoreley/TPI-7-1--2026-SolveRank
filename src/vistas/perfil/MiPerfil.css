@@ -520,6 +520,7 @@
     }
 
     .mi-perfil-modal p { font-size: 13px; }
+    .mi-perfil-modal-acciones { font-size: 13px !important; }
 
     .mi-perfil-lateral { gap: 10px; }
     .mi-perfil-datos { padding: 18px 12px; }
