@@ -174,7 +174,8 @@ function Records() {
                                     })}
                                     {!error && !cargando && records.length === 0 && <p className="records-mensaje">No hay categorías para mostrar.</p>}
                                 </section>
-
+                            </div>
+                            <aside className="records-lateral">
                                 <section className="records-estadisticas">
                                     <h2><span aria-hidden="true"><img src={estadisticasIcon} alt="" /></span>Estadísticas globales</h2>
                                     {iconosEstadisticas.map((item) => <article className="records-estadistica" key={item.key}>
@@ -182,8 +183,6 @@ function Records() {
                                         <div><strong>{Number(estadisticas[item.key] || 0).toLocaleString('es-AR')}</strong><span>{item.label}</span></div>
                                     </article>)}
                                 </section>
-                            </div>
-                            <aside className="records-lateral">
                                 <section className="records-actualizacion">
                                     <h2><span aria-hidden="true"><img src={actualizarIcon} /></span>Última actualización:</h2>
                                     <p>{actualizado ? actualizado.toLocaleString('es-AR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
