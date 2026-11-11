@@ -450,7 +450,12 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                 {cargando ? (
                                     <tr><td colSpan={5 + cantidadIntentos}>Cargando resultados…</td></tr>
                                 ) : clasificacion.length ? clasificacion.map((competidor, indice) => (
-                                    <tr key={competidor.idUsuario} className={competidor.idUsuario === Number(idCompetidor) ? 'seleccionado' : ''}>
+                                    <tr 
+                                        key={competidor.idUsuario} 
+                                        className={competidor.idUsuario === Number(idCompetidor) ? 'seleccionado' : ''}  
+                                        onClick={() => abrirDetalleCompetidor(competidor, indice)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <td
                                             className={competidor.resultado !== null && indice < cantidadAvanzan ? 'carga-resultados-posicion-avanza' : ''}
                                             title={competidor.resultado !== null && indice < cantidadAvanzan ? 'Clasifica a la siguiente ronda' : undefined}
@@ -459,10 +464,13 @@ function CargaResultadosTorneo({ idTorneo, torneo, rondas, rondaSeleccionada, on
                                         </td>
                                         <td>
                                             <div className="carga-resultados-nombre-celda">
-                                                <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
+                                                <span onClick={(e) => e.stopPropagation()}>
+                                                    <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
+                                                </span>
+                                                {/* <EnlacePerfilCompetidor idUsuario={competidor.idUsuario}>{competidor.nombre}</EnlacePerfilCompetidor>
                                                 <button className="carga-resultados-nombre-competidor" type="button" onClick={() => abrirDetalleCompetidor(competidor, indice)}>
                                                     Intentos
-                                                </button>
+                                                </button> */}
                                             </div>
                                         </td>
                                         <td><PaisConBandera pais={competidor.pais} /></td>
