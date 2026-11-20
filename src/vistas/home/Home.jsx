@@ -149,7 +149,7 @@ function Home({ onVerTorneo, onVerTodosTorneos, onVerRankings, usuario, onInicia
                             <span className="violeta">Tu mejor versión.</span>
                         </h1>
                         <p>
-                            Plataforma oficial de gestión de torneos<br className="desktop-break" />
+                            Plataforma de gestión de torneos<br className="desktop-break" />
                             de speedcubing. Encuentra torneos, sigue<br className="desktop-break" />
                             tus resultados y supera tus propios límites.
                         </p>
