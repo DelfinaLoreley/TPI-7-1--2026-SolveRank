@@ -12,7 +12,7 @@ import axios from '../../axiosApi';
 const pasos = [
     { titulo: 'Requisitos', descripcion: <>Aceptá los términos<br />del torneo</> },
     { titulo: 'Registrarse', descripcion: <>Elegí tus categorías<br />para este torneo</> },
-    { titulo: 'Aprobación', descripcion: <>Confirmación de tu<br />inscripción</> }
+    { titulo: 'Confirmación', descripcion: <>Confirmación de tu<br />inscripción</> }
 ];
 
 function fechaPeriodo(fecha) {
