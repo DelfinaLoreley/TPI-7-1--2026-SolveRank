@@ -20,6 +20,7 @@ import PanelResultadosTorneo from './PanelResultadosTorneo.jsx';
 import ResultadosPublicosTorneo from './ResultadosPublicosTorneo.jsx';
 import CategoriaTorneoCard from './CategoriaTorneoCard.jsx';
 import CronogramaTorneo from './CronogramaTorneo.jsx';
+import { CampoEquipo } from './pasos/CamposTorneo.jsx';
 import { categorias as catalogoCategorias } from './pasos/datosCategorias.js';
 import { estadoTorneo } from './estadoTorneo.js';
 import './TorneoDetalle.css';
@@ -63,8 +64,10 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
     const [eliminandoTorneo, setEliminandoTorneo] = useState(false);
     const [mensajeAccionesTorneo, setMensajeAccionesTorneo] = useState('');
     const [catalogosEdicion, setCatalogosEdicion] = useState({ jueces: [], delegados: [] });
-    const [juecesSeleccionados, setJuecesSeleccionados] = useState([]);
-    const [delegadosSeleccionados, setDelegadosSeleccionados] = useState([]);
+    const [equipoEdicion, setEquipoEdicion] = useState({
+        jueces: '', juecesSeleccionados: [],
+        delegados: '', delegadosSeleccionados: []
+    });
 
     useEffect(() => {
         let activo = true;
@@ -263,8 +266,8 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
                 Lugar_Venue: formularioEdicion.get('Lugar_Venue'),
                 direccion: formularioEdicion.get('direccion'),
                 limite_participantes: Number(formularioEdicion.get('limite_participantes')),
-                jueces: juecesSeleccionados.map(Number),
-                delegados: delegadosSeleccionados.map(Number)
+                jueces: equipoEdicion.juecesSeleccionados.map(Number),
+                delegados: equipoEdicion.delegadosSeleccionados.map(Number)
             });
             setEditandoTorneo(false);
             setMensajeAccionesTorneo('Los datos del torneo se actualizaron correctamente.');
@@ -312,8 +315,12 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
     async function abrirEdicionTorneo() {
         setMensajeAccionesTorneo('');
         setEditandoTorneo(true);
-        setJuecesSeleccionados((detalle?.torneo?.juecesIds || []).map(String));
-        setDelegadosSeleccionados((detalle?.torneo?.delegadosIds || []).map(String));
+        setEquipoEdicion({
+            jueces: '',
+            juecesSeleccionados: (detalle?.torneo?.juecesIds || []).map(String),
+            delegados: '',
+            delegadosSeleccionados: (detalle?.torneo?.delegadosIds || []).map(String)
+        });
         try {
             const { data } = await axios.get('/torneos/catalogos');
             setCatalogosEdicion({ jueces: data.jueces || [], delegados: data.delegados || [] });
@@ -321,6 +328,28 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
             setMensajeAccionesTorneo(err?.response?.data?.mensaje || 'No se pudieron cargar los jueces y delegados.');
             setEditandoTorneo(false);
         }
+    }
+
+    function manejarCambioEquipo(event) {
+        const { name, value } = event.target;
+        setEquipoEdicion((actual) => ({ ...actual, [name]: value }));
+    }
+
+    function agregarPersonaEquipo(nombre) {
+        setEquipoEdicion((actual) => {
+            const persona = actual[nombre];
+            const campoSeleccionados = `${nombre}Seleccionados`;
+            if (!persona || actual[campoSeleccionados].includes(persona)) return actual;
+            return { ...actual, [nombre]: '', [campoSeleccionados]: [...actual[campoSeleccionados], persona] };
+        });
+    }
+
+    function quitarPersonaEquipo(nombre, persona) {
+        const campoSeleccionados = `${nombre}Seleccionados`;
+        setEquipoEdicion((actual) => ({
+            ...actual,
+            [campoSeleccionados]: actual[campoSeleccionados].filter((seleccionada) => seleccionada !== persona)
+        }));
     }
 
     if (seccionActiva === 'resultados' && (resultadosAutorizados || resultadosVisibles) && rondaSeleccionada) {
@@ -473,30 +502,24 @@ function TorneoDetalle({ idTorneo, usuario, onSalir, onVerResultadosLive }) {
                                     Descripción
                                     <textarea name="descripcion" rows="4" maxLength="1000" defaultValue={torneo.descripcion || ''} />
                                 </label>
-                                <fieldset className="torneo-edicion-designaciones">
-                                    <legend>Jueces del torneo</legend>
-                                    <div className="torneo-edicion-personas">
-                                        {catalogosEdicion.jueces.map((persona) => (
-                                            <label key={persona.idUsuario}>
-                                                <input type="checkbox" checked={juecesSeleccionados.includes(String(persona.idUsuario))} onChange={(event) => setJuecesSeleccionados((actuales) => event.target.checked ? [...actuales, String(persona.idUsuario)] : actuales.filter((id) => id !== String(persona.idUsuario)))} />
-                                                {persona.nombre} {persona.apellido}
-                                            </label>
-                                        ))}
-                                        {!catalogosEdicion.jueces.length && <p>No hay usuarios activos con rol Juez.</p>}
-                                    </div>
-                                </fieldset>
-                                <fieldset className="torneo-edicion-designaciones">
-                                    <legend>Delegados de la WCA</legend>
-                                    <div className="torneo-edicion-personas">
-                                        {catalogosEdicion.delegados.map((persona) => (
-                                            <label key={persona.idUsuario}>
-                                                <input type="checkbox" checked={delegadosSeleccionados.includes(String(persona.idUsuario))} onChange={(event) => setDelegadosSeleccionados((actuales) => event.target.checked ? [...actuales, String(persona.idUsuario)] : actuales.filter((id) => id !== String(persona.idUsuario)))} />
-                                                {persona.nombre} {persona.apellido}
-                                            </label>
-                                        ))}
-                                        {!catalogosEdicion.delegados.length && <p>No hay usuarios activos con rol Delegado.</p>}
-                                    </div>
-                                </fieldset>
+                                <CampoEquipo
+                                    etiqueta="Seleccioná el/los jueces"
+                                    nombre="jueces"
+                                    opciones={catalogosEdicion.jueces.map((persona) => ({ value: String(persona.idUsuario), label: `${persona.nombre} ${persona.apellido}` }))}
+                                    formulario={equipoEdicion}
+                                    onCambio={manejarCambioEquipo}
+                                    onAgregar={agregarPersonaEquipo}
+                                    onQuitar={quitarPersonaEquipo}
+                                />
+                                <CampoEquipo
+                                    etiqueta="Seleccioná el/los delegados de la WCA"
+                                    nombre="delegados"
+                                    opciones={catalogosEdicion.delegados.map((persona) => ({ value: String(persona.idUsuario), label: `${persona.nombre} ${persona.apellido}` }))}
+                                    formulario={equipoEdicion}
+                                    onCambio={manejarCambioEquipo}
+                                    onAgregar={agregarPersonaEquipo}
+                                    onQuitar={quitarPersonaEquipo}
+                                />
                                 <div className="torneo-edicion-acciones">
                                     <button type="button" onClick={() => setEditandoTorneo(false)} disabled={guardandoEdicion}>
                                         Cancelar

@@ -331,50 +331,78 @@
     outline-offset: 1px;
 }
 
-.torneo-edicion-designaciones {
-    min-width: 0;
-    margin: 0;
-    padding: 12px;
-    border: 1px solid #334766;
-    border-radius: 7px;
+.torneo-edicion-dialogo .creacion-campo {
+    display: grid;
+    gap: 8px;
 }
 
-.torneo-edicion-designaciones legend {
-    padding: 0 6px;
+.torneo-edicion-dialogo .creacion-etiqueta {
     color: #dce5f8;
     font-size: 14px;
 }
 
-.torneo-edicion-personas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 8px 14px;
-    max-height: 180px;
-    overflow-y: auto;
+.torneo-edicion-dialogo .creacion-equipo-control {
+    display: flex;
+    gap: 5px;
 }
 
-.torneo-edicion-personas label {
-    display: flex !important;
-    grid-template-columns: none !important;
-    align-items: center;
-    gap: 8px !important;
+.torneo-edicion-dialogo .creacion-equipo-control .creacion-input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #334766;
+    border-radius: 7px;
+    background: #0c1930;
+    color: #f5f7ff;
+    font: inherit;
+}
+
+.torneo-edicion-dialogo .creacion-equipo-agregar {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    min-height: 42px;
+    place-items: center;
+    border: 1px solid #203657;
+    border-radius: 6px;
+    background: #1a2d4e;
     cursor: pointer;
 }
 
-.torneo-edicion-personas input[type="checkbox"] {
-    width: 16px;
-    min-width: 16px;
+.torneo-edicion-dialogo .creacion-equipo-agregar img {
+    width: 24px;
+    height: 24px;
+}
+
+.torneo-edicion-dialogo .creacion-equipo-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.torneo-edicion-dialogo .creacion-equipo-lista li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border: 1px solid #29456e;
+    border-radius: 14px;
+    background: #122541;
+    color: #c9d8ef;
+    font-size: 12px;
+}
+
+.torneo-edicion-dialogo .creacion-equipo-lista button {
     padding: 0;
     border: 0;
     background: transparent;
-    accent-color: #3978ff;
-}
-
-.torneo-edicion-personas p {
-    grid-column: 1 / -1;
-    margin: 0;
-    color: #9eacc5;
+    color: #c9d8ef;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .torneo-edicion-fechas {
