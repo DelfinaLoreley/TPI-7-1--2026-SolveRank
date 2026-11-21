@@ -331,6 +331,52 @@
     outline-offset: 1px;
 }
 
+.torneo-edicion-designaciones {
+    min-width: 0;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid #334766;
+    border-radius: 7px;
+}
+
+.torneo-edicion-designaciones legend {
+    padding: 0 6px;
+    color: #dce5f8;
+    font-size: 14px;
+}
+
+.torneo-edicion-personas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 8px 14px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.torneo-edicion-personas label {
+    display: flex !important;
+    grid-template-columns: none !important;
+    align-items: center;
+    gap: 8px !important;
+    cursor: pointer;
+}
+
+.torneo-edicion-personas input[type="checkbox"] {
+    width: 16px;
+    min-width: 16px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    accent-color: #3978ff;
+}
+
+.torneo-edicion-personas p {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #9eacc5;
+}
+
 .torneo-edicion-fechas {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
