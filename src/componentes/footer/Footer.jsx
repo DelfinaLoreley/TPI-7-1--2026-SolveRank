@@ -2,7 +2,7 @@ import './Footer.css';
 import logo from '/src/assets/login/logo.svg';
 import { useEffect, useState } from 'react';
 
-function Footer({ vistaActiva }) {
+function Footer({ vistaActiva, onInicio, onTorneos, onRankings, onRecords }) {
     const [llegadaDesdeFooter] = useState(
         () => sessionStorage.getItem('solverank-faq-desde-footer') === 'true'
     );
@@ -29,10 +29,10 @@ function Footer({ vistaActiva }) {
                     </div>
                     <div>
                         <h2>Navegación</h2>
-                        <a href="#inicio">Inicio</a>
-                        <a href="#torneos">Torneos</a>
-                        <a href="#rankings">Resultados</a>
-                        <a href="#rankings">Récords</a>
+                        <a href="#inicio" onClick={(evento) => { evento.preventDefault(); onInicio?.(); }}>Inicio</a>
+                        <a href="#torneos" onClick={(evento) => { evento.preventDefault(); onTorneos?.(); }}>Torneos</a>
+                        <a href="#rankings" onClick={(evento) => { evento.preventDefault(); onRankings?.(); }}>Resultados</a>
+                        <a href="#records" onClick={(evento) => { evento.preventDefault(); onRecords?.(); }}>Récords</a>
                     </div>
                     <div>
                         <h2>Información</h2>

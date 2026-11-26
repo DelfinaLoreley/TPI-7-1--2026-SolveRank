@@ -281,7 +281,13 @@ function App() {
             />
           )}
 
-      {mostrarSitio && vista !== 'pagina-no-encontrada' && <Footer vistaActiva={vista} />}
+      {mostrarSitio && vista !== 'pagina-no-encontrada' && <Footer
+          vistaActiva={vista}
+          onInicio={() => setVista('home')}
+          onTorneos={() => setVista('listado-torneos')}
+          onRankings={() => setVista('rankings')}
+          onRecords={() => setVista('records')}
+        />}
     </div>
   )
 }
